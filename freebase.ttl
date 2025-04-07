@@ -1,0 +1,17 @@
+@prefix freebase: <http://freebase-graph.insubria/anonymized/> .
+
+freebase:user_anthony_asquith	freebase:location_attr	freebase:user_london .
+freebase:user_anthony_asquith	freebase:place_of_death_attr	freebase:user_london .
+freebase:user_anthony_asquith	freebase:place_of_birth_attr	freebase:user_london .
+freebase:user_anthony_asquith	freebase:gender_attr	freebase:user_male .
+freebase:user_anthony_asquith	freebase:institution_attr	freebase:user_winchester_college .
+freebase:user_anthony_asquith	freebase:cause_of_death_attr	freebase:user_lymphoma .
+freebase:user_anthony_asquith	freebase:institution_attr	freebase:user_balliol_college_oxford .
+freebase:user_anthony_asquith	freebase:nationality_attr	freebase:user_united_kingdom .
+freebase:user_anthony_asquith	freebase:location_attr	freebase:user_monmouthshire .
+freebase:user_anthony_asquith	freebase:place_of_death_attr	freebase:user_oxfordshire .
+freebase:user_anthony_asquith	freebase:place_of_birth_attr	freebase:user_abersychan .
+freebase:user_anthony_asquith	freebase:institution_attr	freebase:user_cardiff_university .
+freebase:user_anthony_asquith	freebase:cause_of_death_attr	freebase:user_myocardial_infarction .
+freebase:user_anthony_asquith	freebase:parents_rel	freebase:user_h_h_asquith .
+freebase:user_h_h_asquith	freebase:children_rel	freebase:user_anthony_asquith .
