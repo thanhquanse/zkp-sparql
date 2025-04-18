@@ -3,7 +3,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.operator import apply_op
+from utils.operator import apply_operator
 from utils.hash import hash_to_u64
 
 class FilterConditionVerifier(StepType):
@@ -58,7 +58,7 @@ class FilterVerificationCircuit(Circuit):
     def trace(self, original, filtered, condition):
         target = condition['expr']
         op = condition['op']
-        other = condition['other']
+        other = condition['value']
 
         # Step 1: Process original triples and collect hashes
         computed_hashes = []
@@ -66,7 +66,7 @@ class FilterVerificationCircuit(Circuit):
             # subject, predicate, object = triple
 
             field_check = element[target]
-            flag = int(apply_op(field_check, op, other))
+            flag = int(apply_operator(field_check, op, other))
             hashed_triple = hash_to_u64(element)
             if flag:
                 computed_hashes.append(hashed_triple)
@@ -75,17 +75,20 @@ class FilterVerificationCircuit(Circuit):
         # Also constrain the filtering condition
         filtered_hashes = []
         for element in filtered:
-            # subject, predicate, object = triple
-
             field_check = element[target]
-            flag = int(apply_op(field_check, op, other))
+            flag = int(apply_operator(field_check, op, other))
             hashed_triple = hash_to_u64(element)
-            self.add(self.condition_check_step, {
-                "field_check": field_check,
-                "condition": other,
-                "flag": flag,  # Must pass filter
-            })
-            filtered_hashes.append(hashed_triple)
+            if flag:
+                filtered_hashes.append(hashed_triple)
+            
+            if op == '=':
+                self.add(self.condition_check_step, {
+                    "field_check": hash_to_u64(field_check),
+                    "condition": hash_to_u64(other),
+                    "flag": flag,  # Must pass filter
+                })
+            elif op == '>':
+                self.add(self.filter_gteq_step, int(field_check), int(other))
 
         # Step 3: Constrain the total expected items == the total filtered items
         self.add(self.total_computed_check_step, {

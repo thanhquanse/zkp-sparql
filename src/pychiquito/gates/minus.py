@@ -16,7 +16,7 @@ class MinusConditionVerifier(StepType):
 
 class MinusTotalComputedVerifier(StepType):
     def setup(self):
-        self.constr(eq(self.circuit.total_computed - self.circuit.total_minus, 0))
+        self.constr(eq(self.circuit.total_computed * self.circuit.total_minus, 0))
 
     def wg(self, input):
         self.assign(self.circuit.total_computed, F(input["total_computed"]))
@@ -36,29 +36,41 @@ class MinusVerificationCircuit(Circuit):
         self.minus_check_step = self.step_type(MinusConditionVerifier(self, "minus_check_step"))
         self.minus_gteq_check_step = self.step_type(GreaterEqVerifier(self, "minus_gteq_check_step"))
         self.minus_noteq_check_step = self.step_type(NotEqualVerifier(self, "minus_noteq_check_step"))
+        self.minus_total_check_step = self.step_type(MinusTotalComputedVerifier(self, "minus_total_check_step"))
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, p2, result):
-        p2_common = sorted(list(set(result) & set(p2)))
-        p2_set = sorted(set(p2))
-
-        self.add(self.minus_gteq_check_step, len(p2_common), 0)
-        self.add(self.minus_gteq_check_step, len(p2_set), 0)
-        self.add(self.minus_gteq_check_step, len(result), len(p2_common))
-
-        if len(p2_common) == len(result):
-            for i in range(len(p2_set)):
-                p_common_hash = hash_to_u64(p2_common[i])
-                p_set_hash = hash_to_u64(result[i])
-
-                self.add(self.minus_check_step, {
-                    "p_common_hash": p_common_hash,
-                    "p_set_hash": p_set_hash
-                })
+        sorted_p2 = {key: sorted(value) for key, value in p2.items()}
+        p2_common = {}
+        for key in p2:
+            if key in result:
+                values1_2 = set(p2[key])
+                values2_2 = set(result[key])
+                common_2 = values1_2 & values2_2
+                if common_2:
+                    p2_common[key] = list(common_2)
         
-        min_val = min(len(p2), len(result))
-        for i in range(min_val):
-            p_common_hash = hash_to_u64(p2[i])
-            p_set_hash = hash_to_u64(result[i])
+        sorted_p2_common = {key: sorted(value) for key, value in p2_common.items()}
 
-            self.add(self.minus_noteq_check_step, p_common_hash, p_set_hash)
+        # Constrain results >= 0
+        self.add(self.minus_gteq_check_step, len(list(sorted_p2.keys())), 0)
+        self.add(self.minus_gteq_check_step, len(list(sorted_p2_common.keys())), 0)
+
+        # Constrain items in minus not in results
+        self.add(self.minus_total_check_step, {
+            "total_computed": len(list(p2_common.keys())),
+            "total_minus": 0
+        })
+        self.add(self.minus_gteq_check_step, len(result.keys()), len(list(p2_common.keys())))
+
+        for key in p2.keys():
+            orig_p2_key_hash = hash_to_u64(p2[key])
+            if key in result:
+                result_key_hash = hash_to_u64(result[key])
+            else:
+                result_key_hash = hash_to_u64([])
+            
+            self.add(self.minus_noteq_check_step, orig_p2_key_hash, result_key_hash)
+
+
+        

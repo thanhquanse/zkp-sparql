@@ -1,6 +1,6 @@
 import operator, re
 
-def apply_op(a, op_str, b):
+def apply_operator(a, op_str, b):
     ops = {
         "==": operator.eq,
         "=": operator.eq,
@@ -9,6 +9,11 @@ def apply_op(a, op_str, b):
         "<": operator.lt,
         ">=": operator.ge,
         "<=": operator.le,
-        "regex": lambda a, b: re.match(b, a) is not None
+        "*": operator.mul,
+        "+": operator.add,
+        "-": operator.sub,
+        "/": operator.truediv,
+        "%": operator.mod,
+        "regex_i": lambda a, b: re.search(rf"{b}", a, re.IGNORECASE) is not None
     }
     return ops[op_str](a, b)

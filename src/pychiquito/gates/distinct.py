@@ -25,7 +25,7 @@ class DistinctVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, result):
-        distinct = list(set(result))
+        distinct = set(tuple(sorted(d.items())) for d in result)
 
         self.add(self.distinct_gteq_step, len(distinct), 1)
         self.add(self.distinct_check_step, {

@@ -46,8 +46,8 @@ class UnionVerificationCircuit(Circuit):
         self.add(self.union_gteq_check_step, len(p1) + len(p2), len(result))
 
         # Step 2: Constrain p1 triples
-        p1_common = sorted(list(set(result) & set(p1)))
-        p1_set = sorted(set(p1))
+        p1_common = set(tuple(sorted(d.items())) for d in result) & set(tuple(sorted(d.items())) for d in p1) #sorted(list(set(result) & set(p1)))
+        p1_set = set(tuple(sorted(d.items())) for d in p1) #sorted(set(p1))
 
         self.add(self.union_gteq_check_step, len(p1_common), 0)
         self.add(self.union_gteq_check_step, len(p1_set), 0)
@@ -55,6 +55,10 @@ class UnionVerificationCircuit(Circuit):
             "total_computed": len(p1_common),
             "total_union": len(p1_set)
         })
+
+        # Back to list to execute further
+        p1_common = list(p1_common)
+        p1_set = list(p1_set)
 
         if len(p1_common) == len(p1_set):
             for i in range(len(p1_set)):
@@ -67,8 +71,8 @@ class UnionVerificationCircuit(Circuit):
                 })
 
         # Step 3: Constrain p2 triples
-        p2_common = sorted(list(set(result) & set(p2)))
-        p2_set = sorted(set(p2))
+        p2_common = set(tuple(sorted(d.items())) for d in result) & set(tuple(sorted(d.items())) for d in p2) #sorted(list(set(result) & set(p2)))
+        p2_set = set(tuple(sorted(d.items())) for d in p2) #sorted(set(p2))
 
         self.add(self.union_gteq_check_step, len(p2_common), 0)
         self.add(self.union_gteq_check_step, len(p2_set), 0)
@@ -76,6 +80,10 @@ class UnionVerificationCircuit(Circuit):
             "total_computed": len(p2_common),
             "total_union": len(p2_set)
         })
+
+        # Back to list to execute further
+        p2_common = list(p2_common)
+        p2_set = list(p2_set)
 
         if len(p2_common) == len(p2_set):
             for i in range(len(p2_set)):

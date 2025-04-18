@@ -121,6 +121,34 @@ agg_circuit = AggregateVerificationCircuit(max_steps=len(agg_condition) + 4)
 agg_circuit_instance = agg_circuit.gen_witness(agg_condition, agg_result)
 agg_circuit.halo2_mock_prover(witness=agg_circuit_instance)
 
+agg_condition = [
+    {'name': 'Aggregate_Count', 'vars': 'book', 'res': '__agg_1__'},
+    {'name': 'Aggregate_Sum', 'vars': 'price', 'res': '__agg_2__'},
+    {'name': 'Aggregate_Avg', 'vars': 'price', 'res': '__agg_3__'},
+    {'name': 'Aggregate_Max', 'vars': 'price', 'res': '__agg_4__'},
+    {'name': 'Aggregate_Min', 'vars': 'price', 'res': '__agg_5__'},
+    {'name': 'Aggregate_Sample', 'vars': 'category', 'res': '__agg_6__'}
+]
+agg_groupby = "category"
+agg_vals_before = [
+    {'book': 'http://example.org/book1', 'category': 'Programming', 'price': '30'},
+    {'book': 'http://example.org/book2', 'category': 'Programming', 'price': '25'},
+    {'book': 'http://example.org/book5', 'category': 'Programming', 'price': '35'},
+    {'book': 'http://example.org/book9', 'category': 'Programming', 'price': '32'},
+    {'book': 'http://example.org/book3', 'category': 'Semantics', 'price': '40'},
+    {'book': 'http://example.org/book6', 'category': 'Semantics', 'price': '28'},
+    {'book': 'http://example.org/book8', 'category': 'Semantics', 'price': '45'},
+    {'book': 'http://example.org/book4', 'category': 'Data', 'price': '20'},
+    {'book': 'http://example.org/book7', 'category': 'Data', 'price': '22'},
+    {'book': 'http://example.org/book10', 'category': 'Data', 'price': '18'},
+    {'book': 'http://example.org/book11', 'category': 'Data', 'price': '26'}
+]
+agg_results = [
+    {'__agg_6__': 'Programming', '__agg_1__': '4', '__agg_2__': '122', '__agg_3__': '30.5', '__agg_4__': '35', '__agg_5__': '25'},
+    {'__agg_6__': 'Semantics', '__agg_1__': '3', '__agg_2__': '113', '__agg_3__': '37.66666666666666666666666667', '__agg_4__': '45', '__agg_5__': '28'},
+    {'__agg_6__': 'Data', '__agg_1__': '4', '__agg_2__': '86', '__agg_3__': '21.5', '__agg_4__': '26', '__agg_5__': '18'}
+]
+
 # Groupby
 groupby_field = "name"
 groupby_result = [

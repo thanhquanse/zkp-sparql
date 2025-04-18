@@ -1,3 +1,4 @@
+import json
 import hashlib
 import poseidon
 from poseidon_py.poseidon_hash import (
@@ -20,11 +21,32 @@ def string_to_field_element(input) -> int:
     # Convert the digest to an integer (big-endian)
     return int.from_bytes(digest, 'big')
 
-def hash_to_u64(input) -> int:
+def hash_to_u64_v2(input) -> int:
     # Blake2b with 8-byte output for 64 bits
     data = str(input)
     digest = hashlib.blake2b(data.encode('utf-8'), digest_size=8).digest()
     return int.from_bytes(digest, 'big')  # or 'big'
+
+def hash_to_u64(value, digest_size=32):
+    # Handle serialization for hashable and complex types
+    if isinstance(value, (list, tuple, set)):
+        # Convert to sorted list for consistency across unordered types
+        value = sorted(value)
+    elif isinstance(value, dict):
+        # Convert dicts to sorted list of key-value tuples
+        value = sorted(value.items())
+
+    # Convert to string using json to support complex nested structures
+    if not isinstance(value, str):
+        value_str = json.dumps(value, sort_keys=True)
+    else:
+        value_str = value
+
+    # Create the hash
+    digest = hashlib.blake2b(value_str.encode('utf-8'), digest_size=digest_size).digest()
+
+    # Convert bytes to int
+    return int.from_bytes(digest, byteorder='big')
 
 # Helper: Encode strings to integers (simplified)
 def encode_term(term):
@@ -61,17 +83,17 @@ def zkp_poseidon_hash_many(values):
 
 def hash_fed(hashee: HashType):
     if isinstance(hashee, int):
-        return hashee
-    elif isinstance(hashee, tuple) or isinstance(hashee, list):
+        return hash_to_u64(hashee)
+    elif isinstance(hashee, (tuple, list)):
         rs = 0
         for i in range(len(hashee)):
-            rs = rs + hashee[i]
+            rs = rs + hash_to_u64(hashee[i])
         return rs
     elif isinstance(hashee, dict):
         rs = 0
         keys = list(hashee.keys())
         for i in range(len(keys)):
-            rs = rs + hashee[keys[i]]
+            rs = rs + hash_to_u64(hashee[keys[i]])
         return rs
     
 def to_field_elements(data: Union[List[int], Tuple[int, ...], Dict[any, int]], 

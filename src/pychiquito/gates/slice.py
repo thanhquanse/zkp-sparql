@@ -33,6 +33,7 @@ class SliceVerificationCircuit(Circuit):
     def trace(self, start, slice_num, result):
         self.add(self.slice_gteq_check_step, slice_num, 0)
         self.add(self.slice_gteq_check_step, len(result), 0)
+        
         # Constrain actual results may be less than the expectation
         self.add(self.slice_gteq_check_step, slice_num, len(result))
         self.add(self.slice_check_step, {

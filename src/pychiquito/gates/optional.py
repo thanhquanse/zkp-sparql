@@ -39,51 +39,80 @@ class OptionalVerificationCircuit(Circuit):
 
 
     def trace(self, p1, p2, result):
-        # Step 1: Constrain the total expected items == the total united items
-        self.add(self.total_optional_check_step, {
-            "total_computed": max(len(p1), len(p2)),
-            "total_optional": len(result)
+        # Step 1: Constrain the distinct result fields == the distinct set of p1 and p2 fields
+        p1_obtained_vars = list(p1.keys())
+        p2_obtained_vars = list(p2.keys())
+        common_vars = set(p1_obtained_vars + p2_obtained_vars)
+
+        self.add(self.optional_gteq_check_step, len(p1_obtained_vars), 0)
+        self.add(self.optional_gteq_check_step, len(p2_obtained_vars), 0)
+        self.add(self.optional_gteq_check_step, len(result.keys()), min(len(p1_obtained_vars), len(p2_obtained_vars)))
+
+        common_vars_hash = hash_to_u64(common_vars)
+        result_vars_hash = hash_to_u64(set(list(result.keys())))
+        self.add(self.optional_check_step, {
+            "p_common_hash": common_vars_hash,
+            "p_set_hash": result_vars_hash
         })
-        self.add(self.optional_gteq_check_step, len(p1), 0)
-        self.add(self.optional_gteq_check_step, len(p2), 0)
-        self.add(self.optional_gteq_check_step, len(result), max(len(p1), len(p2)))
 
-        # Step 2: Constrain p1 triples
-        p1_common = sorted([t1 for t1 in p1 if any(set(t1).issubset(set(rs)) for rs in result)])
-        p1_set = sorted(set(p1))
-
-        self.add(self.total_optional_check_step, {
-            "total_computed": len(p1_common),
-            "total_optional": len(p1_set)
-        })
-        self.add(self.optional_gteq_check_step, len(p1_common), len(p1_set))
-
-        if len(p1_common) == len(p1_set):
-            for i in range(len(p1_set)):
-                p_common_hash = hash_to_u64(p1_common[i])
-                p_set_hash = hash_to_u64(p1_set[i])
-
-                self.add(self.optional_check_step, {
-                    "p_common_hash": p_common_hash,
-                    "p_set_hash": p_set_hash
-                })
-
-        # Step 3: Constrain p2 triples
-        p2_common = sorted([t2 for t2 in p2 if any(set(t2).issubset(set(rs)) for rs in result)])
-        p2_set = sorted(set(p2))
+        # Step 2: Constrain p1 vars
+        sorted_p1 = {key: sorted(value) for key, value in p1.items()}
+        p1_common = {}
+        for key in p1:
+            if key in result:
+                values1_1 = set(p1[key])
+                values2_1 = set(result[key])
+                common_1 = values1_1 & values2_1
+                if common_1:
+                    p1_common[key] = list(common_1)
+        
+        sorted_p1_common = {key: sorted(value) for key, value in p1_common.items()}
 
         self.add(self.total_optional_check_step, {
-            "total_computed": len(p2_common),
-            "total_optional": len(p2_set)
+            "total_computed": len(list(sorted_p1_common.keys())),
+            "total_optional": len(list(sorted_p1.keys()))
         })
-        self.add(self.optional_gteq_check_step, len(p2_common), len(p2_set))
+        self.add(self.optional_gteq_check_step, len(list(sorted_p1_common.keys())), len(list(sorted_p1.keys())))
 
-        if len(p2_common) == len(p2_set):
-            for i in range(len(p2_set)):
-                p_common_hash = hash_to_u64(p2_common[i])
-                p_set_hash = hash_to_u64(p2_set[i])
+        if len(list(sorted_p1_common)) != len(list(sorted_p1.keys())):
+            raise ValueError("Error: lhs - the number of values is not satisfied")
+        
+        for key in sorted_p1_common.keys():
+            p_common_hash_1 = hash_to_u64(sorted_p1_common[key])
+            p_set_hash_1 = hash_to_u64(sorted_p1[key])
 
-                self.add(self.optional_check_step, {
-                    "p_common_hash": p_common_hash,
-                    "p_set_hash": p_set_hash
-                })
+            self.add(self.optional_check_step, {
+                    "p_common_hash": p_common_hash_1,
+                    "p_set_hash": p_set_hash_1
+            })
+
+        # Step 3: Constrain p2 vars
+        sorted_p2 = {key: sorted(value) for key, value in p2.items()}
+        p2_common = {}
+        for key in p2:
+            if key in result:
+                values1_2 = set(p2[key])
+                values2_2 = set(result[key])
+                common_2 = values1_2 & values2_2
+                if common_2:
+                    p2_common[key] = list(common_2)
+        
+        sorted_p2_common = {key: sorted(value) for key, value in p2_common.items()}
+
+        self.add(self.total_optional_check_step, {
+            "total_computed": len(list(sorted_p2_common.keys())),
+            "total_optional": len(list(sorted_p2.keys()))
+        })
+        self.add(self.optional_gteq_check_step, len(list(sorted_p2_common.keys())), len(list(sorted_p2.keys())))
+
+        if len(list(sorted_p2_common)) != len(list(sorted_p2.keys())):
+            raise ValueError("Error: rhs - the number of values is not satisfied")
+        
+        for key in sorted_p2_common.keys():
+            p_common_hash_2 = hash_to_u64(sorted_p2_common[key])
+            p_set_hash_2 = hash_to_u64(sorted_p2[key])
+
+            self.add(self.optional_check_step, {
+                    "p_common_hash": p_common_hash_2,
+                    "p_set_hash": p_set_hash_2
+            })

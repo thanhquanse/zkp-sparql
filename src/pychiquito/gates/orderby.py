@@ -3,6 +3,8 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
+from utils.util import word_to_int_order
+
 class OrderByConditionVerifier(StepType):
     def setup(self):
         self.constr(eq(
@@ -33,7 +35,12 @@ class OrderByVerificationCircuit(Circuit):
         self.orderby_gteq_step = self.step_type(GreaterEqVerifier(self, "orderby_gteq_step"))
         self.pragma_num_steps(self.max_steps)
 
-    def trace(self, sorted_list, direction):
+    def trace(self, sorted_values, fields, direction):
+        # TODO: Temporarily hardcode 1 sort field
+        field = fields[0]
+        sorted_list_items = [item[field] for item in sorted_values]
+        sorted_list = word_to_int_order(sorted_list_items, direction)
+
         for i in range((len(sorted_list) - 1)):
             current = sorted_list[i]
             next = sorted_list[i + 1]
