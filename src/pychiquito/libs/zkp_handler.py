@@ -73,23 +73,24 @@ class ZKPHandler:
                 slice_circuit.halo2_mock_prover(witness=slice_circuit_instance, k=self.k)
 
             elif stage_name == "AggregateJoin":
-                total_steps = len(self.stage_dict[stage]['condition']['agg']) * 6 + 4 # +4 for greater than constraint
-                
-                agg_circuit = AggregateVerificationCircuit(max_steps=total_steps)
-
                 _condition = self.stage_dict[stage]['condition']
 
                 condition = _condition['agg']
                 groupby = _condition['op']
                 vals_before = _condition['value']
 
+                total_steps = len(condition) * 13 + 4 # +4 for greater than constraint
+                
+                agg_circuit = AggregateVerificationCircuit(max_steps=total_steps)
+
                 agg_circuit_instance = agg_circuit.gen_witness(condition, groupby, vals_before, stage_results)
-                agg_circuit.halo2_mock_prover(witness=agg_circuit_instance)
+                agg_circuit.halo2_mock_prover(witness=agg_circuit_instance, k=self.k)
 
             elif stage_name == "Group":
-                total_steps = len(self.stage_dict[stage]['value']) * 2
-                # TODO: Temporarily hardcode 1 group by variable
-                groupby = self.stage_dict[stage]['condition']['1']['groupby']
+                # pass
+                total_steps = 1
+                # TODO: Check more than 3 groupby vars
+                groupby = self.stage_dict[stage]['condition']['groupby']
 
                 groupby_circuit = GroupByVerificationCircuit(max_steps=total_steps)
                 groupby_result_instance = groupby_circuit.gen_witness(groupby, stage_results)
@@ -126,7 +127,7 @@ class ZKPHandler:
                         value_dict[key].append(value)
                 value_grouped = dict(value_dict)
 
-                total_steps = len(stage_results) + 8 # +8 for greater than constraint
+                total_steps = (len(p1) + len(p2)) * 2 + 8 # +8 for greater than constraint
                 optional_circuit = OptionalVerificationCircuit(max_steps=total_steps)
                 optional_circuit_instance = optional_circuit.gen_witness(p1_grouped, p2_grouped, value_grouped)
 
@@ -200,6 +201,12 @@ class ZKPHandler:
                 extend_circuit_instance = extend_circuit.gen_witness(condition, stage_results)
 
                 extend_circuit.halo2_mock_prover(witness=extend_circuit_instance, k=self.k)
+
+            elif stage_name == "ToMultiSet":
+                pass
+
+            elif stage_name == "Join":
+                pass
 
             else:
                 raise ValueError(f"Not supported the stage {stage_name}")

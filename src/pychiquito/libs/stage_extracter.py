@@ -128,15 +128,15 @@ class StageExtracter:
             }
         
         elif stage_name == "Group":
-            flag = 1
-            expression = {}
+            groups = []
             for c in condition:
-                expression[str(flag)] = {
-                    'groupby': str(c),
-                    'op': 'groupby',
-                    'value': None
-                }
-                flag += 1
+                groups.append(str(c))
+
+            expression = {
+                'groupby': groups,
+                'op': 'groupby',
+                'value': None
+            }
 
         elif stage_name == "AggregateJoin":
             previous_op = self.stage_vals[str(self.stage_counter - 1)] # should be 'Group'
@@ -145,8 +145,8 @@ class StageExtracter:
                 raise TypeError("Error: Must be 'Group' stage")
             
             before = previous_op['value']
-            # TODO: Temporarily hardcode 1 var groupby
-            groupby = previous_op['condition']['1']['groupby']
+            # TODO: Check more than 3 groupby vars
+            groupby = previous_op['condition']
 
             aggregate_arr = []
             for c in condition:
@@ -175,8 +175,15 @@ class StageExtracter:
             p2 = condition['p2']
             op = condition['expr']
 
-            p1_bgp = self.process_bgp_vars(ctx, p1)
-            p2_bgp = self.process_bgp_vars(ctx, p2)
+            if p1.name == "BGP":
+                p1_bgp = self.process_bgp_vars(ctx, p1)
+            else:
+                p1_bgp = set()
+            
+            if p2.name == "BGP":
+                p2_bgp = self.process_bgp_vars(ctx, p2)
+            else:
+                p2_bgp = set()
 
             expression = {
                 'p1': p1_bgp,

@@ -1,4 +1,6 @@
 import re
+from collections import defaultdict
+from itertools import groupby
 
 charsets = '.-_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
@@ -62,3 +64,54 @@ def find_next_stage(data_dict, current, target):
                 return key, item  # Return the key and the item
 
     return None, None
+
+def group_by(data, keys):
+    grouped = defaultdict(list)
+    for item in data:
+        # Create a tuple of key values for grouping
+        if all(k in item for k in keys):
+            group_key = tuple(item[k] for k in keys)
+            grouped[group_key].append(item)
+    return grouped
+
+def check_tuple_in_flat_list(flat_list, target_tuple):
+    tuple_size = len(target_tuple)
+    if tuple_size == 0 or tuple_size > len(flat_list):
+        return False
+
+    # Create sliding window tuples of the same size as target_tuple
+    tuple_list = [
+        tuple(flat_list[i:i + tuple_size])
+        for i in range(len(flat_list) - tuple_size + 1)
+    ]
+    
+    return target_tuple in tuple_list
+
+def is_grouped_by(data, group_fields):
+    if not data or not group_fields:
+        return False
+
+    # Extract the group key for each item in order
+    # actual_keys = [tuple(item[field] for field in group_fields) for item in data]
+    actual_keys = [
+        tuple(item[field] for field in group_fields)
+        for item in data
+        if all(field in item for field in group_fields)
+    ]
+
+
+    # Use groupby to find unique groups in sequence
+    grouped_keys = [key for key, _ in groupby(actual_keys)]
+
+    # Reconstruct what a properly grouped sequence should look like
+    expected_sequence = []
+    for key in grouped_keys:
+        count = actual_keys.count(key)
+        expected_sequence.extend([key] * count)
+
+    return actual_keys == expected_sequence
+
+def normalize_data(data):
+    # Convert each row to a dict and sort key-value pairs for consistent ordering
+    normalized = [tuple(sorted(dict(row).items())) for row in data]
+    return sorted(normalized)

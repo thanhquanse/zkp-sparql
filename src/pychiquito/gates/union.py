@@ -4,6 +4,7 @@ from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_u64
+from utils.util import normalize_data
 
 class UnionConditionVerifier(StepType):
     def setup(self):
@@ -39,11 +40,11 @@ class UnionVerificationCircuit(Circuit):
 
     def trace(self, p1, p2, result):
         # Step 1: Constrain the total expected items == the total united items
-        self.add(self.total_union_check_step, {
-            "total_computed": len(p1) + len(p2),
-            "total_union": len(result)
-        })
-        self.add(self.union_gteq_check_step, len(p1) + len(p2), len(result))
+        # self.add(self.total_union_check_step, {
+        #     "total_computed": len(p1) + len(p2),
+        #     "total_union": len(result)
+        # })
+        # self.add(self.union_gteq_check_step, len(p1) + len(p2), len(result))
 
         # Step 2: Constrain p1 triples
         p1_common = set(tuple(sorted(d.items())) for d in result) & set(tuple(sorted(d.items())) for d in p1) #sorted(list(set(result) & set(p1)))
@@ -57,8 +58,8 @@ class UnionVerificationCircuit(Circuit):
         })
 
         # Back to list to execute further
-        p1_common = list(p1_common)
-        p1_set = list(p1_set)
+        p1_common = normalize_data(list(p1_common))
+        p1_set = normalize_data(list(p1_set))
 
         if len(p1_common) == len(p1_set):
             for i in range(len(p1_set)):
@@ -82,8 +83,8 @@ class UnionVerificationCircuit(Circuit):
         })
 
         # Back to list to execute further
-        p2_common = list(p2_common)
-        p2_set = list(p2_set)
+        p2_common = normalize_data(list(p2_common))
+        p2_set = normalize_data(list(p2_set))
 
         if len(p2_common) == len(p2_set):
             for i in range(len(p2_set)):

@@ -78,8 +78,11 @@ class OptionalVerificationCircuit(Circuit):
             raise ValueError("Error: lhs - the number of values is not satisfied")
         
         for key in sorted_p1_common.keys():
+            # The values in result should exist in BGP p1
+            # BGP p1 is a raw list (no operations applied) of triples in the graph DB
+            existed_in_result_1 = set(sorted_p1_common[key]) & set(result[key])
             p_common_hash_1 = hash_to_u64(sorted_p1_common[key])
-            p_set_hash_1 = hash_to_u64(sorted_p1[key])
+            p_set_hash_1 = hash_to_u64(existed_in_result_1)
 
             self.add(self.optional_check_step, {
                     "p_common_hash": p_common_hash_1,
@@ -109,8 +112,11 @@ class OptionalVerificationCircuit(Circuit):
             raise ValueError("Error: rhs - the number of values is not satisfied")
         
         for key in sorted_p2_common.keys():
+            # The values in result should exist in BGP p2
+            # BGP p2 is a raw list (no operations applied) of triples in the graph DB
+            existed_in_result_2 = set(sorted_p2_common[key]) & set(result[key])
             p_common_hash_2 = hash_to_u64(sorted_p2_common[key])
-            p_set_hash_2 = hash_to_u64(sorted_p2[key])
+            p_set_hash_2 = hash_to_u64(existed_in_result_2)
 
             self.add(self.optional_check_step, {
                     "p_common_hash": p_common_hash_2,

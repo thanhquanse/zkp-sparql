@@ -7,6 +7,7 @@ from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_u64
+from utils.util import group_by, check_tuple_in_flat_list
 from constants.aggregate import AggregateOperations
 
 class AggregateConditionVerifier(StepType):
@@ -42,12 +43,17 @@ class AggregateVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, agg_condition, agg_groupby, agg_orginal_vals, agg_result):
-        # TODO: Hardcoded 1 groupby var
-        category_groups = defaultdict(list)
-        for item in agg_orginal_vals:
-            category_groups[item[agg_groupby]].append(item)
+        category_groups = group_by(agg_orginal_vals, agg_groupby['groupby'])
+        # for groupby in agg_groupby:
+        #     category_groups = defaultdict(list)
+        #     for item in agg_orginal_vals:
+        #         category_groups[agg_groupby[groupby]['groupby']].append(item)
 
         for agg_operator in agg_condition:
+            # category_groups = defaultdict(list)
+            # for item_val in agg_orginal_vals:
+            #     category_groups[item_val[agg_operator['vars']]].append(item_val)
+
             if agg_operator['name'] == AggregateOperations.COUNT.value:
                 count_var = agg_operator['vars']
                 count_res = agg_operator['res']
@@ -55,7 +61,7 @@ class AggregateVerificationCircuit(Circuit):
                 for category in category_groups:
                     category_count = sum(count_var in item for item in category_groups[category])
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
+                        if check_tuple_in_flat_list(list(result.values()), category):
                             self.add(self.aggregate_check_step, {
                                 "agg_condition_hash": category_count,
                                 "agg_result_hash": int(result[count_res])
@@ -69,7 +75,7 @@ class AggregateVerificationCircuit(Circuit):
                 for category in category_groups:
                     category_sum = sum(float(item[sum_var]) for item in category_groups[category])
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
+                        if check_tuple_in_flat_list(list(result.values()), category):
                             self.add(self.aggregate_check_step, {
                                 "agg_condition_hash": hash_to_u64(category_sum),
                                 "agg_result_hash": hash_to_u64(float(result[sum_res]))
@@ -83,7 +89,7 @@ class AggregateVerificationCircuit(Circuit):
                 for category in category_groups:
                     category_max = max(float(item[max_var]) for item in category_groups[category])
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
+                        if check_tuple_in_flat_list(list(result.values()), category):
                             self.add(self.aggregate_check_step, {
                                 "agg_condition_hash": hash_to_u64(category_max),
                                 "agg_result_hash": hash_to_u64(float(result[max_res]))
@@ -97,7 +103,7 @@ class AggregateVerificationCircuit(Circuit):
                 for category in category_groups:
                     category_min = min(float(item[min_var]) for item in category_groups[category])
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
+                        if check_tuple_in_flat_list(list(result.values()), category):
                             self.add(self.aggregate_check_step, {
                                 "agg_condition_hash": hash_to_u64(category_min),
                                 "agg_result_hash": hash_to_u64(float(result[min_res]))
@@ -111,7 +117,7 @@ class AggregateVerificationCircuit(Circuit):
                 for category in category_groups:
                     category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
+                        if check_tuple_in_flat_list(list(result.values()), category):
                             self.add(self.aggregate_check_step, {
                                 "agg_condition_hash": hash_to_u64(category_avg),
                                 "agg_result_hash": hash_to_u64(float(result[avg_res]))
@@ -123,13 +129,14 @@ class AggregateVerificationCircuit(Circuit):
                 sample_res = agg_operator['res']
 
                 for category in category_groups:
-                    category_sample = category
                     for result in agg_result:
-                        if any(value == category for value in result.values()):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": hash_to_u64(category_sample), # due to str possibility
-                                "agg_result_hash": hash_to_u64(result[sample_res]) # due to str possibility
-                            })
+                       if check_tuple_in_flat_list(list(result.values()), category):
+                            for cat in category:
+                                if cat == result[sample_res]:
+                                    self.add(self.aggregate_check_step, {
+                                        "agg_condition_hash": hash_to_u64(cat), # due to str possibility
+                                        "agg_result_hash": hash_to_u64(result[sample_res]) # due to str possibility
+                                    })
                             break
             else:
                 raise ValueError(f"Error: {agg_operator['name']} not supported")
@@ -139,9 +146,10 @@ class AggregateVerificationCircuit(Circuit):
         self.add(self.aggregate_gteq_step, len(agg_result), 1)
 
         # Constrain aggregate condition elements appearing in results
-        agg_condition_res_list = [item['res'] for item in agg_condition].sort()
+        agg_condition_res_list = sorted([item['res'] for item in agg_condition])
+
         for rs in agg_result:
-            agg_result_res_list = list(rs.keys()).sort()
+            agg_result_res_list = sorted(list(rs.keys()))
 
             agg_condition_hash = hash_to_u64(agg_condition_res_list)
             agg_result_hash = hash_to_u64(agg_result_res_list)
