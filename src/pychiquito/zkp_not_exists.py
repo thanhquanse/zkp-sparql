@@ -9,38 +9,35 @@ data = """
 @prefix ex: <http://example.org/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
-ex:book1 a ex:Book ;
-    foaf:title "SPARQL Basics" ;
-    ex:author ex:alice ;
-    ex:price 30 ;
-    ex:category "Programming" .
-
-ex:book2 a ex:Book ;
-    foaf:title "Advanced SPARQL" ;
-    ex:author ex:bob ;
-    ex:price 25 ;
-    ex:category "Programming" .
-
 ex:alice a foaf:Person ;
     foaf:name "Alice" .
 
 ex:bob a foaf:Person ;
-    foaf:name "Bob" .
+    foaf:name "Bob" ;
+    ex:hasPublished ex:book1 .
+
+ex:carol a foaf:Person ;
+    foaf:name "Carol" ;
+    ex:hasPublished ex:book2 .
+
+ex:book1 a ex:Book ;
+    ex:title "SPARQL for Beginners" .
+
+ex:book2 a ex:Book ;
+    ex:title "Advanced RDF Techniques" .
 """
 
 query = """
 PREFIX ex: <http://example.org/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
-ASK {
-  ?book a ex:Book ;
-        ex:author ?author ;
-        ex:price ?price ;
-        ex:category ?category .
-
-  ?author foaf:name "Alice" .
-
-  FILTER(?price > 25)
+SELECT ?person ?name
+WHERE {
+  ?person a foaf:Person ;
+          foaf:name ?name .
+  FILTER NOT EXISTS {
+    ?person ex:hasPublished ?book .
+  }
 }
 """
 
@@ -49,5 +46,4 @@ rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEva
 
 g.parse(data=data, format="turtle")
 results = g.query(query)
-print("ASK result:", results.askAnswer)
 ZKPHandler(stage_extracter.get_stage_vals()).build()

@@ -3,8 +3,10 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
+from enums.filter import FilterEnum
 from utils.operator import apply_operator
 from utils.hash import hash_to_u64
+from utils.util import find_common_variables, group_by_variable, group_by_keys
 
 class FilterConditionVerifier(StepType):
     def setup(self):
@@ -56,56 +58,80 @@ class FilterVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
     
     def trace(self, original, filtered, condition):
-        target = condition['expr']
-        op = condition['op']
-        other = condition['value']
+        match condition['op']:
+            case FilterEnum.BUILTIN_EXISTS.value | FilterEnum.BUILTIN_NOT_EXISTS.value:
+                vars_set = condition['expr']
+                operator = condition['op']
+                vars_set_values = condition['value']
+                target_intersect_vars = find_common_variables(vars_set, filtered)
 
-        # Step 1: Process original triples and collect hashes
-        computed_hashes = []
-        for element in original:
-            # subject, predicate, object = triple
+                vars_set_values_group = group_by_variable(vars_set_values)
+                filtered_values_group = group_by_keys(filtered)
 
-            field_check = element[target]
-            flag = int(apply_operator(field_check, op, other))
-            hashed_triple = hash_to_u64(element)
-            if flag:
-                computed_hashes.append(hashed_triple)
-        
-        # Step 2: Process filtered triples and check against original
-        # Also constrain the filtering condition
-        filtered_hashes = []
-        for element in filtered:
-            field_check = element[target]
-            flag = int(apply_operator(field_check, op, other))
-            hashed_triple = hash_to_u64(element)
-            if flag:
-                filtered_hashes.append(hashed_triple)
-            
-            if op == '=':
-                self.add(self.condition_check_step, {
-                    "field_check": hash_to_u64(field_check),
-                    "condition": hash_to_u64(other),
-                    "flag": flag,  # Must pass filter
+                for var in target_intersect_vars:
+                    # Condition: the intersected values must (NOT) be in the filtered result values
+                    # Logic 1: if existing => actual - expected = 0
+                    # Logic 2: if not existing => actual - expected != 0
+                    flag = int(apply_operator(vars_set_values_group[var], operator, filtered_values_group[var]))
+                    expected_filter_hash = hash_to_u64(sorted(vars_set_values_group[var]))
+                    actual_filter_hash = hash_to_u64(sorted(filtered_values_group[var]))
+
+                    self.add(self.condition_check_step, {
+                            "field_check": actual_filter_hash,
+                            "condition": expected_filter_hash,
+                            "flag": flag
+                        })
+            case _:
+                target = condition['expr']
+                operator = condition['op']
+                other = condition['value']
+
+                # Step 1: Process original triples and collect hashes
+                computed_hashes = []
+                for element in original:
+                    # subject, predicate, object = triple
+
+                    field_check = element[target]
+                    flag = int(apply_operator(field_check, operator, other))
+                    hashed_triple = hash_to_u64(element)
+                    if flag:
+                        computed_hashes.append(hashed_triple)
+                
+                # Step 2: Process filtered triples and check against original
+                # Also constrain the filtering condition
+                filtered_hashes = []
+                for element in filtered:
+                    field_check = element[target]
+                    flag = int(apply_operator(field_check, operator, other))
+                    hashed_triple = hash_to_u64(element)
+                    if flag:
+                        filtered_hashes.append(hashed_triple)
+                    
+                    if operator == '=':
+                        self.add(self.condition_check_step, {
+                            "field_check": hash_to_u64(field_check),
+                            "condition": hash_to_u64(other),
+                            "flag": flag,  # Must pass filter
+                        })
+                    elif operator == '>' or operator == '>=':
+                        self.add(self.filter_gteq_step, int(field_check), int(other))
+
+                # Step 3: Constrain the total expected items == the total filtered items
+                self.add(self.total_computed_check_step, {
+                    "total_computed": len(computed_hashes),
+                    "total_filtered": len(filtered_hashes)
                 })
-            elif op == '>':
-                self.add(self.filter_gteq_step, int(field_check), int(other))
 
-        # Step 3: Constrain the total expected items == the total filtered items
-        self.add(self.total_computed_check_step, {
-            "total_computed": len(computed_hashes),
-            "total_filtered": len(filtered_hashes)
-        })
-
-        self.add(self.filter_gteq_step, len(computed_hashes), 0)
-        self.add(self.filter_gteq_step, len(filtered_hashes), 0)
-        
-        # Step 4: Constrain filtered hashes to match expected
-        if len(computed_hashes) == len(filtered_hashes):
-            computed_hashes.sort()
-            filtered_hashes.sort()
-            
-            for i in range(len(computed_hashes)):
-                self.add(self.computation_check_step, {
-                    "hashed_triple_computed": computed_hashes[i],
-                    "hashed_triple_filtered": filtered_hashes[i],
-                })
+                self.add(self.filter_gteq_step, len(computed_hashes), 0)
+                self.add(self.filter_gteq_step, len(filtered_hashes), 0)
+                
+                # Step 4: Constrain filtered hashes to match expected
+                if len(computed_hashes) == len(filtered_hashes):
+                    computed_hashes.sort()
+                    filtered_hashes.sort()
+                    
+                    for i in range(len(computed_hashes)):
+                        self.add(self.computation_check_step, {
+                            "hashed_triple_computed": computed_hashes[i],
+                            "hashed_triple_filtered": filtered_hashes[i],
+                        })

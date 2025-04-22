@@ -1,8 +1,8 @@
 from rdflib.term import Variable
 from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject
 from itertools import tee
-from utils.util import contains_regex
-from utils.hash import hash_to_u64
+from utils.util import contains_regex, constains_builtin
+from enums.stages import QueryExecutionStage, QueryType
 
 class StageExtracter:
     def __init__(self):
@@ -14,15 +14,7 @@ class StageExtracter:
 
     def process_bgp(self, ctx, input):
         vals_arr = []
-        # processed_triples = [
-        #     tuple(None if isinstance(item, Variable) else item for item in triple)
-        #     for triple in input.triples
-        # ]
-        # for triple in processed_triples:
-        #     vals = ctx.graph.triples((triple))
-        #     for val in vals:
-        #         s, p, o = val
-        #         vals_arr.append((str(s), str(p), str(o)))
+
         for triple in input.triples:
             new_triple = []
             var_positions = {}  # maps index to variable name
@@ -75,159 +67,171 @@ class StageExtracter:
         val_arr = []
 
         # Process expression
-        if stage_name == "BGP":
-            vals = self.process_bgp_vars(ctx, condition)
-            expression = {
-                'p': vals,
-                'op': 'bgp',
-            }
-        
-        elif stage_name == "Filter":
-            if contains_regex(condition.name):
+        match stage_name:
+            case QueryExecutionStage.BGP.value:
+                vals = self.process_bgp_vars(ctx, condition)
                 expression = {
-                    'expr': str(condition['text']),
-                    'op': str('regex_' + condition['flags']),
-                    'value': str(condition['pattern'])
+                    'p': vals,
+                    'op': 'bgp',
                 }
-            else:
+            
+            case QueryExecutionStage.FILTER.value:
+                if contains_regex(condition.name):
+                    expression = {
+                        'expr': str(condition['text']),
+                        'op': str('regex_' + condition['flags']),
+                        'value': str(condition['pattern'])
+                    }
+                elif constains_builtin(condition.name):
+                    p2 = condition.graph.p2
+                    if p2.name == QueryExecutionStage.BGP.value:
+                        condition_val = self.process_bgp_vars(ctx, p2)
+                        expression = {
+                            'expr': condition._vars,
+                            'op': condition.name,
+                            'value': condition_val
+                        }
+                else:
+                    expression = {
+                        'expr': str(condition['expr']),
+                        'op': str(condition['op']),
+                        'value': str(condition['other'])
+                    }
+
+            case QueryExecutionStage.ORDER_BY.value:
+                flag = 1
+                expression = {}
+                for c in condition:
+                    expression[str(flag)] = {
+                        'expr': str(c['expr']),
+                        'op': 'order',
+                        'value': c['order']
+                    }
+                    flag += 1
+
+            case QueryExecutionStage.UNION.value:
+                val_p1 = self.stage_vals[str(self.stage_counter - 2)]['value']
+                val_p2 = self.stage_vals[str(self.stage_counter - 1)]['value']
+
                 expression = {
-                    'expr': str(condition['expr']),
-                    'op': str(condition['op']),
-                    'value': str(condition['other'])
+                    'p1': val_p1,
+                    'op': 'union',
+                    'p2': val_p2
                 }
 
-        elif stage_name == "OrderBy":
-            flag = 1
-            expression = {}
-            for c in condition:
-                expression[str(flag)] = {
-                    'expr': str(c['expr']),
-                    'op': 'order',
-                    'value': c['order']
+            case QueryExecutionStage.SLICE.value:
+                start = condition.start
+                length = condition.length
+
+                expression = {
+                    'start': start,
+                    'op': 'slice',
+                    'len': length
                 }
-                flag += 1
-
-        elif stage_name == "Union":
-            val_p1 = self.stage_vals[str(self.stage_counter - 2)]['value']
-            val_p2 = self.stage_vals[str(self.stage_counter - 1)]['value']
-
-            expression = {
-                'p1': val_p1,
-                'op': 'union',
-                'p2': val_p2
-            }
-
-        elif stage_name == "Slice":
-            start = condition.start
-            length = condition.length
-
-            expression = {
-                'start': start,
-                'op': 'slice',
-                'len': length
-            }
-        
-        elif stage_name == "Group":
-            groups = []
-            for c in condition:
-                groups.append(str(c))
-
-            expression = {
-                'groupby': groups,
-                'op': 'groupby',
-                'value': None
-            }
-
-        elif stage_name == "AggregateJoin":
-            previous_op = self.stage_vals[str(self.stage_counter - 1)] # should be 'Group'
-
-            if previous_op['name'] != "Group":
-                raise TypeError("Error: Must be 'Group' stage")
             
-            before = previous_op['value']
-            # TODO: Check more than 3 groupby vars
-            groupby = previous_op['condition']
+            case QueryExecutionStage.GROUP.value:
+                groups = []
+                for c in condition:
+                    groups.append(str(c))
 
-            aggregate_arr = []
-            for c in condition:
-                op_hash = {
-                    "name": c.name,
-                    "vars": str(c.vars),
-                    "res": str(c.res)
+                expression = {
+                    'groupby': groups,
+                    'op': 'groupby',
+                    'value': None
                 }
-                aggregate_arr.append(op_hash)
-            
-            expression = {
-                "agg": aggregate_arr,
-                "op": groupby,
-                "value": before
-            }
 
-        elif stage_name == "Distinct":
-            expression = {
-                "expr": None,
-                "op": "distinct",
-                "value": None
-            }
+            case QueryExecutionStage.AGGREGATE.value:
+                previous_op = self.stage_vals[str(self.stage_counter - 1)] # should be 'Group'
 
-        elif stage_name == "LeftJoin":
-            p1 = condition['p1']
-            p2 = condition['p2']
-            op = condition['expr']
+                if previous_op['name'] != "Group":
+                    raise TypeError("Error: Must be 'Group' stage")
+                
+                before = previous_op['value']
+                # TODO: Check more than 3 groupby vars
+                groupby = previous_op['condition']
 
-            if p1.name == "BGP":
-                p1_bgp = self.process_bgp_vars(ctx, p1)
-            else:
-                p1_bgp = set()
-            
-            if p2.name == "BGP":
+                aggregate_arr = []
+                for c in condition:
+                    op_hash = {
+                        "name": c.name,
+                        "vars": str(c.vars),
+                        "res": str(c.res)
+                    }
+                    aggregate_arr.append(op_hash)
+                
+                expression = {
+                    "agg": aggregate_arr,
+                    "op": groupby,
+                    "value": before
+                }
+
+            case QueryExecutionStage.DISTINCT.value:
+                expression = {
+                    "expr": None,
+                    "op": "distinct",
+                    "value": None
+                }
+
+            case QueryExecutionStage.OPTIONAL.value:
+                p1 = condition['p1']
+                p2 = condition['p2']
+                op = condition['expr']
+
+                if p1.name == "BGP":
+                    p1_bgp = self.process_bgp_vars(ctx, p1)
+                else:
+                    p1_bgp = set()
+                
+                if p2.name == "BGP":
+                    p2_bgp = self.process_bgp_vars(ctx, p2)
+                else:
+                    p2_bgp = set()
+
+                expression = {
+                    'p1': p1_bgp,
+                    'op': op,
+                    'p2': p2_bgp
+                }
+
+            case QueryExecutionStage.MINUS.value:
+                p2 = condition
                 p2_bgp = self.process_bgp_vars(ctx, p2)
-            else:
-                p2_bgp = set()
 
-            expression = {
-                'p1': p1_bgp,
-                'op': op,
-                'p2': p2_bgp
-            }
+                expression = {
+                    'p1': None,
+                    'op': None,
+                    'p2': p2_bgp
+                }
 
-        elif stage_name == "Minus":
-            p2 = condition
-            p2_bgp = self.process_bgp_vars(ctx, p2)
+            case QueryType.ASK.value:
+                expression = {
+                    'pv': [str(var) for var in condition.PV],
+                    'op': 'ask'
+                }
 
-            expression = {
-                'p1': None,
-                'op': None,
-                'p2': p2_bgp
-            }
+            case QueryExecutionStage.PROJECT.value:
+                expression = {
+                    'pv': [str(var) for var in condition.PV],
+                    'op': 'project'
+                }
 
-        elif stage_name == "AskQuery":
-            expression = {
-                'pv': [str(var) for var in condition.PV],
-                'op': 'ask'
-            }
+            case QueryExecutionStage.EXTEND.value:
+                # Temporarily ignore extend, due to various forms
+                var_target = condition['var']
+                var_cal = condition.expr['expr'] if 'expr' in condition.expr else None
+                op = condition.expr['op'] if 'op' in condition.expr else None
+                extend_op_name = condition.expr.name if 'name' in condition.expr else None
+                other = condition.expr['other'] if 'other' in condition.expr else None
 
-        elif stage_name == "Project":
-            expression = {
-                'pv': [str(var) for var in condition.PV],
-                'op': 'project'
-            }
-
-        elif stage_name == "Extend":
-            # Temporarily ignore extend, due to various forms
-            var_target = condition['var']
-            var_cal = condition.expr['expr'] if 'expr' in condition.expr else None
-            op = condition.expr['op'] if 'op' in condition.expr else None
-            extend_op_name = condition.expr.name if 'name' in condition.expr else None
-            other = condition.expr['other'] if 'other' in condition.expr else None
-
-            expression = {
-                'var_target': var_target,
-                'var_cal': var_cal,
-                'op': op,
-                'extend_op_name': extend_op_name,
-                'other': other
-            }
+                expression = {
+                    'var_target': var_target,
+                    'var_cal': var_cal,
+                    'op': op,
+                    'extend_op_name': extend_op_name,
+                    'other': other
+                }
+            case _:
+                raise NotImplementedError()
 
         # Process values
         for value in values:
@@ -243,193 +247,195 @@ class StageExtracter:
         }
         self.stage_counter += 1
 
-    def customEval(self, ctx, part):  # noqa: N802
+    def ZKPQueryEval(self, ctx, part):
         """
-        Rewrite triple patterns to get super-classes
+        Extract intermediate values at each stage
         """
-        if part.name == "BGP":
-            bgp = []
-            generator = evalBGP(ctx, part.triples)
-            gen1, gen2 = tee(generator, 2)
-            for v in gen1:
-                bgp.append(v)
+        match part.name:
+            case QueryExecutionStage.BGP.value:
+                bgp = []
+                generator = evalBGP(ctx, part.triples)
+                gen1, gen2 = tee(generator, 2)
+                for v in gen1:
+                    bgp.append(v)
 
-            self.add_stage(ctx, part.name, part, bgp)
+                self.add_stage(ctx, part.name, part, bgp)
+                
+                return gen2
             
-            return gen2
-        
-        if part.name == "Filter":
-            filtered = []
-            generator = evalFilter(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+            case QueryExecutionStage.FILTER.value:
+                filtered = []
+                generator = evalFilter(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            for v in gen1:
-                filtered.append(v)
+                for v in gen1:
+                    filtered.append(v)
 
-            self.add_stage(ctx, part.name, part.expr, filtered)
+                self.add_stage(ctx, part.name, part.expr, filtered)
 
-            return gen2
-        
-        if part.name == "OrderBy":
-            orderby = []
-            generator = evalOrderBy(ctx, part)
-            gen1, gen2 = tee(generator, 2)
-
-            for v in gen1:
-                orderby.append(v)
+                return gen2
             
-            self.add_stage(ctx, part.name, part.expr, orderby)
+            case QueryExecutionStage.ORDER_BY.value:
+                orderby = []
+                generator = evalOrderBy(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            return gen2
-        
-        if part.name == "Group":
-            groupby = []
-            generator = evalGroup(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                for v in gen1:
+                    orderby.append(v)
+                
+                self.add_stage(ctx, part.name, part.expr, orderby)
 
-            for v in gen1:
-                groupby.append(v)
+                return gen2
+            
+            case QueryExecutionStage.GROUP.value:
+                groupby = []
+                generator = evalGroup(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part.expr, groupby)
+                for v in gen1:
+                    groupby.append(v)
 
-            return gen2
-        
-        if part.name == "Union":
-            union = []
-            generator = evalUnion(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part.expr, groupby)
 
-            for v in gen1:
-                union.append(v)
+                return gen2
+            
+            case QueryExecutionStage.UNION.value:
+                union = []
+                generator = evalUnion(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, [part.p1, part.p2], union)
+                for v in gen1:
+                    union.append(v)
 
-            return gen2
-        
-        if part.name == "Minus":
-            minus = []
-            generator = evalMinus(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, [part.p1, part.p2], union)
 
-            for v in gen1:
-                minus.append(v)
+                return gen2
+            
+            case QueryExecutionStage.MINUS.value:
+                minus = []
+                generator = evalMinus(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part.p2, minus)
+                for v in gen1:
+                    minus.append(v)
 
-            return gen2
-        
-        if part.name == "ToMultiSet":
-            intersect = []
-            generator = evalMultiset(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part.p2, minus)
 
-            for v in gen1:
-                intersect.append(v)
+                return gen2
+            
+            case QueryExecutionStage.TO_MULTISET.value:
+                intersect = []
+                generator = evalMultiset(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx,part.name, part.expr, intersect)
+                for v in gen1:
+                    intersect.append(v)
 
-            return gen2
-        
-        if part.name == "AggregateJoin":
-            aggregate = []
-            generator = evalAggregateJoin(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx,part.name, part.expr, intersect)
 
-            for v in gen1:
-                aggregate.append(v)
+                return gen2
+            
+            case QueryExecutionStage.AGGREGATE.value:
+                aggregate = []
+                generator = evalAggregateJoin(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part.A, aggregate)
+                for v in gen1:
+                    aggregate.append(v)
 
-            return gen2
-        
-        if part.name == "Reduced":
-            reduced = []
-            generator = evalReduced(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part.A, aggregate)
 
-            for v in gen1:
-                reduced.append(v)
+                return gen2
+            
+            case QueryExecutionStage.REDUCED.value:
+                reduced = []
+                generator = evalReduced(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part.expr, reduced)
+                for v in gen1:
+                    reduced.append(v)
 
-            return gen2
-        
-        if part.name == "Distinct":
-            distinct = []
-            generator = evalDistinct(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part.expr, reduced)
 
-            for v in gen1:
-                distinct.append(v)
+                return gen2
+            
+            case QueryExecutionStage.DISTINCT.value:
+                distinct = []
+                generator = evalDistinct(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part, distinct)
+                for v in gen1:
+                    distinct.append(v)
 
-            return gen2
-        
-        if part.name == "Slice":
-            slice = []
-            generator = evalSlice(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part, distinct)
 
-            for v in gen1:
-                slice.append(v)
+                return gen2
+            
+            case QueryExecutionStage.SLICE.value:
+                slice = []
+                generator = evalSlice(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part, slice)
+                for v in gen1:
+                    slice.append(v)
 
-            return gen2
-        
-        if part.name == "Join":
-            join = []
-            generator = evalJoin(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part, slice)
 
-            for v in gen1:
-                join.append(v)
+                return gen2
+            
+            case QueryExecutionStage.JOIN.value:
+                join = []
+                generator = evalJoin(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, [part.p1, part.p2], join)
+                for v in gen1:
+                    join.append(v)
 
-            return gen2
-        
-        if part.name == "LeftJoin":
-            leftjoin = []
-            generator = evalLeftJoin(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, [part.p1, part.p2], join)
 
-            for v in gen1:
-                leftjoin.append(v)
+                return gen2
+            
+            case QueryExecutionStage.OPTIONAL.value:
+                leftjoin = []
+                generator = evalLeftJoin(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part, leftjoin)
+                for v in gen1:
+                    leftjoin.append(v)
 
-            return gen2
-        
-        if part.name == "Extend":
-            extend = []
-            generator = evalExtend(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                self.add_stage(ctx, part.name, part, leftjoin)
 
-            for v in gen1:
-                extend.append(v)
+                return gen2
+            
+            case QueryExecutionStage.EXTEND.value:
+                extend = []
+                generator = evalExtend(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part, extend)
+                for v in gen1:
+                    extend.append(v)
 
-            return gen2
-        
-        if part.name == "AskQuery":
-            # Due to ASK query does not return actual values, so return an empty result
-            self.add_stage(ctx, part.name, part, [{}])
+                self.add_stage(ctx, part.name, part, extend)
 
-            return evalAskQuery(ctx, part)
-        
-        if part.name == "Project":
-            project = []
-            generator = evalProject(ctx, part)
-            gen1, gen2 = tee(generator, 2)
+                return gen2
+            
+            case QueryType.ASK.value:
+                # Due to ASK query does not return actual values, so return an empty result
+                self.add_stage(ctx, part.name, part, [{}])
 
-            for v in gen1:
-                project.append(v)
+                return evalAskQuery(ctx, part)
+            
+            case QueryExecutionStage.PROJECT.value:
+                project = []
+                generator = evalProject(ctx, part)
+                gen1, gen2 = tee(generator, 2)
 
-            self.add_stage(ctx, part.name, part, project)
+                for v in gen1:
+                    project.append(v)
 
-            return gen2
+                self.add_stage(ctx, part.name, part, project)
 
-        raise NotImplementedError()
+                return gen2
+
+            case _:
+                raise NotImplementedError()

@@ -1,6 +1,5 @@
 import statistics
 
-from collections import defaultdict
 from chiquito.dsl import Circuit, StepType
 from chiquito.cb import eq
 from chiquito.util import F
@@ -8,7 +7,7 @@ from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_u64
 from utils.util import group_by, check_tuple_in_flat_list
-from constants.aggregate import AggregateOperations
+from enums.aggregate import AggregateOperations
 
 class AggregateConditionVerifier(StepType):
     def setup(self):
@@ -44,102 +43,95 @@ class AggregateVerificationCircuit(Circuit):
 
     def trace(self, agg_condition, agg_groupby, agg_orginal_vals, agg_result):
         category_groups = group_by(agg_orginal_vals, agg_groupby['groupby'])
-        # for groupby in agg_groupby:
-        #     category_groups = defaultdict(list)
-        #     for item in agg_orginal_vals:
-        #         category_groups[agg_groupby[groupby]['groupby']].append(item)
 
         for agg_operator in agg_condition:
-            # category_groups = defaultdict(list)
-            # for item_val in agg_orginal_vals:
-            #     category_groups[item_val[agg_operator['vars']]].append(item_val)
+            match agg_operator['name']:
+                case AggregateOperations.COUNT.value:
+                    count_var = agg_operator['vars']
+                    count_res = agg_operator['res']
 
-            if agg_operator['name'] == AggregateOperations.COUNT.value:
-                count_var = agg_operator['vars']
-                count_res = agg_operator['res']
+                    for category in category_groups:
+                        category_count = sum(count_var in item for item in category_groups[category])
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                self.add(self.aggregate_check_step, {
+                                    "agg_condition_hash": category_count,
+                                    "agg_result_hash": int(result[count_res])
+                                })
+                                break
 
-                for category in category_groups:
-                    category_count = sum(count_var in item for item in category_groups[category])
-                    for result in agg_result:
-                        if check_tuple_in_flat_list(list(result.values()), category):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": category_count,
-                                "agg_result_hash": int(result[count_res])
-                            })
-                            break
+                case AggregateOperations.SUM.value:
+                    sum_var = agg_operator['vars']
+                    sum_res = agg_operator['res']
+                    
+                    for category in category_groups:
+                        category_sum = sum(float(item[sum_var]) for item in category_groups[category])
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                self.add(self.aggregate_check_step, {
+                                    "agg_condition_hash": hash_to_u64(category_sum),
+                                    "agg_result_hash": hash_to_u64(float(result[sum_res]))
+                                })
+                                break
+                                
+                case AggregateOperations.MAX.value:
+                    max_var = agg_operator['vars']
+                    max_res = agg_operator['res']
 
-            elif agg_operator['name'] == AggregateOperations.SUM.value:
-                sum_var = agg_operator['vars']
-                sum_res = agg_operator['res']
+                    for category in category_groups:
+                        category_max = max(float(item[max_var]) for item in category_groups[category])
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                self.add(self.aggregate_check_step, {
+                                    "agg_condition_hash": hash_to_u64(category_max),
+                                    "agg_result_hash": hash_to_u64(float(result[max_res]))
+                                })
+                                break
                 
-                for category in category_groups:
-                    category_sum = sum(float(item[sum_var]) for item in category_groups[category])
-                    for result in agg_result:
-                        if check_tuple_in_flat_list(list(result.values()), category):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": hash_to_u64(category_sum),
-                                "agg_result_hash": hash_to_u64(float(result[sum_res]))
-                            })
-                            break
-                            
-            elif agg_operator['name'] == AggregateOperations.MAX.value:
-                max_var = agg_operator['vars']
-                max_res = agg_operator['res']
+                case AggregateOperations.MIN.value:
+                    min_var = agg_operator['vars']
+                    min_res = agg_operator['res']
 
-                for category in category_groups:
-                    category_max = max(float(item[max_var]) for item in category_groups[category])
-                    for result in agg_result:
-                        if check_tuple_in_flat_list(list(result.values()), category):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": hash_to_u64(category_max),
-                                "agg_result_hash": hash_to_u64(float(result[max_res]))
-                            })
-                            break
-            
-            elif agg_operator['name'] == AggregateOperations.MIN.value:
-                min_var = agg_operator['vars']
-                min_res = agg_operator['res']
+                    for category in category_groups:
+                        category_min = min(float(item[min_var]) for item in category_groups[category])
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                self.add(self.aggregate_check_step, {
+                                    "agg_condition_hash": hash_to_u64(category_min),
+                                    "agg_result_hash": hash_to_u64(float(result[min_res]))
+                                })
+                                break
 
-                for category in category_groups:
-                    category_min = min(float(item[min_var]) for item in category_groups[category])
-                    for result in agg_result:
-                        if check_tuple_in_flat_list(list(result.values()), category):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": hash_to_u64(category_min),
-                                "agg_result_hash": hash_to_u64(float(result[min_res]))
-                            })
-                            break
+                case AggregateOperations.AVG.value:
+                    avg_var = agg_operator['vars']
+                    avg_res = agg_operator['res']
 
-            elif agg_operator['name'] == AggregateOperations.AVG.value:
-                avg_var = agg_operator['vars']
-                avg_res = agg_operator['res']
+                    for category in category_groups:
+                        category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                self.add(self.aggregate_check_step, {
+                                    "agg_condition_hash": hash_to_u64(category_avg),
+                                    "agg_result_hash": hash_to_u64(float(result[avg_res]))
+                                })
+                                break
+                                
+                case AggregateOperations.SAMPLE.value:
+                    sample_var = agg_operator['vars']
+                    sample_res = agg_operator['res']
 
-                for category in category_groups:
-                    category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
-                    for result in agg_result:
-                        if check_tuple_in_flat_list(list(result.values()), category):
-                            self.add(self.aggregate_check_step, {
-                                "agg_condition_hash": hash_to_u64(category_avg),
-                                "agg_result_hash": hash_to_u64(float(result[avg_res]))
-                            })
-                            break
-                            
-            elif agg_operator['name'] == AggregateOperations.SAMPLE.value:
-                sample_var = agg_operator['vars']
-                sample_res = agg_operator['res']
-
-                for category in category_groups:
-                    for result in agg_result:
-                       if check_tuple_in_flat_list(list(result.values()), category):
-                            for cat in category:
-                                if cat == result[sample_res]:
-                                    self.add(self.aggregate_check_step, {
-                                        "agg_condition_hash": hash_to_u64(cat), # due to str possibility
-                                        "agg_result_hash": hash_to_u64(result[sample_res]) # due to str possibility
-                                    })
-                            break
-            else:
-                raise ValueError(f"Error: {agg_operator['name']} not supported")
+                    for category in category_groups:
+                        for result in agg_result:
+                            if check_tuple_in_flat_list(list(result.values()), category):
+                                for cat in category:
+                                    if cat == result[sample_res]:
+                                        self.add(self.aggregate_check_step, {
+                                            "agg_condition_hash": hash_to_u64(cat), # due to str possibility
+                                            "agg_result_hash": hash_to_u64(result[sample_res]) # due to str possibility
+                                        })
+                                break
+                case _:
+                    raise ValueError(f"Error: {agg_operator['name']} not supported")
 
         # Constrain aggregation having at least 1 calculated
         self.add(self.aggregate_gteq_step, len(agg_condition), 1)

@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_dir", type=str, default="./outputs/")
     args = parser.parse_args()
 
-    rdflib.plugins.sparql.CUSTOM_EVALS["exampleEval"] = customEval
+    rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = customEval
 
     condition = ["user_francis_ii_holy_roman_emperor"]
     triples = detect_k_values(args.dataset, "user_francis_ii_holy_roman_emperor")

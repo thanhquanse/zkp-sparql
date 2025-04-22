@@ -18,7 +18,7 @@ from utils.util import find_next_stage
 class ZKPHandler:
     def __init__(self, stage_dict):
         self.stage_dict = stage_dict
-        self.k = 7
+        self.k = 17
 
     def build(self):
         stage_orders = self.stage_dict.keys()

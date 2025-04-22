@@ -14,6 +14,8 @@ def apply_operator(a, op_str, b):
         "-": operator.sub,
         "/": operator.truediv,
         "%": operator.mod,
-        "regex_i": lambda a, b: re.search(rf"{b}", a, re.IGNORECASE) is not None
+        "regex_i": lambda a, b: re.search(rf"{b}", a, re.IGNORECASE) is not None,
+        "Builtin_EXISTS": lambda a, b : all(x in a for x in b) is True,
+        "Builtin_NOTEXISTS": lambda a, b: all(x in a for x in b) is False
     }
     return ops[op_str](a, b)

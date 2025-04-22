@@ -4,8 +4,11 @@ from itertools import groupby
 
 charsets = '.-_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
-def contains_regex(text):
-    return re.search(r'regex', text, re.IGNORECASE) is not None
+def contains_regex(input):
+    return re.search(r'regex', input, re.IGNORECASE) is not None
+
+def constains_builtin(input):
+    return re.search(r'builtin', input, re.IGNORECASE) is not None
 
 def word_to_int(word: str) -> int:
     # Define character set in lexicographical order
@@ -115,3 +118,31 @@ def normalize_data(data):
     # Convert each row to a dict and sort key-value pairs for consistent ordering
     normalized = [tuple(sorted(dict(row).items())) for row in data]
     return sorted(normalized)
+
+def find_common_variables(var1, var2):
+    # Extract variables from var1 (set of (Variable, Value) pairs)
+    var1_vars = {str(var) for var in var1}
+    
+    # Extract variables from var2 (list of dicts)
+    var2_vars = set()
+    for binding in var2:
+        var2_vars.update(binding.keys())
+
+    # Find intersection
+    common_vars = var1_vars & var2_vars
+    return common_vars
+
+def group_by_variable(pairs):
+    # The input is in pair like (rdflib.term.Variable('book'), rdflib.term.URIRef('http://example.org/book2'))
+    result = defaultdict(list)
+    for var, val in pairs:
+        result[str(var)].append(str(val))
+    return dict(result)
+
+def group_by_keys(dict_list):
+    # The input is like [{'person': 'http://example.org/bob', 'name': 'Bob'}, {'person': 'http://example.org/carol', 'name': 'Carol'}]
+    result = defaultdict(list)
+    for entry in dict_list:
+        for key, value in entry.items():
+            result[key].append(value)
+    return dict(result)

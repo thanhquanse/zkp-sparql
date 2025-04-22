@@ -54,12 +54,12 @@ g.parse(data=data, format="turtle")
 
 # Sort asc
 stage_extracter_asc = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["exampleEval"] = stage_extracter_asc.customEval
+rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter_asc.ZKPQueryEval
 results = g.query(query_asc)
 ZKPHandler(stage_extracter_asc.get_stage_vals()).build()
 
 # Sort desc
 stage_extracter_desc = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["exampleEval"] = stage_extracter_desc.customEval
+rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter_desc.ZKPQueryEval
 results = g.query(query_desc)
 ZKPHandler(stage_extracter_desc.get_stage_vals()).build()

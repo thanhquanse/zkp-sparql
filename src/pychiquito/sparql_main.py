@@ -89,7 +89,7 @@ ORDER BY DESC(?totalSales)
 LIMIT 2 OFFSET 0
 """
 stage_extracter = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["exampleEval"] = stage_extracter.customEval
+rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
 results = g.query(query)
 ZKPHandler(stage_extracter.get_stage_vals()).build()

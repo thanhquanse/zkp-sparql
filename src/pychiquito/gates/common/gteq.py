@@ -18,6 +18,7 @@ class GreaterEqVerifier(StepType):
         for bit in self.bits:
             self.constr(eq(bit * (bit - 1), 0))
 
+    #TODO: Should implement to work with double/float
     def wg(self, a_val, b_val):
         d_val = a_val - b_val
         assert d_val >= 0, "a < b, invalid witness"

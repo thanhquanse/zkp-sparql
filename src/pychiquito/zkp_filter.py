@@ -39,7 +39,7 @@ ORDER BY ?price
 """
 
 stage_extracter = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["exampleEval"] = stage_extracter.customEval
+rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
 g.parse(data=data, format="turtle")
 results = g.query(query)
