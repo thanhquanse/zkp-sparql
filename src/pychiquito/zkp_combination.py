@@ -51,6 +51,9 @@ WHERE {
 
   # FILTER: only programming books
   FILTER(?category = "Programming")
+#   FILTER EXISTS {
+#     ?author foaf:name ?authorName .
+#   }
 
   # MINUS: exclude certain books explicitly
   MINUS {
@@ -58,6 +61,7 @@ WHERE {
   }
 }
 GROUP BY ?authorName
+HAVING(AVG(?price) > 1)
 ORDER BY DESC(?avgPrice)
 LIMIT 2
 OFFSET 1

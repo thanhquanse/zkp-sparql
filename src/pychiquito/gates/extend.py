@@ -4,6 +4,7 @@ from chiquito.util import F
 
 from utils.hash import hash_to_u64
 from utils.operator import apply_operator
+from enums.aggregate import ExpressionEnum
 
 class ExtendConditionVerifier(StepType):
     def setup(self):
@@ -26,7 +27,7 @@ class ExtendVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, input, results):
-        if input['extend_op_name'] in ["MultiplicativeExpression", "AdditiveExpression"]:
+        if input['extend_op_name'] in [ExpressionEnum.MULTIPLICATIVE.value, ExpressionEnum.ADDITIVE.value]:
             var_target = str(input['var_target'])
             var_cal = str(input['var_cal'])
 

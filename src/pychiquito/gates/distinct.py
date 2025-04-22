@@ -3,6 +3,8 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
+from utils.hash import hash_to_u64
+
 class DistinctConditionVerifier(StepType):
     def setup(self):
         self.constr(eq(self.circuit.total_computed - self.circuit.total_distinct, 0))
@@ -25,10 +27,23 @@ class DistinctVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, result):
-        distinct = set(tuple(sorted(d.items())) for d in result)
+        # Convert to set to ensure the content is still the same when comparing
+        result_set = {tuple(d.items()) for d in result}
+        distinct_set = set(tuple(sorted(d.items())) for d in result)
 
-        self.add(self.distinct_gteq_step, len(distinct), 1)
+        self.add(self.distinct_gteq_step, len(distinct_set), 1)
         self.add(self.distinct_check_step, {
             "total_computed": len(result),
-            "total_distinct": len(distinct)
+            "total_distinct": len(distinct_set)
+        })
+
+        # Normalize to ensure the order does not impact the hashing results
+        normalized_result_set = [tuple(sorted(t)) for t in result_set]
+        normalized_result_set.sort()
+        normalized_distinct_set = [tuple(sorted(t)) for t in distinct_set]
+        normalized_distinct_set.sort()
+
+        self.add(self.distinct_check_step, {
+            "total_computed": hash_to_u64(normalized_result_set),
+            "total_distinct": hash_to_u64(normalized_distinct_set)
         })

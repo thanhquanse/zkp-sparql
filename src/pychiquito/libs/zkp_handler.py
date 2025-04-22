@@ -98,7 +98,7 @@ class ZKPHandler:
                 groupby_circuit.halo2_mock_prover(witness=groupby_result_instance, k=self.k)
 
             elif stage_name == "Distinct":
-                distinct_circuit = DistinctVerificationCircuit(max_steps=2)
+                distinct_circuit = DistinctVerificationCircuit(max_steps=3)
                 distinct_circuit_instance = distinct_circuit.gen_witness(stage_results)
                 
                 distinct_circuit.halo2_mock_prover(witness=distinct_circuit_instance, k=self.k)

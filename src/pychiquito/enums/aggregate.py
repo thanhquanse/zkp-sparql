@@ -7,3 +7,7 @@ class AggregateOperations(Enum):
     MAX = "Aggregate_Max"
     MIN = "Aggregate_Min"
     SAMPLE = "Aggregate_Sample"
+
+class ExpressionEnum(Enum):
+    MULTIPLICATIVE = "MultiplicativeExpression"
+    ADDITIVE = "AdditiveExpression"
