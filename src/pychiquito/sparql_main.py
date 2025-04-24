@@ -1,7 +1,7 @@
 import rdflib
 from rdflib import Graph
-from libs.stage_extracter import StageExtracter
-from libs.zkp_handler import ZKPHandler
+from libs.stageextracter import StageExtracter
+from libs.singlehandler import ZKPSingleHandler
 
 g = Graph()
 g.parse(data="""
@@ -92,7 +92,7 @@ stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
 results = g.query(query)
-ZKPHandler(stage_extracter.get_stage_vals()).build()
+ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
 # print(stage_extracter.get_stage_vals())
 # for row in results:
 #     print(f"Year: {row.pubYear}, Total Sales: {row.totalSales}")

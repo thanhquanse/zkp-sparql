@@ -1,7 +1,8 @@
 import rdflib
 from rdflib import Graph
-from libs.stage_extracter import StageExtracter
-from libs.zkp_handler import ZKPHandler
+from libs.stageextracter import StageExtracter
+from libs.singlehandler import ZKPSingleHandler
+from libs.superhandler import ZKPSuperHandler
 
 g = Graph()
 
@@ -72,4 +73,4 @@ rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEva
 
 g.parse(data=data, format="turtle")
 results = g.query(query)
-ZKPHandler(stage_extracter.get_stage_vals()).build()
+ZKPSuperHandler(stage_extracter.get_stage_vals()).build()

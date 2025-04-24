@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from itertools import groupby
+from itertools import groupby, product
 
 charsets = '.-_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
@@ -146,3 +146,17 @@ def group_by_keys(dict_list):
         for key, value in entry.items():
             result[key].append(value)
     return dict(result)
+
+def group_by_fields(data, fields):
+    var_map = defaultdict(list)
+    for var, value in data:
+        var_map[str(var)].append(str(value))  # convert values to strings for consistent output
+
+    # Extract the value lists for the selected fields
+    value_lists = [var_map.get(field, []) for field in fields]
+
+    # Compute Cartesian product
+    combos = product(*value_lists)
+
+    # Build dictionaries for each combination
+    return [dict(zip(fields, combo)) for combo in combos]

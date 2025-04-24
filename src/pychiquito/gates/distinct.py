@@ -5,6 +5,8 @@ from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_u64
 
+from collections import defaultdict
+
 class DistinctConditionVerifier(StepType):
     def setup(self):
         self.constr(eq(self.circuit.total_computed - self.circuit.total_distinct, 0))
@@ -27,9 +29,23 @@ class DistinctVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, result):
+        grouped_items = defaultdict(list)
+
+        for item in result:
+            key = tuple(sorted(item.items()))
+            grouped_items[key].append(item)
+
+        # Extract duplicates
+        duplicates = [items for items in grouped_items.values() if len(items) > 1]
+
+        for group in duplicates:
+            for dup in group:
+                print(dup)
+            print("---")
+
         # Convert to set to ensure the content is still the same when comparing
         result_set = {tuple(d.items()) for d in result}
-        distinct_set = set(tuple(sorted(d.items())) for d in result)
+        distinct_set = set(tuple(d.items()) for d in result)
 
         self.add(self.distinct_gteq_step, len(distinct_set), 1)
         self.add(self.distinct_check_step, {

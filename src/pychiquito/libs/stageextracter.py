@@ -76,6 +76,7 @@ class StageExtracter:
                 }
             
             case QueryExecutionStage.FILTER.value:
+                # TODO: Handle more than 1 filter and "ConditionalAndExpression" type
                 if contains_regex(condition.name):
                     expression = {
                         'expr': str(condition['text']),
@@ -131,13 +132,19 @@ class StageExtracter:
             
             case QueryExecutionStage.GROUP.value:
                 groups = []
-                for c in condition:
+                values2group = None
+                # try:
+                #     values2group = self.process_bgp_vars(ctx, condition.p)
+                # except:
+                #     raise ValueError(f"Error: BGP stage not found in group")
+                
+                for c in condition.expr:
                     groups.append(str(c))
 
                 expression = {
                     'groupby': groups,
                     'op': 'groupby',
-                    'value': None
+                    'value': values2group
                 }
 
             case QueryExecutionStage.AGGREGATE.value:
@@ -295,7 +302,7 @@ class StageExtracter:
                 for v in gen1:
                     groupby.append(v)
 
-                self.add_stage(ctx, part.name, part.expr, groupby)
+                self.add_stage(ctx, part.name, part, groupby)
 
                 return gen2
             

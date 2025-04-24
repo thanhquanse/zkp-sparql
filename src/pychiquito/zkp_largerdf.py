@@ -1,11 +1,11 @@
 import rdflib
 from rdflib import Graph
-from libs.stage_extracter import StageExtracter
-from libs.zkp_handler import ZKPHandler
+from libs.stageextracter import StageExtracter
+from libs.singlehandler import ZKPSingleHandler
 
 g = Graph()
 
-data = "./datasets/drugbank_dump.nt"
+data = "./datasets/largerdfbench_drugbank_dump.nt"
 
 query_1 = """
 SELECT $drug $melt WHERE {
@@ -96,4 +96,4 @@ rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEva
 g.parse(data)
 print(f"Loaded graph: {len(g)}")
 results = g.query(query_3)
-ZKPHandler(stage_extracter.get_stage_vals()).build()
+ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
