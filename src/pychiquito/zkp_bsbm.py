@@ -1,4 +1,5 @@
 import rdflib
+from memory_profiler import profile
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
@@ -27,6 +28,11 @@ LIMIT 2
 """
 
 query_2 = """
+PREFIX bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>
+PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
 SELECT ?label ?comment ?producer ?productFeature ?propertyTextual1 ?propertyTextual2 ?propertyTextual3
  ?propertyNumeric1 ?propertyNumeric2 ?propertyTextual4 ?propertyTextual5 ?propertyNumeric4 
 WHERE {
@@ -180,11 +186,15 @@ WHERE {
     }
 }
 """
-
-stage_extracter = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
-
 g.parse(data)
 print(f"Loaded graph: {len(g)}")
-results = g.query(query_6)
-ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+@profile
+def func():
+    stage_extracter = StageExtracter()
+    rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    results = g.query(query_7)
+    ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+if __name__ == '__main__':
+    func()

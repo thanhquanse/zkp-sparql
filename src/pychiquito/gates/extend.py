@@ -2,7 +2,7 @@ from chiquito.dsl import Circuit, StepType
 from chiquito.cb import eq
 from chiquito.util import F
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 from utils.operator import apply_operator
 from enums.aggregate import ExpressionEnum
 
@@ -47,8 +47,8 @@ class ExtendVerificationCircuit(Circuit):
                 mul_cal = apply_operator(val_cal, op, other)
 
                 self.add(self.extend_check_step, {
-                    "expected": hash_to_u64(mul_result), # hash due to processing float
-                    "actual": hash_to_u64(mul_cal)
+                    "expected": hash_to_number(mul_result), # hash due to processing float
+                    "actual": hash_to_number(mul_cal)
                 })
 
 

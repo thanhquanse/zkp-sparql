@@ -1,4 +1,5 @@
 import rdflib
+from memory_profiler import profile
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
@@ -26,7 +27,6 @@ SELECT ?predicate ?object WHERE {
 
 query_3 = """
 SELECT ?Drug ?IntDrug ?IntEffect WHERE {
-#    ?Drug <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Drug> .
     ?y <http://www.w3.org/2002/07/owl#sameAs> ?Drug .
     ?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/interactionDrug1> ?y .
     ?Int <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/interactionDrug2> ?IntDrug .
@@ -38,10 +38,8 @@ query_4 = """
 SELECT $drug $transform $mass WHERE {  
  	{ $drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/affectedOrganism>  'Humans and other mammals'.
  	  $drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/casRegistryNumber> $cas .
-# 	  $keggDrug <http://bio2rdf.org/ns/bio2rdf#xRef> $cas .
-# 	  $keggDrug <http://bio2rdf.org/ns/bio2rdf#mass> $mass .
- 	     	} .
- 	  OPTIONAL { $drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/biotransformation> $transform . } 
+ 	} .
+ 	OPTIONAL { $drug <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/biotransformation> $transform . } 
 }
 """
 complex_query_1 = """
@@ -90,10 +88,16 @@ WHERE
 }
 """
 
-stage_extracter = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
-
 g.parse(data)
 print(f"Loaded graph: {len(g)}")
-results = g.query(query_3)
-ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+@profile
+def func():
+    stage_extracter = StageExtracter()
+    rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+
+    results = g.query(complex_query_1)
+    ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+if __name__ == '__main__':
+    func()

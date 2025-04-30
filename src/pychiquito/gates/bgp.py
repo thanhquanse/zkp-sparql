@@ -3,7 +3,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 class BGPConditionVerifier(StepType):
     def setup(self):
@@ -29,8 +29,9 @@ class BGPVerificationCircuit(Circuit):
     def trace(self, p, result):
         p_obtained_vars = list(p.keys())
 
-        self.add(self.bgp_gteq_check_step, len(p_obtained_vars), 0)
-        self.add(self.bgp_gteq_check_step, len(result.keys()), len(p_obtained_vars))
+        # Constrain >= 0
+        self.add(self.bgp_gteq_check_step, 0, len(p_obtained_vars))
+        self.add(self.bgp_gteq_check_step, 0, len(result.keys()), len(p_obtained_vars))
 
         # Step 2: Constrain p vars
         sorted_p = {key: sorted(value) for key, value in p.items()}
@@ -47,8 +48,8 @@ class BGPVerificationCircuit(Circuit):
         sorted_p_common = {key: sorted(value) for key, value in p_common.items()}
         
         for key in sorted_p_common.keys():
-            p_common_hash = hash_to_u64(sorted_p_common[key])
-            p_set_hash = hash_to_u64(sorted_p[key])
+            p_common_hash = hash_to_number(sorted_p_common[key])
+            p_set_hash = hash_to_number(sorted_p[key])
 
             self.add(self.bgp_check_step, {
                     "p_common_hash": p_common_hash,

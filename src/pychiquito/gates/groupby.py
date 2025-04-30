@@ -4,7 +4,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 
 from utils.util import is_grouped_by, group_by_fields
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 class GroupByConditionVerifier(StepType):
     def setup(self):

@@ -1,0 +1,13 @@
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT DISTINCT  ?instance ?p ?o
+WHERE
+  { ?instance <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+    ?instance ?p ?o
+  }
+GROUP BY ?instance
+ORDER BY ?instance ?p ?o
+OFFSET  1000
+LIMIT   1000

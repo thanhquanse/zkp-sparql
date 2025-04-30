@@ -1,10 +1,9 @@
 import rdflib
+from memory_profiler import profile
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
 from libs.superhandler import ZKPSuperHandler
-
-g = Graph()
 
 data = """
 @prefix ex: <http://example.org/> .
@@ -68,9 +67,16 @@ LIMIT 2
 OFFSET 1
 """
 
-stage_extracter = StageExtracter()
-rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
-
+g = Graph()
 g.parse(data=data, format="turtle")
-results = g.query(query)
-ZKPSuperHandler(stage_extracter.get_stage_vals()).build()
+print(f"Loaded graph: {len(g)}")
+
+@profile
+def func():
+  stage_extracter = StageExtracter()
+  rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+  results = g.query(query)
+  ZKPSuperHandler(stage_extracter.get_stage_vals()).build()
+
+if __name__ == '__main__':
+    func()

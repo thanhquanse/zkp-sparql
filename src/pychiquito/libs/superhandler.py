@@ -215,3 +215,5 @@ class ZKPSuperHandler:
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
 
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)
+        zkp_super_circuit.create_param_file("super_params_test.bin", self.k)
+        zkp_super_circuit.generate_proof_file(zkp_super_circuit_witness, "super_params_test.bin", "super_proof.bin")

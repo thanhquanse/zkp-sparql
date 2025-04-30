@@ -175,6 +175,9 @@ class ZKPSingleHandler:
                     project_circuit_instance = project_circuit.gen_witness(project_vars, stage_results)
                     project_circuit.halo2_mock_prover(witness=project_circuit_instance, k=self.k)
 
+                    # project_circuit.create_param_file("project_params_test.bin", self.k)
+                    # project_circuit.generate_proof_file(project_circuit_instance, "project_params_test.bin", "project_proof.bin")
+
                 case QueryExecutionStage.BGP.value:
                     pass
                     # p = self.stage_dict[stage]['condition']['p']

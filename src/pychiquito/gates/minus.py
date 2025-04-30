@@ -4,7 +4,7 @@ from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 from .common.noteq import NotEqualVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 class MinusConditionVerifier(StepType):
     def setup(self):
@@ -53,8 +53,8 @@ class MinusVerificationCircuit(Circuit):
         sorted_p2_common = {key: sorted(value) for key, value in p2_common.items()}
 
         # Constrain results >= 0
-        self.add(self.minus_gteq_check_step, len(list(sorted_p2.keys())), 0)
-        self.add(self.minus_gteq_check_step, len(list(sorted_p2_common.keys())), 0)
+        self.add(self.minus_gteq_check_step, 0, len(list(sorted_p2.keys())))
+        self.add(self.minus_gteq_check_step, 0, len(list(sorted_p2_common.keys())))
 
         # Constrain items in minus not in results
         self.add(self.minus_total_check_step, {
@@ -64,11 +64,11 @@ class MinusVerificationCircuit(Circuit):
         self.add(self.minus_gteq_check_step, len(result.keys()), len(list(p2_common.keys())))
 
         for key in p2.keys():
-            orig_p2_key_hash = hash_to_u64(p2[key])
+            orig_p2_key_hash = hash_to_number(p2[key])
             if key in result:
-                result_key_hash = hash_to_u64(result[key])
+                result_key_hash = hash_to_number(result[key])
             else:
-                result_key_hash = hash_to_u64([])
+                result_key_hash = hash_to_number([])
             
             self.add(self.minus_noteq_check_step, orig_p2_key_hash, result_key_hash)
 

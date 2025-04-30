@@ -52,4 +52,4 @@ class OrderByVerificationCircuit(Circuit):
 
             self.add(self.orderby_check_step, current, next, direction, slack)
             # Slack is non-negative
-            self.add(self.orderby_gteq_step, slack, 0)
+            self.add(self.orderby_gteq_step, 0, slack)

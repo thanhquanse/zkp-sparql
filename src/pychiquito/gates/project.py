@@ -4,7 +4,7 @@ from chiquito.util import F
 
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 class ProjectConditionVerifier(StepType):
     def setup(self):
@@ -29,14 +29,15 @@ class ProjectVerificationCircuit(Circuit):
 
     def trace(self, project_vars, results):
         sorted_project_vars = project_vars.sort()
-        sorted_project_vars_hash = hash_to_u64(sorted_project_vars)
+        sorted_project_vars_hash = hash_to_number(sorted_project_vars)
 
-        self.add(self.project_gteq_check_step, len(project_vars), 1)
-        self.add(self.project_gteq_check_step, len(results), 1)
+        # Constrain >= 1
+        self.add(self.project_gteq_check_step, 1, len(project_vars))
+        self.add(self.project_gteq_check_step, 1, len(results))
 
         for project_el in results:
             sort_project_el = list(project_el.keys()).sort()
-            sort_project_el_hash = hash_to_u64(sort_project_el)
+            sort_project_el_hash = hash_to_number(sort_project_el)
 
             self.add(self.project_check_step, {
                 "expected_project_vars": sorted_project_vars_hash,

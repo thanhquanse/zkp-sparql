@@ -3,7 +3,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 from collections import defaultdict
 
@@ -47,7 +47,8 @@ class DistinctVerificationCircuit(Circuit):
         result_set = {tuple(d.items()) for d in result}
         distinct_set = set(tuple(d.items()) for d in result)
 
-        self.add(self.distinct_gteq_step, len(distinct_set), 1)
+        # Constrain >= 1
+        self.add(self.distinct_gteq_step, 1, len(distinct_set))
         self.add(self.distinct_check_step, {
             "total_computed": len(result),
             "total_distinct": len(distinct_set)
@@ -60,6 +61,6 @@ class DistinctVerificationCircuit(Circuit):
         normalized_distinct_set.sort()
 
         self.add(self.distinct_check_step, {
-            "total_computed": hash_to_u64(normalized_result_set),
-            "total_distinct": hash_to_u64(normalized_distinct_set)
+            "total_computed": hash_to_number(normalized_result_set),
+            "total_distinct": hash_to_number(normalized_distinct_set)
         })

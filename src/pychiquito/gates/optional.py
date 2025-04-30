@@ -3,7 +3,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 
 class OptionalConditionVerifier(StepType):
     def setup(self):
@@ -44,12 +44,15 @@ class OptionalVerificationCircuit(Circuit):
         p2_obtained_vars = list(p2.keys())
         common_vars = set(p1_obtained_vars + p2_obtained_vars)
 
-        self.add(self.optional_gteq_check_step, len(p1_obtained_vars), 0)
-        self.add(self.optional_gteq_check_step, len(p2_obtained_vars), 0)
-        self.add(self.optional_gteq_check_step, len(result.keys()), min(len(p1_obtained_vars), len(p2_obtained_vars)))
+        # Constrain >= 0
+        self.add(self.optional_gteq_check_step, 0, len(p1_obtained_vars))
+        self.add(self.optional_gteq_check_step, 0, len(p2_obtained_vars))
 
-        common_vars_hash = hash_to_u64(common_vars)
-        result_vars_hash = hash_to_u64(set(list(result.keys())))
+        # a, b => Constrain b >= a
+        self.add(self.optional_gteq_check_step, min(len(p1_obtained_vars), len(p2_obtained_vars)), len(result.keys()))
+
+        common_vars_hash = hash_to_number(common_vars)
+        result_vars_hash = hash_to_number(set(list(result.keys())))
         self.add(self.optional_check_step, {
             "p_common_hash": common_vars_hash,
             "p_set_hash": result_vars_hash
@@ -81,8 +84,8 @@ class OptionalVerificationCircuit(Circuit):
             # The values in result should exist in BGP p1
             # BGP p1 is a raw list (no operations applied) of triples in the graph DB
             existed_in_result_1 = set(sorted_p1_common[key]) & set(result[key])
-            p_common_hash_1 = hash_to_u64(sorted_p1_common[key])
-            p_set_hash_1 = hash_to_u64(existed_in_result_1)
+            p_common_hash_1 = hash_to_number(sorted_p1_common[key])
+            p_set_hash_1 = hash_to_number(existed_in_result_1)
 
             self.add(self.optional_check_step, {
                     "p_common_hash": p_common_hash_1,
@@ -106,7 +109,8 @@ class OptionalVerificationCircuit(Circuit):
             "total_computed": len(list(sorted_p2_common.keys())),
             "total_optional": len(list(sorted_p2.keys()))
         })
-        self.add(self.optional_gteq_check_step, len(list(sorted_p2_common.keys())), len(list(sorted_p2.keys())))
+        # a, b => Constrain b >= a
+        self.add(self.optional_gteq_check_step, len(list(sorted_p2.keys())), len(list(sorted_p2_common.keys())))
 
         if len(list(sorted_p2_common)) != len(list(sorted_p2.keys())):
             raise ValueError("Error: rhs - the number of values is not satisfied")
@@ -114,9 +118,9 @@ class OptionalVerificationCircuit(Circuit):
         for key in sorted_p2_common.keys():
             # The values in result should exist in BGP p2
             # BGP p2 is a raw list (no operations applied) of triples in the graph DB
-            existed_in_result_2 = set(sorted_p2_common[key]) & set(result[key])
-            p_common_hash_2 = hash_to_u64(sorted_p2_common[key])
-            p_set_hash_2 = hash_to_u64(existed_in_result_2)
+            existed_in_result_2 = sorted(set(sorted_p2_common[key]) & set(result[key]))
+            p_common_hash_2 = hash_to_number(sorted_p2_common[key])
+            p_set_hash_2 = hash_to_number(existed_in_result_2)
 
             self.add(self.optional_check_step, {
                     "p_common_hash": p_common_hash_2,

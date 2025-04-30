@@ -31,11 +31,13 @@ class SliceVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, start, slice_num, result):
-        self.add(self.slice_gteq_check_step, slice_num, 0)
-        self.add(self.slice_gteq_check_step, len(result), 0)
+        # Constrain >= 0
+        self.add(self.slice_gteq_check_step, 0, slice_num)
+        self.add(self.slice_gteq_check_step, 0, len(result))
         
         # Constrain actual results may be less than the expectation
-        self.add(self.slice_gteq_check_step, slice_num, len(result))
+        # a, b => Constrain b >= a
+        self.add(self.slice_gteq_check_step, len(result), slice_num)
         self.add(self.slice_check_step, {
             "start": start,
             "num_expected": slice_num,

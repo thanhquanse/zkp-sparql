@@ -3,7 +3,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 from utils.util import normalize_data
 
 class UnionConditionVerifier(StepType):
@@ -50,8 +50,8 @@ class UnionVerificationCircuit(Circuit):
         p1_common = set(tuple(sorted(d.items())) for d in result) & set(tuple(sorted(d.items())) for d in p1) #sorted(list(set(result) & set(p1)))
         p1_set = set(tuple(sorted(d.items())) for d in p1) #sorted(set(p1))
 
-        self.add(self.union_gteq_check_step, len(p1_common), 0)
-        self.add(self.union_gteq_check_step, len(p1_set), 0)
+        self.add(self.union_gteq_check_step, 0, len(p1_common))
+        self.add(self.union_gteq_check_step, 0, len(p1_set))
         self.add(self.total_union_check_step, {
             "total_computed": len(p1_common),
             "total_union": len(p1_set)
@@ -63,8 +63,8 @@ class UnionVerificationCircuit(Circuit):
 
         if len(p1_common) == len(p1_set):
             for i in range(len(p1_set)):
-                p_common_hash = hash_to_u64(p1_common[i])
-                p_set_hash = hash_to_u64(p1_set[i])
+                p_common_hash = hash_to_number(p1_common[i])
+                p_set_hash = hash_to_number(p1_set[i])
 
                 self.add(self.union_check_step, {
                     "p_common_hash": p_common_hash,
@@ -75,8 +75,9 @@ class UnionVerificationCircuit(Circuit):
         p2_common = set(tuple(sorted(d.items())) for d in result) & set(tuple(sorted(d.items())) for d in p2) #sorted(list(set(result) & set(p2)))
         p2_set = set(tuple(sorted(d.items())) for d in p2) #sorted(set(p2))
 
-        self.add(self.union_gteq_check_step, len(p2_common), 0)
-        self.add(self.union_gteq_check_step, len(p2_set), 0)
+        # Constrain >= 0
+        self.add(self.union_gteq_check_step, 0, len(p2_common))
+        self.add(self.union_gteq_check_step, 0, len(p2_set))
         self.add(self.total_union_check_step, {
             "total_computed": len(p2_common),
             "total_union": len(p2_set)
@@ -88,8 +89,8 @@ class UnionVerificationCircuit(Circuit):
 
         if len(p2_common) == len(p2_set):
             for i in range(len(p2_set)):
-                p_common_hash = hash_to_u64(p2_common[i])
-                p_set_hash = hash_to_u64(p2_set[i])
+                p_common_hash = hash_to_number(p2_common[i])
+                p_set_hash = hash_to_number(p2_set[i])
 
                 self.add(self.union_check_step, {
                     "p_common_hash": p_common_hash,

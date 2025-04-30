@@ -5,7 +5,7 @@ from chiquito.cb import eq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
-from utils.hash import hash_to_u64
+from utils.hash import hash_to_number
 from utils.util import group_by, check_tuple_in_flat_list
 from enums.aggregate import AggregateOperations
 
@@ -69,8 +69,8 @@ class AggregateVerificationCircuit(Circuit):
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
-                                    "agg_condition_hash": hash_to_u64(category_sum),
-                                    "agg_result_hash": hash_to_u64(float(result[sum_res]))
+                                    "agg_condition_hash": hash_to_number(category_sum),
+                                    "agg_result_hash": hash_to_number(float(result[sum_res]))
                                 })
                                 break
                                 
@@ -83,8 +83,8 @@ class AggregateVerificationCircuit(Circuit):
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
-                                    "agg_condition_hash": hash_to_u64(category_max),
-                                    "agg_result_hash": hash_to_u64(float(result[max_res]))
+                                    "agg_condition_hash": hash_to_number(category_max),
+                                    "agg_result_hash": hash_to_number(float(result[max_res]))
                                 })
                                 break
                 
@@ -97,8 +97,8 @@ class AggregateVerificationCircuit(Circuit):
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
-                                    "agg_condition_hash": hash_to_u64(category_min),
-                                    "agg_result_hash": hash_to_u64(float(result[min_res]))
+                                    "agg_condition_hash": hash_to_number(category_min),
+                                    "agg_result_hash": hash_to_number(float(result[min_res]))
                                 })
                                 break
 
@@ -111,8 +111,8 @@ class AggregateVerificationCircuit(Circuit):
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
-                                    "agg_condition_hash": hash_to_u64(category_avg),
-                                    "agg_result_hash": hash_to_u64(float(result[avg_res]))
+                                    "agg_condition_hash": hash_to_number(category_avg),
+                                    "agg_result_hash": hash_to_number(float(result[avg_res]))
                                 })
                                 break
                                 
@@ -126,16 +126,17 @@ class AggregateVerificationCircuit(Circuit):
                                 for cat in category:
                                     if cat == result[sample_res]:
                                         self.add(self.aggregate_check_step, {
-                                            "agg_condition_hash": hash_to_u64(cat), # due to str possibility
-                                            "agg_result_hash": hash_to_u64(result[sample_res]) # due to str possibility
+                                            "agg_condition_hash": hash_to_number(cat), # due to str possibility
+                                            "agg_result_hash": hash_to_number(result[sample_res]) # due to str possibility
                                         })
                                 break
                 case _:
                     raise ValueError(f"Error: {agg_operator['name']} not supported")
 
         # Constrain aggregation having at least 1 calculated
-        self.add(self.aggregate_gteq_step, len(agg_condition), 1)
-        self.add(self.aggregate_gteq_step, len(agg_result), 1)
+        # Constrain >= 1
+        self.add(self.aggregate_gteq_step, 1, len(agg_condition))
+        self.add(self.aggregate_gteq_step, 1, len(agg_result))
 
         # Constrain aggregate condition elements appearing in results
         agg_condition_res_list = sorted([item['res'] for item in agg_condition])
@@ -143,8 +144,8 @@ class AggregateVerificationCircuit(Circuit):
         for rs in agg_result:
             agg_result_res_list = sorted(list(rs.keys()))
 
-            agg_condition_hash = hash_to_u64(agg_condition_res_list)
-            agg_result_hash = hash_to_u64(agg_result_res_list)
+            agg_condition_hash = hash_to_number(agg_condition_res_list)
+            agg_result_hash = hash_to_number(agg_result_res_list)
 
             self.add(self.aggregate_check_step, {
                     "agg_condition_hash": agg_condition_hash,

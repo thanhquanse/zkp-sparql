@@ -1,0 +1,12 @@
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT  ?resource_uri (count(?property) AS ?datatype_properties)
+WHERE
+  { ?resource_uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?concept .
+    ?resource_uri ?property ?value
+  }
+GROUP BY ?resource_uri
+OFFSET  8000
+LIMIT   1000
