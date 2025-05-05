@@ -68,13 +68,19 @@ def find_next_stage(data_dict, current, target):
 
     return None, None
 
-def group_by(data, keys):
+def group_by(data, keys, has_distinct=False):
     grouped = defaultdict(list)
     for item in data:
-        # Create a tuple of key values for grouping
+        # Ensure all grouping keys exist
         if all(k in item for k in keys):
             group_key = tuple(item[k] for k in keys)
-            grouped[group_key].append(item)
+            if has_distinct:
+                # Convert to tuple for deduplication
+                # item_tuple = tuple(sorted(item.items()))
+                # if item_tuple not in [tuple(sorted(i.items())) for i in grouped[group_key]]:
+                grouped[group_key].append(item)
+            else:
+                grouped[group_key].append(item)
     return grouped
 
 def check_tuple_in_flat_list(flat_list, target_tuple):
@@ -148,15 +154,11 @@ def group_by_keys(dict_list):
     return dict(result)
 
 def group_by_fields(data, fields):
-    var_map = defaultdict(list)
-    for var, value in data:
-        var_map[str(var)].append(str(value))  # convert values to strings for consistent output
+    grouped = defaultdict(list)
 
-    # Extract the value lists for the selected fields
-    value_lists = [var_map.get(field, []) for field in fields]
+    for row in data:
+        key = tuple(row[field] for field in fields if field in row)
+        grouped[key].append(row)
 
-    # Compute Cartesian product
-    combos = product(*value_lists)
-
-    # Build dictionaries for each combination
-    return [dict(zip(fields, combo)) for combo in combos]
+    return [item for group in grouped.values() for item in group]
+    

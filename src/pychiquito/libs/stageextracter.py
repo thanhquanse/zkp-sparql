@@ -1,5 +1,5 @@
 from rdflib.term import Variable
-from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject
+from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject, evalPart
 from itertools import tee
 from utils.util import contains_regex, constains_builtin
 from enums.stages import QueryExecutionStage, QueryType
@@ -76,6 +76,10 @@ class StageExtracter:
                 }
             
             case QueryExecutionStage.FILTER.value:
+                # Prove the values before going through the filter
+                previous_op = self.stage_vals[str(self.stage_counter - 1)]
+                prev_values = previous_op['value']
+
                 # TODO: Handle more than 1 filter and "ConditionalAndExpression" type
                 if contains_regex(condition.name):
                     expression = {
@@ -93,10 +97,17 @@ class StageExtracter:
                             'value': condition_val
                         }
                 else:
+                    if hasattr(condition['expr'], 'name') and condition['expr'].name == 'Function':
+                        # TODO: At present, just focus on 1 variable for the experiment
+                        # In the future, must address more
+                        cond = str(condition['expr'].expr[0])
+                    else:
+                        cond = str(condition['expr'])
                     expression = {
-                        'expr': str(condition['expr']),
+                        'expr': cond,
                         'op': str(condition['op']),
-                        'value': str(condition['other'])
+                        'value': str(condition['other']),
+                        'prev_value': prev_values
                     }
 
             case QueryExecutionStage.ORDER_BY.value:
@@ -132,11 +143,13 @@ class StageExtracter:
             
             case QueryExecutionStage.GROUP.value:
                 groups = []
-                values2group = None
-                # try:
-                #     values2group = self.process_bgp_vars(ctx, condition.p)
-                # except:
-                #     raise ValueError(f"Error: BGP stage not found in group")
+                values2group = []
+
+                try:
+                    prev_stage_vals = self.stage_vals[str(self.stage_counter - 1)]['value']
+                    values2group = prev_stage_vals
+                except:
+                    print("Error: Failed to get the previous values to group.")
                 
                 for c in condition.expr:
                     groups.append(str(c))
@@ -153,7 +166,7 @@ class StageExtracter:
                 if previous_op['name'] != "Group":
                     raise TypeError("Error: Must be 'Group' stage")
                 
-                before = previous_op['value']
+                prev_values = previous_op['value']
                 # TODO: Check more than 3 groupby vars
                 groupby = previous_op['condition']
 
@@ -169,7 +182,7 @@ class StageExtracter:
                 expression = {
                     "agg": aggregate_arr,
                     "op": groupby,
-                    "value": before
+                    "value": prev_values
                 }
 
             case QueryExecutionStage.DISTINCT.value:

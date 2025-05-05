@@ -11,6 +11,7 @@ def hash_to_number(value, digest_size=4):
     elif isinstance(value, dict):
         # Convert dicts to sorted list of key-value tuples
         value = sorted(value.items())
+        value = [(key, sorted(values)) for key, values in value]
 
     # Convert to string using json to support complex nested structures
     if not isinstance(value, str):

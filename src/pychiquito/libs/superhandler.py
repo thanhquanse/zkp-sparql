@@ -94,12 +94,12 @@ class ZKPSparqlSuperCircuit(SuperCircuit):
 
                 case QueryExecutionStage.AGGREGATE.value:
                     _condition = self.stage_dict[stage]['condition']
-
+                    has_distinct = any(entry.get("name") == "Distinct" for entry in self.stage_dict.values())
                     condition = _condition['agg']
                     groupby = _condition['op']
                     vals_before = _condition['value']
 
-                    self.map(self.aggregate_circuit, condition, groupby, vals_before, stage_results)
+                    self.map(self.aggregate_circuit, condition, groupby, vals_before, stage_results, has_distinct)
 
                 case QueryExecutionStage.GROUP.value:
                     # TODO: Check more than 3 groupby vars
@@ -211,7 +211,7 @@ class ZKPSuperHandler:
         self.k = 19
 
     def build(self):
-        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=20)
+        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=100000)
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
 
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)

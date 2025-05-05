@@ -57,7 +57,7 @@ class FilterVerificationCircuit(Circuit):
         self.filter_gteq_step = self.step_type(GreaterEqVerifier(self, "filter_gteq_step"))
         self.pragma_num_steps(self.max_steps)
     
-    def trace(self, original, filtered, condition):
+    def trace(self, prev_values, filtered, condition):
         match condition['op']:
             case FilterEnum.BUILTIN_EXISTS.value | FilterEnum.BUILTIN_NOT_EXISTS.value:
                 vars_set = condition['expr']
@@ -66,7 +66,7 @@ class FilterVerificationCircuit(Circuit):
                 target_intersect_vars = find_common_variables(vars_set, filtered)
 
                 vars_set_values_group = group_by_variable(vars_set_values)
-                filtered_values_group = group_by_keys(filtered)
+                filtered_values_group = group_by_keys(prev_values)
 
                 for var in target_intersect_vars:
                     # Condition: the intersected values must (NOT) be in the filtered result values
@@ -88,7 +88,7 @@ class FilterVerificationCircuit(Circuit):
 
                 # Step 1: Process original triples and collect hashes
                 computed_hashes = []
-                for element in original:
+                for element in prev_values:
                     # subject, predicate, object = triple
 
                     field_check = element[target]

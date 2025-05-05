@@ -7,7 +7,7 @@ from libs.superhandler import ZKPSuperHandler
 
 g = Graph()
 
-data = "./datasets/swdf/swdf.nt"
+data = "./datasets/swdf/swdf_light.nt"
 
 query_1 = """
 PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
@@ -93,7 +93,7 @@ PREFIX swrc: <http://swrc.ontoware.org/ontology#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT ?authorName 
+SELECT DISTINCT ?author
        (COUNT(DISTINCT ?paper) AS ?numPapers)
        (AVG(?titleLength) AS ?avgTitleLength)
        (SUM(?titleLength) AS ?totalTitleLength)
@@ -122,26 +122,26 @@ WHERE {
   BIND(STRLEN(STR(?title)) AS ?titleLength)
 
   # FILTER: only papers from year 2006 or later
-  FILTER(?year >= 2006)
+  FILTER(xsd:integer(?year) >= 2006)
 
   # MINUS: exclude papers by exact title
   MINUS {
     ?paper rdfs:label "OPTIMA:  A System for Semi Automatic and Large Scale Ontology Population" .
   }
 }
-GROUP BY ?authorName
-HAVING(AVG(?titleLength) > 10)
+GROUP BY ?author
+HAVING(SUM(?titleLength) > 10)
 ORDER BY DESC(?avgTitleLength)
-LIMIT 100
-OFFSET 10
+LIMIT 5
+OFFSET 3
 """
 
-# g.parse(data)
-# print(f"Loaded graph: {len(g)}")
+g.parse(data)
+print(f"Loaded graph: {len(g)}")
 
 # results = g.query(query_complex)
 # for row in results:
-#    print(f"Author name: {row.authorName}, {row.numPapers}, {row.avgTitleLength}")
+#    print(f"Author name: {row.authorName}, {row.numPapers}, {row.year}, {row.avgTitleLength}")
 # # print("ASK result:", results.askAnswer)
 
 # import sys

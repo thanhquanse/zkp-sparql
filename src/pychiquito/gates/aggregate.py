@@ -41,8 +41,8 @@ class AggregateVerificationCircuit(Circuit):
         self.aggregate_gteq_step = self.step_type(GreaterEqVerifier(self, "aggregate_gteq_step"))
         self.pragma_num_steps(self.max_steps)
 
-    def trace(self, agg_condition, agg_groupby, agg_orginal_vals, agg_result):
-        category_groups = group_by(agg_orginal_vals, agg_groupby['groupby'])
+    def trace(self, agg_condition, agg_groupby, agg_orginal_vals, agg_result, has_distinct):
+        category_groups = group_by(agg_orginal_vals, agg_groupby['groupby'], has_distinct)
 
         for agg_operator in agg_condition:
             match agg_operator['name']:
@@ -51,9 +51,12 @@ class AggregateVerificationCircuit(Circuit):
                     count_res = agg_operator['res']
 
                     for category in category_groups:
-                        category_count = sum(count_var in item for item in category_groups[category])
+                        # category_count = sum(count_var in item for item in category_groups[category])
+                        category_count = len({item[count_var] for item in category_groups[category] if count_var in item})
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
+                                if int(category_count) != int(result[count_res]):
+                                    print(f"COUNT: {category_count} + {int(result[count_res])}")
                                 self.add(self.aggregate_check_step, {
                                     "agg_condition_hash": category_count,
                                     "agg_result_hash": int(result[count_res])
@@ -65,9 +68,12 @@ class AggregateVerificationCircuit(Circuit):
                     sum_res = agg_operator['res']
                     
                     for category in category_groups:
-                        category_sum = sum(float(item[sum_var]) for item in category_groups[category])
+                        # category_sum = sum(float(item[sum_var]) for item in category_groups[category])
+                        category_sum = sum(float(item[sum_var]) for item in category_groups[category] if sum_var in item and item[sum_var])
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
+                                if float(category_sum) != float(result[sum_res]):
+                                    print(f"Sum: {category_sum} + {float(result[sum_res])}")
                                 self.add(self.aggregate_check_step, {
                                     "agg_condition_hash": hash_to_number(category_sum),
                                     "agg_result_hash": hash_to_number(float(result[sum_res]))
@@ -79,7 +85,8 @@ class AggregateVerificationCircuit(Circuit):
                     max_res = agg_operator['res']
 
                     for category in category_groups:
-                        category_max = max(float(item[max_var]) for item in category_groups[category])
+                        # category_max = max(float(item[max_var]) for item in category_groups[category])
+                        category_max = max(float(item[max_var]) for item in category_groups[category] if max_var in item and item[max_var])
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
@@ -93,7 +100,8 @@ class AggregateVerificationCircuit(Circuit):
                     min_res = agg_operator['res']
 
                     for category in category_groups:
-                        category_min = min(float(item[min_var]) for item in category_groups[category])
+                        # category_min = min(float(item[min_var]) for item in category_groups[category])
+                        category_min = min(float(item[min_var]) for item in category_groups[category] if min_var in item and item[min_var])
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
@@ -107,7 +115,8 @@ class AggregateVerificationCircuit(Circuit):
                     avg_res = agg_operator['res']
 
                     for category in category_groups:
-                        category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
+                        # category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
+                        category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category] if avg_var in item and item[avg_var])
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {

@@ -1,9 +1,8 @@
-from collections import defaultdict
 from chiquito.dsl import Circuit, StepType
 from chiquito.cb import eq
 from chiquito.util import F
 
-from utils.util import is_grouped_by, group_by_fields
+from utils.util import is_grouped_by, group_by_fields, group_by_keys
 from utils.hash import hash_to_number
 
 class GroupByConditionVerifier(StepType):
@@ -37,12 +36,17 @@ class GroupByVerificationCircuit(Circuit):
 
     def trace(self, groupby, value2group, results):
         is_grouped = is_grouped_by(results, groupby)
+        
         # Constraint 1: the results are grouped properly
         self.add(self.groupby_check_step, int(is_grouped))
 
         # Constraint 2: the results must ensure the correctness from the witness data
-        # grouped_check = group_by_fields(value2group, groupby)
-        # self.add(self.groupby_content_check_step, {
-        #     "group_expected": hash_to_u64(grouped_check),
-        #     "group_actual": hash_to_u64(results)
-        # })
+        grouped_check = group_by_fields(value2group, groupby)
+
+        results_dict = group_by_keys(results)
+        grouped_check_dict = group_by_keys(grouped_check)
+
+        self.add(self.groupby_content_check_step, {
+            "group_expected": hash_to_number(results_dict),
+            "group_actual": hash_to_number(grouped_check_dict)
+        })

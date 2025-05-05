@@ -35,10 +35,10 @@ class ZKPSingleHandler:
                 case QueryExecutionStage.FILTER.value:
                     total_steps = len(stage_results) * 2 + 3 # +3 for greater than constraint
                     filter_condition = self.stage_dict[stage]['condition']
+                    prev_values = self.stage_dict[stage]['condition']['prev_value']
                     
                     filter_circuit = FilterVerificationCircuit(max_steps=total_steps)
-                    # TODO: Should check the original data
-                    filter_circuit_witness = filter_circuit.gen_witness(stage_results, stage_results, filter_condition)
+                    filter_circuit_witness = filter_circuit.gen_witness(prev_values, stage_results, filter_condition)
                     
                     filter_circuit.halo2_mock_prover(witness=filter_circuit_witness, k=self.k)
 
