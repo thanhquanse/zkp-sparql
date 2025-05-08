@@ -28,18 +28,22 @@ class ProjectVerificationCircuit(Circuit):
         self.pragma_num_steps(self.max_steps)
 
     def trace(self, project_vars, results):
-        sorted_project_vars = project_vars.sort()
-        sorted_project_vars_hash = hash_to_number(sorted_project_vars)
+        sorted_project_vars = sorted(project_vars)
 
         # Constrain >= 1
         self.add(self.project_gteq_check_step, 1, len(project_vars))
         self.add(self.project_gteq_check_step, 1, len(results))
 
         for project_el in results:
-            sort_project_el = list(project_el.keys()).sort()
+            sort_project_el = sorted(list(project_el.keys()))
+            # Intersect to ensure the vars in the results present in the projected vars
+            # But due to optional, sometimes they are not
+            common_vars = set(sorted_project_vars) & set(sort_project_el)
+
+            common_vars_hash = hash_to_number(common_vars)
             sort_project_el_hash = hash_to_number(sort_project_el)
 
             self.add(self.project_check_step, {
-                "expected_project_vars": sorted_project_vars_hash,
+                "expected_project_vars": common_vars_hash,
                 "actual_project_vars": sort_project_el_hash
             })

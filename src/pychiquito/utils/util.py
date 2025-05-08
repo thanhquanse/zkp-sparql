@@ -1,6 +1,8 @@
 import re
 from collections import defaultdict
-from itertools import groupby, product
+from itertools import groupby
+from datetime import datetime, date
+from dateutil import parser
 
 charsets = '.-_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
@@ -108,7 +110,6 @@ def is_grouped_by(data, group_fields):
         if all(field in item for field in group_fields)
     ]
 
-
     # Use groupby to find unique groups in sequence
     grouped_keys = [key for key, _ in groupby(actual_keys)]
 
@@ -161,4 +162,36 @@ def group_by_fields(data, fields):
         grouped[key].append(row)
 
     return [item for group in grouped.values() for item in group]
+
+def is_datetime(value):
+    if isinstance(value, datetime):
+        return True
+    elif isinstance(value, date):
+        return True
+    elif isinstance(value, str):
+        try:
+            parser.parse(value)
+            return True
+        except (ValueError, TypeError):
+            print(f"ERROR: Cannot parse: {value}")
+            return False
+    else:
+        print(f"ERROR: Type of {value} is {type(value)}")
+        return False
     
+def to_datetime(value):
+    if isinstance(value, datetime):
+        return value
+    elif isinstance(value, date):
+        return datetime.combine(value, datetime.min.time())
+    elif isinstance(value, str):
+        try:
+            return parser.parse(value)
+        except (ValueError, TypeError):
+            raise ValueError(f"Invalid date string: {value}")
+    else:
+        raise TypeError(f"Unsupported type: {type(value)}")
+    
+def to_timestamp(date_str):
+    dt = parser.parse(date_str)
+    return dt.timestamp()

@@ -8,5 +8,5 @@ WHERE
     ?a foaf:name ?v0
   }
 GROUP BY ?a
-OFFSET  10000
-LIMIT   1000
+OFFSET  10
+LIMIT   100

@@ -6,7 +6,7 @@ from .common.gteq import GreaterEqVerifier
 from enums.filter import FilterEnum
 from utils.operator import apply_operator
 from utils.hash import hash_to_number
-from utils.util import find_common_variables, group_by_variable, group_by_keys
+from utils.util import find_common_variables, group_by_variable, group_by_keys, is_datetime, to_timestamp
 
 class FilterConditionVerifier(StepType):
     def setup(self):
@@ -92,7 +92,8 @@ class FilterVerificationCircuit(Circuit):
                     # subject, predicate, object = triple
 
                     field_check = element[target]
-                    flag = int(apply_operator(field_check, operator, other))
+                    checker = other
+                    flag = int(apply_operator(field_check, operator, checker))
                     hashed_triple = hash_to_number(element)
                     if flag:
                         computed_hashes.append(hashed_triple)
@@ -102,7 +103,8 @@ class FilterVerificationCircuit(Circuit):
                 filtered_hashes = []
                 for element in filtered:
                     field_check = element[target]
-                    flag = int(apply_operator(field_check, operator, other))
+                    checker = other
+                    flag = int(apply_operator(field_check, operator, checker))
                     hashed_triple = hash_to_number(element)
                     if flag:
                         filtered_hashes.append(hashed_triple)
@@ -110,12 +112,20 @@ class FilterVerificationCircuit(Circuit):
                     if operator == '=':
                         self.add(self.condition_check_step, {
                             "field_check": hash_to_number(field_check),
-                            "condition": hash_to_number(other),
+                            "condition": hash_to_number(checker),
                             "flag": flag,  # Must pass filter
                         })
                     elif operator == '>' or operator == '>=':
+                        if is_datetime(field_check) and is_datetime(checker):
+                            field_check = to_timestamp(field_check)
+                            checker = to_timestamp(checker)
                         # a, b => Constrain b >= a
-                        self.add(self.filter_gteq_step, int(other), int(field_check))
+                        self.add(self.filter_gteq_step, int(checker), int(field_check))
+                    elif operator == '<' or operator == '<=':
+                        if is_datetime(field_check) and is_datetime(checker):
+                            field_check = to_timestamp(field_check)
+                            checker = to_timestamp(checker)
+                        self.add(self.filter_gteq_step, int(field_check), int(checker))
 
                 # Step 3: Constrain the total expected items == the total filtered items
                 self.add(self.total_computed_check_step, {

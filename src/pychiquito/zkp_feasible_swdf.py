@@ -1,5 +1,7 @@
 import rdflib
+import time
 from memory_profiler import profile
+from functools import wraps
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
@@ -136,23 +138,41 @@ LIMIT 5
 OFFSET 3
 """
 
+def timeit(func):
+  @wraps(func)
+  def timeit_wrapper(*args, **kwargs):
+      start_time = time.perf_counter()
+      result = func(*args, **kwargs)
+      end_time = time.perf_counter()
+      total_time = end_time - start_time
+      print(f'Function {func.__name__} took {total_time:.4f} seconds')
+      return result
+  return timeit_wrapper
+
 g.parse(data)
 print(f"Loaded graph: {len(g)}")
 
-# results = g.query(query_complex)
-# for row in results:
-#    print(f"Author name: {row.authorName}, {row.numPapers}, {row.year}, {row.avgTitleLength}")
-# # print("ASK result:", results.askAnswer)
-
-# import sys
-# sys.exit(0)
+@timeit
+def execute_query():
+  results = g.query(query_complex)
+  for row in results:
+    print(f"Author name: {row.author}, {row.numPapers}, {row.avgTitleLength}")
+  # print("ASK result:", results.askAnswer)
 
 @profile
+@timeit
 def func():
+  params: dict = {
+    "k": 17,
+    "param": "./proof/super_params_test.bin",
+    "paramgen": True,
+    "proof": "./proof/super_proof_test.bin",
+    "proofgen": True
+  }
   stage_extracter = StageExtracter()
   rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
   results = g.query(query_complex)
-  ZKPSuperHandler(stage_extracter.get_stage_vals()).build()
+  ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build()
 
 if __name__ == '__main__':
     func()

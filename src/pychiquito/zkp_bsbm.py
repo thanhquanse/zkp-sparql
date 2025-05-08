@@ -6,7 +6,7 @@ from libs.singlehandler import ZKPSingleHandler
 
 g = Graph()
 
-data = "./datasets/bsbm_dataset_update.nt"
+data = "./datasets/bsbm/bsbm_light.nt"
 
 query_1 = """
 PREFIX bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>
@@ -33,26 +33,19 @@ PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT ?label ?comment ?producer ?productFeature ?propertyTextual1 ?propertyTextual2 ?propertyTextual3
- ?propertyNumeric1 ?propertyNumeric2 ?propertyTextual4 ?propertyTextual5 ?propertyNumeric4 
+SELECT ?product ?label ?p1 ?p3
 WHERE {
-    VALUES ?input { bsbm-inst:Product1002 }
-    bsbm-inst:Product1002 rdfs:label ?label .
-    bsbm-inst:Product1002 rdfs:comment ?comment .
-    bsbm-inst:Product1002 bsbm:producer ?p .
-    ?p rdfs:label ?producer .
-    bsbm-inst:Product1002 dc:publisher ?p . 
-    bsbm-inst:Product1002 bsbm:productFeature ?f .
-    ?f rdfs:label ?productFeature .
-    bsbm-inst:Product1002 bsbm:productPropertyTextual1 ?propertyTextual1 .
-    bsbm-inst:Product1002 bsbm:productPropertyTextual2 ?propertyTextual2 .
-    bsbm-inst:Product1002 bsbm:productPropertyTextual3 ?propertyTextual3 .
-    bsbm-inst:Product1002 bsbm:productPropertyNumeric1 ?propertyNumeric1 .
-    bsbm-inst:Product1002 bsbm:productPropertyNumeric2 ?propertyNumeric2 .
-    OPTIONAL { bsbm-inst:Product1002 bsbm:productPropertyTextual4 ?propertyTextual4 }
-    OPTIONAL { bsbm-inst:Product1002 bsbm:productPropertyTextual5 ?propertyTextual5 }
-    OPTIONAL { bsbm-inst:Product1002 bsbm:productPropertyNumeric4 ?propertyNumeric4 }
+    ?product rdfs:label ?label .
+	?product bsbm:productFeature bsbm-inst:ProductFeature7 .
+	?product bsbm:productPropertyNumeric1 ?p1 . 
+	?product bsbm:productPropertyNumeric3 ?p3 .
+	FILTER (?p3 <= 500 )
+    OPTIONAL { 
+        ?product bsbm:productFeature bsbm-inst:ProductFeature338 .
+        ?product rdfs:label ?testVar }
 }
+ORDER BY ?label
+LIMIT 30
 """
 
 query_3 = """
@@ -162,27 +155,18 @@ PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX rev: <http://purl.org/stuff/rev#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
-SELECT ?productLabel ?offer ?price ?vendor ?vendorTitle ?review ?revTitle 
-       ?reviewer ?revName ?rating1 ?rating2
+SELECT ?productLabel ?offer ?price ?vendor ?revTitle 
 WHERE { 
-	bsbm-inst:dataFromProducer22/Product1004 rdfs:label ?productLabel . 	
+    ?product rdfs:label ?productLabel .
+    ?offer bsbm:price ?price .
+    ?offer bsbm:vendor ?vendor .
+    ?offer dc:publisher ?vendor . 
+    ?offer bsbm:validTo ?date .
+    FILTER (?date < "2019-03-24"^^xsd:date)
     OPTIONAL {
-        ?offer bsbm:product bsbm-inst:dataFromProducer22/Product1004.
-		?offer bsbm:price ?price .
-		?offer bsbm:vendor ?vendor .
-		?vendor rdfs:label ?vendorTitle .
-        ?vendor bsbm:country <http://downlode.org/rdf/iso-3166/countries#DE> .
-        ?offer dc:publisher ?vendor . 
-        ?offer bsbm:validTo ?date .
-        FILTER (?date > "2019-03-24" )
-    }
-    OPTIONAL {
-	?review bsbm:reviewFor bsbm-inst:dataFromProducer22/Product1004 .
-	?review rev:reviewer ?reviewer .
-	?reviewer foaf:name ?revName .
-	?review dc:title ?revTitle .
-    OPTIONAL { ?review bsbm:rating1 ?rating1 . }
-    OPTIONAL { ?review bsbm:rating2 ?rating2 . } 
+        ?review dc:title ?revTitle .
+        OPTIONAL { ?review bsbm:rating1 ?rating1 . }
+        OPTIONAL { ?review bsbm:rating2 ?rating2 . } 
     }
 }
 """

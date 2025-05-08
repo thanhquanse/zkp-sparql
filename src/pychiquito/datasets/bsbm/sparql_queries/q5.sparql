@@ -6,25 +6,16 @@ PREFIX dc: <http://purl.org/dc/elements/1.1/>
 PREFIX rev: <http://purl.org/stuff/rev#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
-SELECT ?productLabel ?offer ?price ?vendor ?vendorTitle ?review ?revTitle 
-       ?reviewer ?revName ?rating1 ?rating2
+SELECT ?productLabel ?offer ?price ?vendor ?revTitle ?rating1 ?rating2
 WHERE { 
-	bsbm-inst:dataFromProducer22/Product1004 rdfs:label ?productLabel . 	
+    ?product rdfs:label ?productLabel .
+    ?offer bsbm:price ?price .
+    ?offer bsbm:vendor ?vendor .
+    ?offer dc:publisher ?vendor . 
+    ?offer bsbm:validTo ?date .
+    FILTER (?date < "2019-03-24"^^xsd:date)
     OPTIONAL {
-        ?offer bsbm:product bsbm-inst:dataFromProducer22/Product1004.
-		?offer bsbm:price ?price .
-		?offer bsbm:vendor ?vendor .
-		?vendor rdfs:label ?vendorTitle .
-        ?vendor bsbm:country <http://downlode.org/rdf/iso-3166/countries#DE> .
-        ?offer dc:publisher ?vendor . 
-        ?offer bsbm:validTo ?date .
-        FILTER (?date > "2019-03-24" )
-    }
-    OPTIONAL {
-	?review bsbm:reviewFor bsbm-inst:dataFromProducer22/Product1004 .
-	?review rev:reviewer ?reviewer .
-	?reviewer foaf:name ?revName .
-	?review dc:title ?revTitle .
+        ?review dc:title ?revTitle .
         OPTIONAL { ?review bsbm:rating1 ?rating1 . }
         OPTIONAL { ?review bsbm:rating2 ?rating2 . } 
     }

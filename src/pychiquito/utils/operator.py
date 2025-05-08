@@ -1,6 +1,14 @@
 import operator, re
+from .util import is_datetime, to_datetime
 
 def apply_operator(a, op_str, b):
+    if op_str not in ['regex_i', 'Builtin_EXISTS', 'Builtin_NOTEXISTS']:
+        if is_datetime(a) and is_datetime(b):
+            a = to_datetime(a)
+            b = to_datetime(b)
+        else:
+            a = float(a)
+            b = float(b)
     ops = {
         "==": operator.eq,
         "=": operator.eq,

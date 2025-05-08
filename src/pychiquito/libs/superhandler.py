@@ -206,14 +206,30 @@ class ZKPSparqlSuperCircuit(SuperCircuit):
                     raise ValueError(f"Not supported the stage {stage_name}")
 
 class ZKPSuperHandler:
-    def __init__(self, stage_dict):
+    def __init__(self, stage_dict,
+                 params: dict = {
+                     "k": 19,
+                     "param": "./proof/super_params_test.bin",
+                     "paramgen": False,
+                     "proof": "./proof/super_proof_test.bin",
+                     "proofgen": False
+                }
+        ):
         self.stage_dict = stage_dict
-        self.k = 19
+        self.k = params["k"]
+        self.param = params["param"]
+        self.proof = params["proof"]
+        self.paramgen = params["paramgen"]
+        self.proofgen = params["proofgen"]
 
     def build(self):
-        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=100000)
+        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=1100000)
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
 
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)
-        zkp_super_circuit.create_param_file("super_params_test.bin", self.k)
-        zkp_super_circuit.generate_proof_file(zkp_super_circuit_witness, "super_params_test.bin", "super_proof.bin")
+        
+        if self.paramgen: 
+            zkp_super_circuit.create_param_file(self.param, self.k)
+        
+        if self.proofgen:
+            zkp_super_circuit.generate_proof_file(zkp_super_circuit_witness, self.param, self.proof)
