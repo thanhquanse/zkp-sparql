@@ -7,7 +7,7 @@ prefixes:
 mappings:
   lineitem:
     sources:
-      - [ ./relationaldb/lineitem.tbl~csv]
+      - [ ./relationaldb/lineitem_light.tbl~csv]
     s: ex:LineItem_$(l_orderkey)_$(l_linenumber)
     po:
       - [ a, ex:LineItem ]

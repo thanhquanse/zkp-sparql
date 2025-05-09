@@ -12,6 +12,9 @@ def contains_regex(input):
 def constains_builtin(input):
     return re.search(r'builtin', input, re.IGNORECASE) is not None
 
+def contains_expression(input):
+    return re.search(r'Expression_', input, re.IGNORECASE) is not None
+
 def word_to_int(word: str) -> int:
     # Define character set in lexicographical order
     char_to_value = {char: idx + 1 for idx, char in enumerate(charsets)}  # 1-based mapping
@@ -164,19 +167,19 @@ def group_by_fields(data, fields):
     return [item for group in grouped.values() for item in group]
 
 def is_datetime(value):
-    if isinstance(value, datetime):
+    if not isinstance(value, str):
+        return False
+
+    value = value.strip()
+
+    # Reject purely numeric strings (e.g., "2024", "12", "000123")
+    if re.fullmatch(r"\d+", value):
+        return False
+
+    try:
+        parsed = parser.parse(value, fuzzy=False)
         return True
-    elif isinstance(value, date):
-        return True
-    elif isinstance(value, str):
-        try:
-            parser.parse(value)
-            return True
-        except (ValueError, TypeError):
-            print(f"ERROR: Cannot parse: {value}")
-            return False
-    else:
-        print(f"ERROR: Type of {value} is {type(value)}")
+    except (ValueError, OverflowError):
         return False
     
 def to_datetime(value):

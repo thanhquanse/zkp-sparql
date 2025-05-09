@@ -1,13 +1,12 @@
 import os
 import sys
 import rdflib
-import time
 from contextlib import redirect_stdout
 from memory_profiler import profile
-from functools import wraps
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.superhandler import ZKPSuperHandler
+from utils.measure import timeit
 
 LOG_FILE = "./logs/experiment.log"
 fp = open(LOG_FILE, "w+")
@@ -27,18 +26,6 @@ def log_and_write(message: str, logfile: str = LOG_FILE):
     print(f"{message}\n")
     with open(logfile, "a") as file:
         file.write(f"{message}\n")
-
-def timeit(func):
-    @wraps(func)
-    def timeit_wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        print(f'Function {func.__name__} took {total_time:.4f} seconds')
-        
-        return result
-    return timeit_wrapper
 
 def load_dataset(path: str) -> Graph:
     g = Graph()
@@ -63,7 +50,7 @@ def load_query(path: str) -> str:
 
 @timeit
 @profile(stream=fp)
-def performSPARL(graph: Graph, query: str):
+def performSPARQL(graph: Graph, query: str):
     return graph.query(query)
 
 @timeit
@@ -71,12 +58,12 @@ def performSPARL(graph: Graph, query: str):
 def performZKP(graph: Graph, query: str, params: dict):
     stage_extracter = StageExtracter()
     rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
-    results = performSPARL(graph, query)
+    results = performSPARQL(graph, query)
     ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build()
 
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
-        "k": 17,
+        "k": 19,
         "paramgen": False,
         "param": f"./proof/super_param.bin",
         "proofgen": False
@@ -98,35 +85,35 @@ def zkpFunc(dataset_query_dict: dict):
 
 if __name__ == "__main__":
     dataset_query_dict = {
-        "bsbm": {
-            "path": "./datasets/bsbm/bsbm_light.nt",
+        "swdf": {
+            "path": "./datasets/swdf/swdf.nt",
             "queries": [
-                # "./datasets/bsbm/sparql_queries/q1.sparql",
-                # "./datasets/bsbm/sparql_queries/q2.sparql",
-                # "./datasets/bsbm/sparql_queries/q3.sparql",
-                # "./datasets/bsbm/sparql_queries/q4.sparql",
-                "./datasets/bsbm/sparql_queries/q5.sparql",
+                "./datasets/swdf/sparql_queries/q1.sparql",
+                "./datasets/swdf/sparql_queries/q2.sparql",
+                "./datasets/swdf/sparql_queries/q3.sparql",
+                "./datasets/swdf/sparql_queries/q4.sparql",
+                "./datasets/swdf/sparql_queries/q5.sparql",
             ]
         },
-        # "drugbank": {
-        #     "path": "./datasets/drugbank/drugbank_light.nt",
-        #     "queries": [
-        #         "./datasets/drugbank/sparql_queries/q1.sparql",
-        #         "./datasets/drugbank/sparql_queries/q2.sparql",
-        #         "./datasets/drugbank/sparql_queries/q3.sparql",
-        #         "./datasets/drugbank/sparql_queries/q4.sparql",
-        #         "./datasets/drugbank/sparql_queries/q5.sparql",
-        #     ]
-        # },
-        # "swdf": {
-        #     "path": "./datasets/swdf/swdf_light.nt",
-        #     "queries": [
-        #         "./datasets/swdf/sparql_queries/q1.sparql",
-        #         "./datasets/swdf/sparql_queries/q2.sparql",
-        #         "./datasets/swdf/sparql_queries/q3.sparql",
-        #         "./datasets/swdf/sparql_queries/q4.sparql",
-        #         "./datasets/swdf/sparql_queries/q5.sparql",
-        #     ]
-        # }
+        "drugbank": {
+            "path": "./datasets/drugbank/drugbank.nt",
+            "queries": [
+                "./datasets/drugbank/sparql_queries/q1.sparql",
+                "./datasets/drugbank/sparql_queries/q2.sparql",
+                "./datasets/drugbank/sparql_queries/q3.sparql",
+                "./datasets/drugbank/sparql_queries/q4.sparql",
+                "./datasets/drugbank/sparql_queries/q5.sparql",
+            ]
+        },
+        "bsbm": {
+            "path": "./datasets/bsbm/bsbm.nt",
+            "queries": [
+                "./datasets/bsbm/sparql_queries/q1.sparql",
+                "./datasets/bsbm/sparql_queries/q2.sparql",
+                "./datasets/bsbm/sparql_queries/q3.sparql",
+                "./datasets/bsbm/sparql_queries/q4.sparql",
+                "./datasets/bsbm/sparql_queries/q5.sparql",
+            ]
+        }
     }
     zkpFunc(dataset_query_dict)

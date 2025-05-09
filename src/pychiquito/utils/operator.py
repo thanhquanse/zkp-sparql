@@ -1,4 +1,6 @@
 import operator, re
+import rdflib
+from typing import Any, Dict
 from .util import is_datetime, to_datetime
 
 def apply_operator(a, op_str, b):
@@ -27,3 +29,24 @@ def apply_operator(a, op_str, b):
         "Builtin_NOTEXISTS": lambda a, b: all(x in a for x in b) is False
     }
     return ops[op_str](a, b)
+
+def evaluate_expression(expr: Dict[str, Any], data: Dict[str, Any]) -> float:
+    def resolve(term: Any) -> float:
+        if isinstance(term, rdflib.term.Variable):
+            return float(data.get(str(term), 0))
+        elif isinstance(term, rdflib.term.Literal):
+            return float(term.toPython())
+        elif isinstance(term, (int, float)):
+            return float(term)
+        return float(term)
+
+    # Base value
+    result = resolve(expr['expr'])
+
+    # Apply all operations
+    for op, other_expr in zip(expr.get('op', []), expr.get('other', [])):
+        right = evaluate_expression(other_expr, data) if isinstance(other_expr, dict) else resolve(other_expr)
+        
+        result = apply_operator(result, op, right)
+    
+    return result

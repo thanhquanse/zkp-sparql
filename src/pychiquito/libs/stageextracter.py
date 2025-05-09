@@ -1,7 +1,7 @@
 from rdflib.term import Variable
 from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject, evalPart
 from itertools import tee
-from utils.util import contains_regex, constains_builtin
+from utils.util import contains_regex, constains_builtin, contains_expression
 from enums.stages import QueryExecutionStage, QueryType
 
 class StageExtracter:
@@ -174,7 +174,7 @@ class StageExtracter:
                 for c in condition:
                     op_hash = {
                         "name": c.name,
-                        "vars": str(c.vars),
+                        "vars": c.vars if contains_expression(str(c.vars)) else str(c.vars),
                         "res": str(c.res)
                     }
                     aggregate_arr.append(op_hash)

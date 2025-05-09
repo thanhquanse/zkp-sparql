@@ -6,7 +6,8 @@ from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_number
-from utils.util import group_by, check_tuple_in_flat_list
+from utils.util import group_by, check_tuple_in_flat_list, contains_expression
+from utils.operator import evaluate_expression
 from enums.aggregate import AggregateOperations
 
 class AggregateConditionVerifier(StepType):
@@ -56,7 +57,7 @@ class AggregateVerificationCircuit(Circuit):
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 if int(category_count) != int(result[count_res]):
-                                    print(f"COUNT: {category_count} + {int(result[count_res])}")
+                                    print(f"COUNT: {category_count} != {int(result[count_res])}")
                                 self.add(self.aggregate_check_step, {
                                     "agg_condition_hash": category_count,
                                     "agg_result_hash": int(result[count_res])
@@ -69,11 +70,15 @@ class AggregateVerificationCircuit(Circuit):
                     
                     for category in category_groups:
                         # category_sum = sum(float(item[sum_var]) for item in category_groups[category])
-                        category_sum = sum(float(item[sum_var]) for item in category_groups[category] if sum_var in item and item[sum_var])
+                        if contains_expression(str(sum_var)):
+                            category_sum = sum(float(value) for value in [evaluate_expression(sum_var, row) for row in category_groups[category]])
+                        else:
+                            category_sum = sum(float(item[sum_var]) for item in category_groups[category] if sum_var in item and item[sum_var])
+                        
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 if float(category_sum) != float(result[sum_res]):
-                                    print(f"Sum: {category_sum} + {float(result[sum_res])}")
+                                    print(f"Sum: {category_sum} != {float(result[sum_res])}")
                                 self.add(self.aggregate_check_step, {
                                     "agg_condition_hash": hash_to_number(category_sum),
                                     "agg_result_hash": hash_to_number(float(result[sum_res]))
@@ -116,7 +121,11 @@ class AggregateVerificationCircuit(Circuit):
 
                     for category in category_groups:
                         # category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category])
-                        category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category] if avg_var in item and item[avg_var])
+                        if contains_expression(str(avg_var)):
+                            category_avg = statistics.mean(float(value) for value in [evaluate_expression(avg_var, row) for row in category_groups[category]])
+                        else:
+                            category_avg = statistics.mean(float(item[avg_var]) for item in category_groups[category] if avg_var in item and item[avg_var])
+                        
                         for result in agg_result:
                             if check_tuple_in_flat_list(list(result.values()), category):
                                 self.add(self.aggregate_check_step, {
