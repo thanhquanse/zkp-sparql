@@ -1,0 +1,11 @@
+maturin==1.2.0
+memory-profiler==0.61.0
+morph_kgc==2.8.1
+numpy==2.2.5
+odfpy==1.4.1
+pandas==2.2.3
+psutil==7.0.0
+python-dateutil==2.9.0.post0
+rdflib==7.1.4
+requests==2.32.3
+urllib3==2.4.0

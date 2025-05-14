@@ -97,25 +97,25 @@ if __name__ == "__main__":
                 "./datasets/swdf/sparql_queries/q5.sparql",
             ]
         },
-        # "drugbank": {
-        #     "path": "./datasets/drugbank/drugbank.nt",
-        #     "queries": [
-        #         "./datasets/drugbank/sparql_queries/q1.sparql",
-        #         "./datasets/drugbank/sparql_queries/q2.sparql",
-        #         "./datasets/drugbank/sparql_queries/q3.sparql",
-        #         "./datasets/drugbank/sparql_queries/q4.sparql",
-        #         "./datasets/drugbank/sparql_queries/q5.sparql",
-        #     ]
-        # },
-        # "bsbm": {
-        #     "path": "./datasets/bsbm/bsbm.nt",
-        #     "queries": [
-        #         "./datasets/bsbm/sparql_queries/q1.sparql",
-        #         "./datasets/bsbm/sparql_queries/q2.sparql",
-        #         "./datasets/bsbm/sparql_queries/q3.sparql",
-        #         "./datasets/bsbm/sparql_queries/q4.sparql",
-        #         "./datasets/bsbm/sparql_queries/q5.sparql",
-        #     ]
-        # }
+        "drugbank": {
+            "path": "./datasets/drugbank/drugbank.nt",
+            "queries": [
+                "./datasets/drugbank/sparql_queries/q1.sparql",
+                "./datasets/drugbank/sparql_queries/q2.sparql",
+                "./datasets/drugbank/sparql_queries/q3.sparql",
+                "./datasets/drugbank/sparql_queries/q4.sparql",
+                "./datasets/drugbank/sparql_queries/q5.sparql",
+            ]
+        },
+        "bsbm": {
+            "path": "./datasets/bsbm/bsbm.nt",
+            "queries": [
+                "./datasets/bsbm/sparql_queries/q1.sparql",
+                "./datasets/bsbm/sparql_queries/q2.sparql",
+                "./datasets/bsbm/sparql_queries/q3.sparql",
+                "./datasets/bsbm/sparql_queries/q4.sparql",
+                "./datasets/bsbm/sparql_queries/q5.sparql",
+            ]
+        }
     }
     zkpFunc(dataset_query_dict)
