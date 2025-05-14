@@ -402,3 +402,10 @@ FodyWeavers.xsd
 
 .venv
 .venv/*
+src/zkp-sparql/proof
+src/zkp-sparql/datasets/*/*.nt
+src/zkp-sparql/datasets/*/*.db
+src/zkp-sparql/datasets/*/*.txt
+src/zkp-sparql/relationaldb/*.tbl
+src/zkp-sparql/relationaldb/*.db
+target

@@ -9,7 +9,7 @@ from utils.measure import timeit
 csv_dataset = './relationaldb/lineitem_light.tbl'
 config_file = './relationaldb/config.ini'
 sparql = """
-PREFIX ex: <http://example.com/>
+PREFIX ex: <http://zkpsparql.engine.com/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?returnFlag ?lineStatus
@@ -30,7 +30,7 @@ WHERE {
      ex:discount ?discount ;
      ex:tax ?tax ;
      ex:shipDate ?shipDate .
-  FILTER (?shipDate <= "1998-08-03"^^xsd:date)
+  FILTER (?shipDate <= "1998-09-01"^^xsd:date)
 }
 GROUP BY ?returnFlag ?lineStatus
 ORDER BY ?returnFlag ?lineStatus

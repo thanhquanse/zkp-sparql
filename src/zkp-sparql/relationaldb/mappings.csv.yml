@@ -1,5 +1,5 @@
 prefixes:
-  ex: http://example.com/
+  ex: http://zkpsparql.engine.com/
   xsd: http://www.w3.org/2001/XMLSchema#
   rml: http://semweb.mmlab.be/ns/rml#
   rr: http://www.w3.org/ns/r2rml#
