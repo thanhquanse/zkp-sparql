@@ -32,7 +32,8 @@ class ProjectVerificationCircuit(Circuit):
 
         # Constrain >= 1
         self.add(self.project_gteq_check_step, 1, len(project_vars))
-        self.add(self.project_gteq_check_step, 1, len(results))
+        # With optional operator, sometimes, there is no result
+        self.add(self.project_gteq_check_step, 0, len(results))
 
         for project_el in results:
             sort_project_el = sorted(list(project_el.keys()))

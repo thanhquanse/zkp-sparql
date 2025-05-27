@@ -8,7 +8,7 @@ from libs.stageextracter import StageExtracter
 from libs.superhandler import ZKPSuperHandler
 from utils.measure import timeit
 
-LOG_FILE = "./logs/main_zkpsparql_experiment.log"
+LOG_FILE = "./rdf2rdb/logs/run.log"
 fp = open(LOG_FILE, "w+")
 
 class TeeLog:
@@ -29,7 +29,7 @@ def log_and_write(message: str, logfile: str = LOG_FILE):
 
 def load_dataset(path: str) -> Graph:
     g = Graph()
-    g.parse(path)
+    g.parse(path, format="turtle")
     print(f"Loaded graph {path} with size: {len(g)}")
 
     return g
@@ -65,10 +65,11 @@ def performZKP(graph: Graph, query: str, params: dict):
 @profile
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
-        "k": 19,
-        "paramgen": True,
-        "param": f"./proof/super_param.bin",
-        "proofgen": True
+        "k": 16,
+        "paramgen": False,
+        "param": f"./rdf2rdb/proof/super_param.bin",
+        "proofgen": True,
+        "step_num": 50000
     }
     for dataset in dataset_query_dict.keys():
         path = dataset_query_dict[dataset]["path"]
@@ -79,42 +80,19 @@ def zkpFunc(dataset_query_dict: dict):
             print(f"----- Experimenting {query_str} -----")
             query_name = os.path.basename(query_str).split('.')[0]
             query: str = load_query(query_str)
-            params["proof"] = f"./proof/super_proof_{dataset}_{query_name}"
-            # with open(LOG_FILE, "a") as file:
-            #     logtee = TeeLog(sys.stdout, file)
-            #     with redirect_stdout(logtee):
+            params["proof"] = f"./rdf2rdb/proof/super_proof_{dataset}_{query_name}"
+
             performZKP(graph, query, params)
 
 if __name__ == "__main__":
     dataset_query_dict = {
-        "swdf": {
-            "path": "./datasets/swdf/swdf_light.nt",
-            "queries": [
-                "./datasets/swdf/sparql_queries/q1_select.sparql",
-                "./datasets/swdf/sparql_queries/q2_select.sparql",
-                "./datasets/swdf/sparql_queries/q3_select.sparql",
-                "./datasets/swdf/sparql_queries/q4_select.sparql",
-                "./datasets/swdf/sparql_queries/q5_select.sparql",
-            ]
-        },
-        "drugbank": {
-            "path": "./datasets/drugbank/drugbank.nt",
-            "queries": [
-                "./datasets/drugbank/sparql_queries/q1_select.sparql",
-                "./datasets/drugbank/sparql_queries/q2_select.sparql",
-                "./datasets/drugbank/sparql_queries/q3_select.sparql",
-                "./datasets/drugbank/sparql_queries/q4_select.sparql",
-                "./datasets/drugbank/sparql_queries/q5_select.sparql",
-            ]
-        },
         "bsbm": {
-            "path": "./datasets/bsbm/bsbm.nt",
+            "path": "./rdf2rdb/datasets/BSBM.ttl",
             "queries": [
-                "./datasets/bsbm/sparql_queries/q1_select.sparql",
-                "./datasets/bsbm/sparql_queries/q2_select.sparql",
-                "./datasets/bsbm/sparql_queries/q3_select.sparql",
-                "./datasets/bsbm/sparql_queries/q4_select.sparql",
-                "./datasets/bsbm/sparql_queries/q5_select.sparql",
+                "./rdf2rdb/sparql_queries/q1_select.sparql",
+                "./rdf2rdb/sparql_queries/q2_select.sparql",
+                "./rdf2rdb/sparql_queries/q3_select.sparql",
+                "./rdf2rdb/sparql_queries/q4_select.sparql"
             ]
         }
     }

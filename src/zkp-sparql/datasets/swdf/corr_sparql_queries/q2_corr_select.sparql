@@ -1,0 +1,58 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?author
+       (COUNT(DISTINCT ?paper) AS ?numPapers)
+       (AVG(?titleLength) AS ?avgTitleLength)
+       (SUM(?titleLength) AS ?totalTitleLength)
+       (MIN(?titleLength) AS ?minTitleLength)
+       (MAX(?titleLength) AS ?maxTitleLength)
+WHERE {
+  {
+    SELECT DISTINCT ?author ?paper
+    WHERE {
+      {
+        # Case 1: direct authorship
+        ?author a foaf:Person ;
+                foaf:name ?authorName ;
+                foaf:made ?paper .
+      }
+      UNION
+      {
+        # Case 2: list-based authorship
+        ?author a foaf:Person ;
+                foaf:name ?authorName .
+        ?authList ?pos ?author .
+        ?authList ^<http://data.semanticweb.org/ns/swc/ontology#hasRelatedDocument> ?paper .
+      }
+
+      # Exclude specific paper
+      MINUS {
+        ?paper rdfs:label "OPTIMA:  A System for Semi Automatic and Large Scale Ontology Population" .
+      }
+    }
+  }
+
+  # Correlated subquery to fetch title and year
+  {
+    SELECT ?title ?year
+    WHERE {
+      ?paper rdfs:label ?title .
+      OPTIONAL { ?paper swrc:year ?year . }
+    }
+  }
+
+  # Filter by year if present
+  FILTER(xsd:integer(?year) >= 2006)
+
+  # Correlated title length computation
+  BIND(STRLEN(STR(?title)) AS ?titleLength)
+}
+GROUP BY ?author
+HAVING(SUM(?titleLength) > 10)
+ORDER BY DESC(?avgTitleLength)
+LIMIT 5
+OFFSET 3

@@ -8,7 +8,7 @@ def apply_operator(a, op_str, b):
         if is_datetime(a) and is_datetime(b):
             a = to_datetime(a)
             b = to_datetime(b)
-        else:
+        elif a.isnumeric() and b.isnumeric():
             a = float(a)
             b = float(b)
     ops = {

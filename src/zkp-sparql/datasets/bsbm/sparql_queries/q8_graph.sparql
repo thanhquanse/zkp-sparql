@@ -1,0 +1,7 @@
+SELECT ?product ?label
+WHERE {
+  GRAPH <http://bsbm.org/graphs/products> {
+    ?product a <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/Product> ;
+             <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/label> ?label .
+  }
+}

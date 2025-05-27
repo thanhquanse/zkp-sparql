@@ -3,7 +3,7 @@ import sys
 import rdflib
 from contextlib import redirect_stdout
 from memory_profiler import profile
-from rdflib import Graph
+from rdflib import Graph, ConjunctiveGraph
 from libs.stageextracter import StageExtracter
 from libs.superhandler import ZKPSuperHandler
 from utils.measure import timeit
@@ -27,11 +27,18 @@ def log_and_write(message: str, logfile: str = LOG_FILE):
     with open(logfile, "a") as file:
         file.write(f"{message}\n")
 
-def load_dataset(path: str) -> Graph:
+def load_dataset(path: str, is_conjunctive=False) -> Graph:
+    # Conjunctive graph
+    if is_conjunctive:
+        cg = ConjunctiveGraph()
+        cg.parse(path, format="trig")
+        print(f"Loaded conjunctive graph {path} with size: {len(cg)}")
+        return cg
+    
+    # Normal graph
     g = Graph()
     g.parse(path)
     print(f"Loaded graph {path} with size: {len(g)}")
-
     return g
 
 def load_query(path: str) -> str:
@@ -48,31 +55,39 @@ def load_query(path: str) -> str:
     
     return sparql_query
 
-@timeit
-@profile
+# @timeit
+# @profile
 def performSPARQL(graph: Graph, query: str):
     return graph.query(query)
 
-@timeit
-@profile
+# @timeit
+# @profile
 def performZKP(graph: Graph, query: str, params: dict):
     stage_extracter = StageExtracter()
     rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
     results = performSPARQL(graph, query)
+    
+    for rs in results:
+        print(rs)
+        # print(f"{rs.product} - {rs.label}")
+        # print(f"{rs.product} - {rs.label} - {rs.p1} - {rs.p3}")
+
+    # return
     ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build()
 
-@timeit
-@profile
+# @timeit
+# @profile
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
         "k": 19,
         "paramgen": True,
         "param": f"./proof/super_param.bin",
-        "proofgen": True
+        "proofgen": True,
+        "step_num": 100000
     }
     for dataset in dataset_query_dict.keys():
         path = dataset_query_dict[dataset]["path"]
-        graph: Graph = load_dataset(path)
+        graph: Graph = load_dataset(path, is_conjunctive=dataset_query_dict[dataset]["is_conjunctive"])
         queries: list[str] = dataset_query_dict[dataset]["queries"]
 
         for query_str in queries:
@@ -87,35 +102,42 @@ def zkpFunc(dataset_query_dict: dict):
 
 if __name__ == "__main__":
     dataset_query_dict = {
-        "swdf": {
-            "path": "./datasets/swdf/swdf_light.nt",
+        # "bsbm": {
+        #     "path": "./datasets/bsbm/bsbm_light.nt",
+        #     "queries": [
+        #         "./datasets/bsbm/corr_sparql_queries/q1_corr_select.sparql", # OK
+        #         "./datasets/bsbm/corr_sparql_queries/q2_corr_select.sparql", # OK
+        #         "./datasets/bsbm/sparql_queries/q6_describe.sparql", # OK
+        #         "./datasets/bsbm/sparql_queries/q7_construct.sparql", # OK
+        #     ],
+        #     "is_conjunctive": False
+        # },
+        # "drugbank": {
+        #     "path": "./datasets/drugbank/drugbank_light.nt",
+        #     "queries": [
+        #         "./datasets/drugbank/corr_sparql_queries/q1_corr_select.sparql", # Killed
+        #         "./datasets/drugbank/sparql_queries/q6_describe.sparql", # OK
+        #         "./datasets/drugbank/sparql_queries/q7_construct.sparql" # OK
+        #     ],
+        #     "is_conjunctive": False
+        # },
+        # "swdf": {
+        #     "path": "./datasets/swdf/swdf_light.nt",
+        #     "queries": [
+        #         "./datasets/swdf/sparql_queries/q6_describe.sparql", # OK
+        #         "./datasets/swdf/sparql_queries/q7_construct.sparql", # OK
+        #         "./datasets/swdf/corr_sparql_queries/q1_corr_select.sparql", # Killed
+        #         "./datasets/swdf/corr_sparql_queries/q2_corr_select.sparql" # Killed
+        #     ],
+        #     "is_conjunctive": False
+        # },
+        "bsbm_named_graph": {
+            "path": "./datasets/bsbm/bsbm_named_graphs.trig",
             "queries": [
-                "./datasets/swdf/sparql_queries/q1_select.sparql",
-                "./datasets/swdf/sparql_queries/q2_select.sparql",
-                "./datasets/swdf/sparql_queries/q3_select.sparql",
-                "./datasets/swdf/sparql_queries/q4_select.sparql",
-                "./datasets/swdf/sparql_queries/q5_select.sparql",
-            ]
-        },
-        "drugbank": {
-            "path": "./datasets/drugbank/drugbank.nt",
-            "queries": [
-                "./datasets/drugbank/sparql_queries/q1_select.sparql",
-                "./datasets/drugbank/sparql_queries/q2_select.sparql",
-                "./datasets/drugbank/sparql_queries/q3_select.sparql",
-                "./datasets/drugbank/sparql_queries/q4_select.sparql",
-                "./datasets/drugbank/sparql_queries/q5_select.sparql",
-            ]
-        },
-        "bsbm": {
-            "path": "./datasets/bsbm/bsbm.nt",
-            "queries": [
-                "./datasets/bsbm/sparql_queries/q1_select.sparql",
-                "./datasets/bsbm/sparql_queries/q2_select.sparql",
-                "./datasets/bsbm/sparql_queries/q3_select.sparql",
-                "./datasets/bsbm/sparql_queries/q4_select.sparql",
-                "./datasets/bsbm/sparql_queries/q5_select.sparql",
-            ]
+                "./datasets/bsbm/sparql_queries/q8_graph.sparql", # OK
+                "./datasets/bsbm/sparql_queries/q9_graph.sparql" # OK
+            ],
+            "is_conjunctive": True
         }
     }
     zkpFunc(dataset_query_dict)

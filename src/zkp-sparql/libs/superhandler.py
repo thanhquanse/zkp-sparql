@@ -212,7 +212,8 @@ class ZKPSuperHandler:
                 "param": "./proof/super_params_test.bin",
                 "paramgen": False,
                 "proof": "./proof/super_proof_test.bin",
-                "proofgen": False
+                "proofgen": False,
+                "step_num": 100000
             }
         ):
         self.stage_dict = stage_dict
@@ -221,9 +222,10 @@ class ZKPSuperHandler:
         self.proof = params["proof"]
         self.paramgen = params["paramgen"]
         self.proofgen = params["proofgen"]
+        self.step_num = params["step_num"]
 
     def build(self):
-        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=100000)
+        zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=self.step_num)
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
 
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)
