@@ -1,3 +1,5 @@
+import time
+
 from collections import defaultdict
 from chiquito.dsl import SuperCircuit
 
@@ -225,11 +227,14 @@ class ZKPSuperHandler:
         self.step_num = params["step_num"]
 
     def build(self):
+        start = time.time()
         zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=self.step_num)
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
 
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)
-        
+        end = time.time()
+        print(f"Proving time: {end - start}\n")
+
         if self.paramgen: 
             zkp_super_circuit.create_param_file(self.param, self.k)
         
