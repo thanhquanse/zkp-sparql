@@ -85,6 +85,7 @@ class ZKPSingleHandler:
 
                 case QueryExecutionStage.AGGREGATE.value:
                     _condition = self.stage_dict[stage]['condition']
+                    has_distinct = any(entry.get("name") == "Distinct" for entry in self.stage_dict.values())
 
                     condition = _condition['agg']
                     groupby = _condition['op']
@@ -95,7 +96,7 @@ class ZKPSingleHandler:
                     start = time.time()
                     agg_circuit = AggregateVerificationCircuit(max_steps=total_steps)
 
-                    agg_circuit_instance = agg_circuit.gen_witness(condition, groupby, vals_before, stage_results)
+                    agg_circuit_instance = agg_circuit.gen_witness(condition, groupby, vals_before, stage_results, has_distinct)
                     agg_circuit.halo2_mock_prover(witness=agg_circuit_instance, k=self.k)
                     end = time.time()
                     print(f"Proving time: {end - start}\n")

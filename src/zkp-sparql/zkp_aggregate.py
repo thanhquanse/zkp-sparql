@@ -107,6 +107,7 @@ WHERE {
   # Convert title to string length
   BIND(STRLEN(STR(?title)) AS ?titleLength)
 }
+GROUP BY ?author
 """
 
 stage_extracter = StageExtracter()

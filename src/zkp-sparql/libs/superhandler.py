@@ -70,9 +70,10 @@ class ZKPSparqlSuperCircuit(SuperCircuit):
             match stage_name:
                 case QueryExecutionStage.FILTER.value:
                     filter_condition = self.stage_dict[stage]['condition']
+                    prev_values = self.stage_dict[stage]['condition']['prev_value']
 
                     # TODO: Should check the original data
-                    self.map(self.filter_circuit, stage_results, stage_results, filter_condition)
+                    self.map(self.filter_circuit, prev_values, stage_results, filter_condition)
 
                 case QueryExecutionStage.UNION.value:
                     p1 = self.stage_dict[stage]['condition']['p1']

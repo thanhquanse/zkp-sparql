@@ -85,7 +85,8 @@ class StageExtracter:
                     expression = {
                         'expr': str(condition['text']),
                         'op': str('regex_' + condition['flags']),
-                        'value': str(condition['pattern'])
+                        'value': str(condition['pattern']),
+                        'prev_value': prev_values
                     }
                 elif constains_builtin(condition.name):
                     p2 = condition.graph.p2
@@ -94,7 +95,8 @@ class StageExtracter:
                         expression = {
                             'expr': condition._vars,
                             'op': condition.name,
-                            'value': condition_val
+                            'value': condition_val,
+                            'prev_value': prev_values
                         }
                 else:
                     if hasattr(condition['expr'], 'name') and condition['expr'].name == 'Function':
