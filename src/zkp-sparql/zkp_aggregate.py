@@ -2,6 +2,8 @@ import rdflib
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
+from memory_profiler import profile
+from utils.measure import timeit
 
 g = Graph()
 
@@ -54,6 +56,8 @@ ex:book11 ex:title "Linked Data for Dummies" ;
          ex:category "Data" .
 """
 
+data_path = "./datasets/swdf/swdf_light_60000.nt"
+
 query = """
 PREFIX ex: <http://example.org/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -77,9 +81,45 @@ GROUP BY ?category
 ORDER BY ?category
 """
 
+query_str = """
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?author
+       (COUNT(DISTINCT ?paper) AS ?numPapers)
+       (AVG(?titleLength) AS ?avgTitleLength)
+       (SUM(?titleLength) AS ?totalTitleLength)
+       (MIN(?titleLength) AS ?minTitleLength)
+       (MAX(?titleLength) AS ?maxTitleLength)
+WHERE {
+  {
+    # Case 1: Paper directly linked via foaf:made
+    ?author a foaf:Person ;
+            foaf:name ?authorName ;
+            foaf:made ?paper .
+  }
+
+  ?paper rdfs:label ?title .
+
+  # Convert title to string length
+  BIND(STRLEN(STR(?title)) AS ?titleLength)
+}
+"""
+
 stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
-g.parse(data=data, format="turtle")
-results = g.query(query)
-ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+# g.parse(data=data, format="turtle")
+g.parse(data_path)
+results = g.query(query_str)
+
+@timeit
+@profile
+def func():
+  ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+if __name__ == "__main__":
+  func()

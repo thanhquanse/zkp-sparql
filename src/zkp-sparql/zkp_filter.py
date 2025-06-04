@@ -2,6 +2,8 @@ import rdflib
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.singlehandler import ZKPSingleHandler
+from memory_profiler import profile
+from utils.measure import timeit
 
 g = Graph()
 
@@ -38,9 +40,31 @@ WHERE {
 ORDER BY ?price
 """
 
+data_path = "./datasets/swdf/swdf_light_60000.nt"
+query_path = """
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?resource_uri
+WHERE {
+    ?resource_uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?concept .
+    ?resource_uri ?property ?value .
+    FILTER(REGEX(?value, "Nathalie Friburger", "i"))
+}
+"""
+
 stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
-g.parse(data=data, format="turtle")
-results = g.query(query)
-ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+# g.parse(data=data, format="turtle")
+g.parse(data_path)
+results = g.query(query_path)
+
+@timeit
+@profile
+def func():
+  ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+
+if __name__ == "__main__":
+  func()

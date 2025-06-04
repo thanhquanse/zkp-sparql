@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict
 
 from gates.filter import FilterVerificationCircuit
@@ -37,10 +38,13 @@ class ZKPSingleHandler:
                     filter_condition = self.stage_dict[stage]['condition']
                     prev_values = self.stage_dict[stage]['condition']['prev_value']
                     
+                    start = time.time()
                     filter_circuit = FilterVerificationCircuit(max_steps=total_steps)
                     filter_circuit_witness = filter_circuit.gen_witness(prev_values, stage_results, filter_condition)
                     
                     filter_circuit.halo2_mock_prover(witness=filter_circuit_witness, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.UNION.value:
                     total_steps = len(stage_results) + 8 # +8 for greater than constraint
@@ -55,6 +59,7 @@ class ZKPSingleHandler:
                 case QueryExecutionStage.ORDER_BY.value:
                     total_steps = len(stage_results) * 2
                     
+                    start = time.time()
                     orderby_circuit_asc = OrderByVerificationCircuit(max_steps=total_steps)
 
                     # TODO: Temporarily hardcode one orderby '1' condition
@@ -65,6 +70,8 @@ class ZKPSingleHandler:
                         
                     orderby_circuit_instance_asc = orderby_circuit_asc.gen_witness(stage_results, [field], order)  # 0 for ASC
                     orderby_circuit_asc.halo2_mock_prover(witness=orderby_circuit_instance_asc, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.SLICE.value:
                     total_steps = 4
@@ -85,10 +92,13 @@ class ZKPSingleHandler:
 
                     total_steps = len(stage_results) * 5 + 4 # +4 for greater than constraint
                     
+                    start = time.time()
                     agg_circuit = AggregateVerificationCircuit(max_steps=total_steps)
 
                     agg_circuit_instance = agg_circuit.gen_witness(condition, groupby, vals_before, stage_results)
                     agg_circuit.halo2_mock_prover(witness=agg_circuit_instance, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.GROUP.value:
                     # pass
@@ -97,10 +107,13 @@ class ZKPSingleHandler:
                     groupby = self.stage_dict[stage]['condition']['groupby']
                     values2group = self.stage_dict[stage]['condition']['value']
 
+                    start = time.time()
                     groupby_circuit = GroupByVerificationCircuit(max_steps=total_steps)
                     groupby_result_instance = groupby_circuit.gen_witness(groupby, values2group, stage_results)
 
                     groupby_circuit.halo2_mock_prover(witness=groupby_result_instance, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.DISTINCT.value:
                     distinct_circuit = DistinctVerificationCircuit(max_steps=3)
@@ -133,10 +146,14 @@ class ZKPSingleHandler:
                     value_grouped = dict(value_dict)
 
                     total_steps = (len(p1) + len(p2)) * 2 + 8 # +8 for greater than constraint
+                    
+                    start = time.time()
                     optional_circuit = OptionalVerificationCircuit(max_steps=total_steps)
                     optional_circuit_instance = optional_circuit.gen_witness(p1_grouped, p2_grouped, value_grouped)
 
                     optional_circuit.halo2_mock_prover(witness=optional_circuit_instance, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.MINUS.value:
                     p2 = self.stage_dict[stage]['condition']['p2']
@@ -156,9 +173,13 @@ class ZKPSingleHandler:
                     value_grouped = dict(value_dict)
 
                     total_steps = len(stage_results) * 2 + 3 # +3 for greater than constraint
+
+                    start = time.time()
                     minus_circuit = MinusVerificationCircuit(max_steps=total_steps) 
                     minus_circuit_instance = minus_circuit.gen_witness(p2_grouped, value_grouped)
                     minus_circuit.halo2_mock_prover(witness=minus_circuit_instance, k=self.k)
+                    end = time.time()
+                    print(f"Proving time: {end - start}\n")
 
                 case QueryExecutionStage.PROJECT.value | QueryType.ASK.value:
                     if stage_name == QueryType.ASK.value:
