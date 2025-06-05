@@ -227,17 +227,38 @@ class ZKPSuperHandler:
         self.proofgen = params["proofgen"]
         self.step_num = params["step_num"]
 
-    def build(self):
+    def build(self, log_path):
+        time_measurement = {
+            "proving": 0,
+            "param_gen": 0,
+            "proof_gen": 0
+        }
         start = time.time()
+        
         zkp_super_circuit = ZKPSparqlSuperCircuit(stage_dict=self.stage_dict, step_num=self.step_num)
         zkp_super_circuit_witness = zkp_super_circuit.gen_witness(self.stage_dict)
-
         zkp_super_circuit.halo2_mock_prover(zkp_super_circuit_witness, k=self.k)
+        
         end = time.time()
         print(f"Proving time: {end - start}\n")
+        time_measurement["proving"] = end - start
 
-        if self.paramgen: 
-            zkp_super_circuit.create_param_file(self.param, self.k)
+        if self.paramgen:
+            start = time.time()
+            
+            zkp_super_circuit.create_param_file(self.param, self.k, log_path)
+            
+            end = time.time()
+            print(f"Param gen time: {end - start}\n")
+            time_measurement["param_gen"] = end - start
         
         if self.proofgen:
-            zkp_super_circuit.generate_proof_file(zkp_super_circuit_witness, self.param, self.proof)
+            start = time.time()
+
+            zkp_super_circuit.generate_proof_file(zkp_super_circuit_witness, self.param, self.proof, log_path)
+
+            end = time.time()
+            print(f"Proof gen time: {end - start}\n")
+            time_measurement["proof_gen"] = end - start
+
+        return time_measurement

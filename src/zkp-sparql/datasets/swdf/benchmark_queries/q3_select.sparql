@@ -1,0 +1,10 @@
+SELECT ?person (COUNT(?paper) AS ?paperCount)
+WHERE {
+  ?person a <http://xmlns.com/foaf/0.1/Person> ;
+          <http://xmlns.com/foaf/0.1/made> ?paper .
+}
+GROUP BY ?person
+HAVING (COUNT(?paper) >= 1)
+ORDER BY DESC(?paperCount)
+LIMIT 1000
+OFFSET 5

@@ -3,7 +3,7 @@ PREFIX drugtype: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugtype/>
 PREFIX kegg: <http://bio2rdf.org/ns/kegg#>
 PREFIX chebi: <http://bio2rdf.org/ns/bio2rdf#>
 PREFIX purl: <http://purl.org/dc/elements/1.1/>
-SELECT DISTINCT ?drug	?drugDesc 	?compound   ?ReactionTitle    ?ChemicalEquation 
+SELECT ?drug ?drugDesc 	?compound   ?ReactionTitle    ?ChemicalEquation 
 WHERE
 {
     ?drug 			drugbank:description 	 ?drugDesc .

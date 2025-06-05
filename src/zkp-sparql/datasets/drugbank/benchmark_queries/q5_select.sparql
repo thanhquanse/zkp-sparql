@@ -1,0 +1,26 @@
+PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+
+SELECT DISTINCT ?target ?synonym (COUNT(DISTINCT ?synonym) AS ?synonymCount)
+WHERE
+{
+    {
+        ?target db:synonym ?synonym
+        OPTIONAL {
+            ?target db:transmembraneRegions ?tmRegion .
+        }
+        FILTER(REGEX(?synonym, "delta", "i"))
+    }
+    UNION
+    {
+        ?target db:synonym ?synonym
+        FILTER(REGEX(?synonym, "alpha", "i"))
+    }
+    MINUS {
+        ?target db:cellularLocation "cytoplasmic" .
+    }
+}
+GROUP BY ?target
+HAVING (COUNT(DISTINCT ?synonym) > 0)
+ORDER BY DESC(?synonymCount)
+LIMIT 1000
+OFFSET 0

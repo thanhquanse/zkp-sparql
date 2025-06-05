@@ -1,0 +1,11 @@
+PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT ?product ?producer (?value1 AS ?numeric1)
+WHERE {
+  ?product bsbm:productPropertyNumeric1 ?value1 .
+  ?product bsbm:producer ?producer .
+  FILTER(?value1 > 200)
+}
+GROUP BY ?product ?producer ?value1
+ORDER BY DESC(?numeric1)

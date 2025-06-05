@@ -1,0 +1,6 @@
+PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+
+SELECT ?target ?synonym
+WHERE {
+  ?target drugbank:synonym ?synonym .
+}

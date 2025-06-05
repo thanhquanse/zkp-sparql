@@ -127,6 +127,12 @@ class StageExtracter:
                 val_p1 = self.stage_vals[str(self.stage_counter - 2)]['value']
                 val_p2 = self.stage_vals[str(self.stage_counter - 1)]['value']
 
+                if self.stage_vals[str(self.stage_counter - 1)]['name'] == QueryExecutionStage.FILTER.value \
+                    and self.stage_vals[str(self.stage_counter - 3)]['name'] == QueryExecutionStage.FILTER.value:
+                    val_p1 = self.stage_vals[str(self.stage_counter - 3)]['value']
+                    val_p2 = self.stage_vals[str(self.stage_counter - 1)]['value']
+
+
                 expression = {
                     'p1': val_p1,
                     'op': 'union',
