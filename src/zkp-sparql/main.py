@@ -101,22 +101,20 @@ def process_dataset_query(dataset_query_dict: dict, is_single=False):
 
         k, step_num = select_k(len(graph))
         param_file_path = f"./proof/param_{str(k)}.bin"
-        params: dict = {
-            "k": k,
-            "step_num": step_num,
-            "param": param_file_path,
-            "paramgen": (not os.path.exists(param_file_path)),
-            "proofgen": True
-        }
 
         for query_str in queries:
             print_and_write(f"--------------- Experimenting: {dataset} - {query_str} ---------------")
-            
+
             query_name = os.path.basename(query_str).split('.')[0]
             query: str = load_query(query_str)
-            params["proof"] = f"./proof/{dataset}/super_proof_{query_name}"
-            if is_single:
-                params["proof"] = f"./proof/{dataset}/single_proof_{query_name}"
+            params: dict = {
+                "k": k,
+                "step_num": step_num,
+                "param": param_file_path,
+                "paramgen": (not os.path.exists(param_file_path)),
+                "proofgen": True,
+                "proof": f"./proof/{dataset}/{'single' if is_single else 'super'}_proof_{query_name}"
+            }
 
             print_and_write(f"INFO: Params: {json.dumps(params)}")
             
