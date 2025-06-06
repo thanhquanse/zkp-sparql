@@ -56,16 +56,18 @@ def load_query(path: str) -> str:
     return sparql_query
 
 def select_k(ds_size: int) -> int:
-    if ds_size <= 65000:
+    if ds_size < 65536:
         return 16, 65000
-    elif ds_size <= 120000:
+    elif ds_size < 130000:
         return 17, 100000
-    elif ds_size <= 240000:
+    elif ds_size < 260000:
         return 18, 150000
-    elif ds_size <= 500000:
+    elif ds_size < 520000:
         return 19, 250000
+    elif ds_size < 1048576:
+        return 20, 500000 
     else:
-        return 20, 500000
+        return 22, 1000000
 
 def process_query(graph: Graph, query: str):
     return graph.query(query)

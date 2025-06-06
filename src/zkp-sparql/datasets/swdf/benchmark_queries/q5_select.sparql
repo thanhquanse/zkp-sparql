@@ -1,7 +1,7 @@
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX swrc: <http://swrc.ontoware.org/ontology#>
 
-SELECT DISTINCT ?author (COUNT(?paper) AS ?numPapers)
+SELECT DISTINCT ?author (COUNT(DISTINCT ?paper) AS ?numPapers)
 WHERE {
   {
     ?event a <http://data.semanticweb.org/ns/swc/ontology#TalkEvent> ;
@@ -15,7 +15,6 @@ WHERE {
   {
     ?event <http://data.semanticweb.org/ns/swc/ontology#hasRelatedDocument> ?paper .
     ?paper <http://xmlns.com/foaf/0.1/maker> ?author .
-    FILTER(REGEX(?author, "a", "i"))
   }
   MINUS {
     ?paper rdfs:label "OPTIMA:  A System for Semi Automatic and Large Scale Ontology Population" .

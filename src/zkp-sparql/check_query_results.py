@@ -42,31 +42,31 @@ if __name__ == "__main__":
         "swdf": {
             "path": "./datasets/swdf/swdf_25_percent.nt",
             "queries": [
-                "./datasets/swdf/comparable_sparql_queries/q1_select.sparql",
-                "./datasets/swdf/comparable_sparql_queries/q2_select.sparql",
-                "./datasets/swdf/comparable_sparql_queries/q3_select.sparql",
-                "./datasets/swdf/comparable_sparql_queries/q4_ask.sparql",
-                "./datasets/swdf/comparable_sparql_queries/q5_select.sparql",
+                "./datasets/swdf/benchmark_queries/q1_select.sparql",
+                "./datasets/swdf/benchmark_queries/q2_select.sparql",
+                "./datasets/swdf/benchmark_queries/q3_select.sparql",
+                "./datasets/swdf/benchmark_queries/q4_ask.sparql",
+                "./datasets/swdf/benchmark_queries/q5_select.sparql",
             ]
         },
         "drugbank": {
             "path": "./datasets/drugbank/drugbank_25_percent.nt",
             "queries": [
-                "./datasets/drugbank/comparable_sparql_queries/q1_select.sparql",
-                "./datasets/drugbank/comparable_sparql_queries/q2_select.sparql",
-                "./datasets/drugbank/comparable_sparql_queries/q3_select.sparql",
-                "./datasets/drugbank/comparable_sparql_queries/q4_ask.sparql",
-                "./datasets/drugbank/comparable_sparql_queries/q5_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q1_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q2_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q3_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q4_ask.sparql",
+                "./datasets/drugbank/benchmark_queries/q5_select.sparql",
             ]
         },
         "bsbm": {
             "path": "./datasets/bsbm/bsbm_25_percent.nt",
             "queries": [
-                "./datasets/bsbm/comparable_sparql_queries/q1_select.sparql",
-                "./datasets/bsbm/comparable_sparql_queries/q2_select.sparql",
-                "./datasets/bsbm/comparable_sparql_queries/q3_select.sparql",
-                "./datasets/bsbm/comparable_sparql_queries/q4_ask.sparql",
-                "./datasets/bsbm/comparable_sparql_queries/q5_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q1_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q2_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q3_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q4_ask.sparql",
+                "./datasets/bsbm/benchmark_queries/q5_select.sparql",
             ]
         }
     }

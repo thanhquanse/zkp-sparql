@@ -4,7 +4,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 
-SELECT DISTINCT ?product ?label ?propertyTextual (COUNT(?label) AS ?numLabel)
+SELECT DISTINCT ?product ?label ?propertyTextual (COUNT(DISTINCT ?label) AS ?numLabel)
 WHERE {
     { 
         ?product rdfs:label ?label .
@@ -12,7 +12,10 @@ WHERE {
         ?product bsbm:productPropertyTextual1 ?propertyTextual .
         ?product bsbm:productPropertyNumeric1 ?p1 .
         OPTIONAL {
+            ?product rdfs:label ?label .
             ?product rdf:type bsbm-inst:ProductType3 .
+            ?product bsbm:productPropertyTextual1 ?propertyTextual .
+            ?product bsbm:productPropertyNumeric1 ?p1 .
         }
         FILTER ( ?p1 > 5 )
     } 
