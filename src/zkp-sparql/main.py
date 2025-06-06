@@ -86,7 +86,7 @@ def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False)
     
     start = time.time()
     if is_single:
-        zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+        zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
     else:
         zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
     end = time.time()
@@ -183,13 +183,13 @@ def eval_single_gate():
         "swdf": {
             "path": "./datasets/swdf/swdf_100_percent.nt",
             "queries": [
-                "./datasets/swdf/single_gate_benchmark_queries/q1_filter.sparql",
                 "./datasets/swdf/single_gate_benchmark_queries/q2_group_order_by.sparql",
-                "./datasets/swdf/single_gate_benchmark_queries/q3_aggregate.sparql"
+                "./datasets/swdf/single_gate_benchmark_queries/q3_aggregate.sparql",
+                "./datasets/swdf/single_gate_benchmark_queries/q4_all.sparql"
             ]
         }
     }
-    process_dataset_query(dataset_query_dict)
+    process_dataset_query(dataset_query_dict, is_single=True)
 
 if __name__ == "__main__":
     eval_super_gate()

@@ -31,7 +31,7 @@ class BGPVerificationCircuit(Circuit):
 
         # Constrain >= 0
         self.add(self.bgp_gteq_check_step, 0, len(p_obtained_vars))
-        self.add(self.bgp_gteq_check_step, 0, len(result.keys()), len(p_obtained_vars))
+        self.add(self.bgp_gteq_check_step, len(result.keys()), len(p_obtained_vars))
 
         # Step 2: Constrain p vars
         sorted_p = {key: sorted(value) for key, value in p.items()}
