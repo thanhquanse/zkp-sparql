@@ -21,6 +21,7 @@ WHERE {
   }
 }
 GROUP BY ?author
+HAVING (COUNT(?paper) >= 1)
 ORDER BY DESC(?numPapers)
 LIMIT 1000
 OFFSET 0

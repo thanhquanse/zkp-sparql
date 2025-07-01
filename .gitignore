@@ -413,3 +413,4 @@ src/zkp-sparql/datasets/*/*.txt
 src/zkp-sparql/relationaldb/*.tbl
 src/zkp-sparql/relationaldb/*.db
 target
+summary

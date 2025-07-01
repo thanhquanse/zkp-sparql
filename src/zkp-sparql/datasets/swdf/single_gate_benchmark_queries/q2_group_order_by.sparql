@@ -9,5 +9,5 @@ WHERE
   }
 GROUP BY ?instance
 ORDER BY ?instance ?p ?o
-OFFSET  10
-LIMIT   1000
+LIMIT 1000
+OFFSET 10

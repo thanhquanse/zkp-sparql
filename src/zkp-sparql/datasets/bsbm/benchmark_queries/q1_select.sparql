@@ -1,21 +1,9 @@
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>
 PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
-PREFIX data: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer22/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT ?label ?comment ?numeric1 ?numeric2 ?numeric3 ?numeric4 ?numeric5
-       ?textual1 ?textual2 ?textual3 ?textual4 ?textual5
+SELECT ?product ?label
 WHERE {
-  data:Product1001 rdfs:label ?label ;
-                   rdfs:comment ?comment ;
-                   bsbm:productPropertyNumeric1 ?numeric1 ;
-                   bsbm:productPropertyNumeric2 ?numeric2 ;
-                   bsbm:productPropertyNumeric3 ?numeric3 ;
-                   bsbm:productPropertyNumeric4 ?numeric4 ;
-                   bsbm:productPropertyNumeric5 ?numeric5 ;
-                   bsbm:productPropertyTextual1 ?textual1 ;
-                   bsbm:productPropertyTextual2 ?textual2 ;
-                   bsbm:productPropertyTextual3 ?textual3 ;
-                   bsbm:productPropertyTextual4 ?textual4 ;
-                   bsbm:productPropertyTextual5 ?textual5 .
+  ?product rdfs:label ?label .
 }

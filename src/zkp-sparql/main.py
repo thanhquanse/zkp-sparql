@@ -4,7 +4,7 @@ import rdflib
 import datetime
 import time
 from pathlib import Path
-from memory_profiler import profile
+from memory_profiler import memory_usage, profile
 from rdflib import Graph
 from libs.stageextracter import StageExtracter
 from libs.superhandler import ZKPSuperHandler
@@ -12,8 +12,8 @@ from libs.singlehandler import ZKPSingleHandler
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 LOG_FILE = f"./logs/experiment_{timestamp}.log"
-MEM_LOG_FILE = f"./logs/profile_experiment_{timestamp}.log"
-fp = open(MEM_LOG_FILE, "w+")
+# MEM_LOG_FILE = f"./logs/profile_experiment_{timestamp}.log"
+# logging.basicConfig(filename=MEM_LOG_FILE, level=logging.INFO)
 
 class TeeLog:
     def __init__(self, *streams):
@@ -72,7 +72,7 @@ def select_k(ds_size: int) -> int:
 def process_query(graph: Graph, query: str):
     return graph.query(query)
 
-@profile(stream=fp)
+@profile
 def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
     stage_extracter = StageExtracter()
     rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
@@ -120,8 +120,12 @@ def process_dataset_query(dataset_query_dict: dict, is_single=False):
 
             print_and_write(f"INFO: Params: {json.dumps(params)}")
             
-            exe_results = perform_zkp_circuit(graph, query, params, is_single)
+            # exe_results = perform_zkp_circuit(graph, query, params, is_single)
 
+            mem_usage, exe_results = memory_usage((perform_zkp_circuit, (graph, query, params, is_single)), retval=True, interval=0.1, max_usage=True)
+            # logging.info(f"Params: query={query_str}, Peak memory: {mem_usage:.2f} MB")
+
+            print_and_write(f"INFO: Mem usage: {mem_usage:.2f} MB")
             print_and_write(f"INFO: Proving time: {exe_results['proving']}")
             print_and_write(f"INFO: Param gen time: {exe_results['param_gen']}")
             print_and_write(f"INFO: Proof gen time: {exe_results['proof_gen']}")
@@ -134,7 +138,7 @@ def eval_super_gate():
     for pct in percentages:
         dataset_query_dict = {
             "swdf": {
-                "path": f"./datasets/swdf/swdf_{pct}_percent.nt",
+                "path": f"./datasets/swdf/swdf_{pct}_pct.nt",
                 "queries": [
                     "./datasets/swdf/benchmark_queries/q1_select.sparql",
                     "./datasets/swdf/benchmark_queries/q2_select.sparql",
@@ -144,7 +148,7 @@ def eval_super_gate():
                 ]
             },
             "drugbank": {
-                "path": f"./datasets/drugbank/drugbank_{pct}_percent.nt",
+                "path": f"./datasets/drugbank/drugbank_{pct}_pct.nt",
                 "queries": [
                     "./datasets/drugbank/benchmark_queries/q1_select.sparql",
                     "./datasets/drugbank/benchmark_queries/q2_select.sparql",
@@ -154,7 +158,7 @@ def eval_super_gate():
                 ]
             },
             "bsbm": {
-                "path": f"./datasets/bsbm/bsbm_{pct}_percent.nt",
+                "path": f"./datasets/bsbm/bsbm_{pct}_pct.nt",
                 "queries": [
                     "./datasets/bsbm/benchmark_queries/q1_select.sparql",
                     "./datasets/bsbm/benchmark_queries/q2_select.sparql",
@@ -172,6 +176,7 @@ def eval_bsbm_converted():
             "path": "./rdf2rdb/datasets/BSBM.ttl",
             "queries": [
                 "./rdf2rdb/sparql_queries/q1_select.sparql",
+                "./rdf2rdb/sparql_queries/q3_select.sparql",
                 "./rdf2rdb/sparql_queries/q4_select.sparql"
             ]
         }
@@ -181,8 +186,9 @@ def eval_bsbm_converted():
 def eval_single_gate():
     dataset_query_dict = {
         "swdf": {
-            "path": "./datasets/swdf/swdf_100_percent.nt",
+            "path": "./datasets/swdf/swdf_100_pct.nt",
             "queries": [
+                "./datasets/swdf/single_gate_benchmark_queries/q1_filter.sparql",
                 "./datasets/swdf/single_gate_benchmark_queries/q2_group_order_by.sparql",
                 "./datasets/swdf/single_gate_benchmark_queries/q3_aggregate.sparql",
                 "./datasets/swdf/single_gate_benchmark_queries/q4_all.sparql"

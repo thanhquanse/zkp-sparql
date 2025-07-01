@@ -59,16 +59,17 @@ def performZKP(graph: Graph, query: str, params: dict):
     stage_extracter = StageExtracter()
     rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
     results = performSPARQL(graph, query)
-    ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build()
+    ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
 
 @timeit
 @profile
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
-        "k": 19,
+        "k": 20,
         "paramgen": True,
-        "param": f"./proof/super_param.bin",
-        "proofgen": True
+        "param": f"./proof/param_20.bin",
+        "proofgen": True,
+        "step_num": 150000,
     }
     for dataset in dataset_query_dict.keys():
         path = dataset_query_dict[dataset]["path"]
@@ -90,31 +91,31 @@ if __name__ == "__main__":
         "swdf": {
             "path": "./datasets/swdf/swdf_light.nt",
             "queries": [
-                "./datasets/swdf/sparql_queries/q1_select.sparql",
-                "./datasets/swdf/sparql_queries/q2_select.sparql",
-                "./datasets/swdf/sparql_queries/q3_select.sparql",
-                "./datasets/swdf/sparql_queries/q4_select.sparql",
-                "./datasets/swdf/sparql_queries/q5_select.sparql",
+                "./datasets/swdf/benchmark_queries/q1_select.sparql",
+                "./datasets/swdf/benchmark_queries/q2_select.sparql",
+                "./datasets/swdf/benchmark_queries/q3_select.sparql",
+                "./datasets/swdf/benchmark_queries/q4_select.sparql",
+                "./datasets/swdf/benchmark_queries/q5_select.sparql",
             ]
         },
         "drugbank": {
             "path": "./datasets/drugbank/drugbank.nt",
             "queries": [
-                "./datasets/drugbank/sparql_queries/q1_select.sparql",
-                "./datasets/drugbank/sparql_queries/q2_select.sparql",
-                "./datasets/drugbank/sparql_queries/q3_select.sparql",
-                "./datasets/drugbank/sparql_queries/q4_select.sparql",
-                "./datasets/drugbank/sparql_queries/q5_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q1_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q2_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q3_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q4_select.sparql",
+                "./datasets/drugbank/benchmark_queries/q5_select.sparql",
             ]
         },
         "bsbm": {
             "path": "./datasets/bsbm/bsbm.nt",
             "queries": [
-                "./datasets/bsbm/sparql_queries/q1_select.sparql",
-                "./datasets/bsbm/sparql_queries/q2_select.sparql",
-                "./datasets/bsbm/sparql_queries/q3_select.sparql",
-                "./datasets/bsbm/sparql_queries/q4_select.sparql",
-                "./datasets/bsbm/sparql_queries/q5_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q1_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q2_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q3_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q4_select.sparql",
+                "./datasets/bsbm/benchmark_queries/q5_select.sparql",
             ]
         }
     }

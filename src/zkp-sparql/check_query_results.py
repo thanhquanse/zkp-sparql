@@ -40,17 +40,18 @@ def func(dataset_query_dict: dict):
 if __name__ == "__main__":
     dataset_query_dict = {
         "swdf": {
-            "path": "./datasets/swdf/swdf_25_percent.nt",
+            "path": "./datasets/swdf/swdf_25_pct.nt",
             "queries": [
                 "./datasets/swdf/benchmark_queries/q1_select.sparql",
                 "./datasets/swdf/benchmark_queries/q2_select.sparql",
                 "./datasets/swdf/benchmark_queries/q3_select.sparql",
                 "./datasets/swdf/benchmark_queries/q4_ask.sparql",
                 "./datasets/swdf/benchmark_queries/q5_select.sparql",
+                "./datasets/swdf/single_gate_benchmark_queries/q1_filter.sparql"
             ]
         },
         "drugbank": {
-            "path": "./datasets/drugbank/drugbank_25_percent.nt",
+            "path": "./datasets/drugbank/drugbank_25_pct.nt",
             "queries": [
                 "./datasets/drugbank/benchmark_queries/q1_select.sparql",
                 "./datasets/drugbank/benchmark_queries/q2_select.sparql",
@@ -60,7 +61,7 @@ if __name__ == "__main__":
             ]
         },
         "bsbm": {
-            "path": "./datasets/bsbm/bsbm_25_percent.nt",
+            "path": "./datasets/bsbm/bsbm_25_pct.nt",
             "queries": [
                 "./datasets/bsbm/benchmark_queries/q1_select.sparql",
                 "./datasets/bsbm/benchmark_queries/q2_select.sparql",

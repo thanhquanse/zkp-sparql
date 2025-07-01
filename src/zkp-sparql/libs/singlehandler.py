@@ -93,14 +93,14 @@ class ZKPSingleHandler:
 
                 case QueryExecutionStage.SLICE.value:
                     total_steps = 4
-                    start = int(self.stage_dict[stage]['condition']['start'])
+                    start_idx = int(self.stage_dict[stage]['condition']['start'])
                     length = int(self.stage_dict[stage]['condition']['len'])
 
                     start = time.time()
                     
                     slice_circuit = SliceVerificationCircuit(max_steps=total_steps)
 
-                    slice_circuit_instance = slice_circuit.gen_witness(start, length, stage_results)
+                    slice_circuit_instance = slice_circuit.gen_witness(start_idx, length, stage_results)
                     slice_circuit.halo2_mock_prover(witness=slice_circuit_instance, k=self.k)
                     
                     end = time.time()
@@ -115,7 +115,7 @@ class ZKPSingleHandler:
                     groupby = _condition['op']
                     vals_before = _condition['value']
 
-                    total_steps = len(stage_results) * 5 + 4 # +4 for greater than constraint
+                    total_steps = len(stage_results) * 50 + 4 # +4 for greater than constraint
                     
                     start = time.time()
                     
