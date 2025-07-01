@@ -1,0 +1,162 @@
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75    201.6 MiB    201.6 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77    201.6 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78    201.6 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79    201.6 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81    201.6 MiB      0.0 MiB           1       start = time.time()
+    82    204.3 MiB      2.6 MiB           1       results = process_query(graph, query)
+    83    204.3 MiB      0.0 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84    204.3 MiB      0.0 MiB           1       end = time.time()
+    85    204.3 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87    204.3 MiB      0.0 MiB           1       start = time.time()
+    88    204.3 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91    756.8 MiB    552.5 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92    756.8 MiB      0.0 MiB           1       end = time.time()
+    93    756.8 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95    756.8 MiB      0.0 MiB           1       return zkp_exe_results
+
+
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75    756.8 MiB    756.8 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77    756.8 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78    756.8 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79    756.8 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81    756.8 MiB      0.0 MiB           1       start = time.time()
+    82    756.8 MiB      0.0 MiB           1       results = process_query(graph, query)
+    83    756.8 MiB      0.0 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84    756.8 MiB      0.0 MiB           1       end = time.time()
+    85    756.8 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87    756.8 MiB      0.0 MiB           1       start = time.time()
+    88    756.8 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91    725.6 MiB    -31.1 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92    725.6 MiB      0.0 MiB           1       end = time.time()
+    93    725.6 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95    725.6 MiB      0.0 MiB           1       return zkp_exe_results
+
+
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75    811.9 MiB    811.9 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77    811.9 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78    811.9 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79    811.9 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81    811.9 MiB      0.0 MiB           1       start = time.time()
+    82    812.2 MiB      0.4 MiB           1       results = process_query(graph, query)
+    83    812.2 MiB      0.0 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84    812.2 MiB      0.0 MiB           1       end = time.time()
+    85    812.2 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87    812.2 MiB      0.0 MiB           1       start = time.time()
+    88    812.2 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91    817.9 MiB      5.6 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92    817.9 MiB      0.0 MiB           1       end = time.time()
+    93    817.9 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95    817.9 MiB      0.0 MiB           1       return zkp_exe_results
+
+
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75    817.9 MiB    817.9 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77    817.9 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78    817.9 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79    817.9 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81    817.9 MiB      0.0 MiB           1       start = time.time()
+    82    817.9 MiB      0.0 MiB           1       results = process_query(graph, query)
+    83    817.9 MiB      0.0 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84    817.9 MiB      0.0 MiB           1       end = time.time()
+    85    817.9 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87    817.9 MiB      0.0 MiB           1       start = time.time()
+    88    817.9 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91    819.0 MiB      1.1 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92    819.0 MiB      0.0 MiB           1       end = time.time()
+    93    819.0 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95    819.0 MiB      0.0 MiB           1       return zkp_exe_results
+
+
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75   1004.3 MiB   1004.3 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77   1004.3 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78   1004.3 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79   1004.3 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81   1004.3 MiB      0.0 MiB           1       start = time.time()
+    82   1006.5 MiB      2.2 MiB           1       results = process_query(graph, query)
+    83   1006.9 MiB      0.4 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84   1006.9 MiB      0.0 MiB           1       end = time.time()
+    85   1006.9 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87   1006.9 MiB      0.0 MiB           1       start = time.time()
+    88   1006.9 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91   1024.7 MiB     17.8 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92   1024.7 MiB      0.0 MiB           1       end = time.time()
+    93   1024.7 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95   1024.7 MiB      0.0 MiB           1       return zkp_exe_results
+
+
+Filename: /home/cc/src/personalized-zkp-rdflib/src/zkp-sparql/main.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    75   1024.7 MiB   1024.7 MiB           1   @profile(stream=fp)
+    76                                         def perform_zkp_circuit(graph: Graph, query: str, params: dict, is_single=False):
+    77   1024.7 MiB      0.0 MiB           1       stage_extracter = StageExtracter()
+    78   1024.7 MiB      0.0 MiB           1       rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
+    79   1024.7 MiB      0.0 MiB           1       print_and_write(f"INFO: Param proof {params['proof']}...")
+    80                                         
+    81   1024.7 MiB      0.0 MiB           1       start = time.time()
+    82   1024.7 MiB      0.0 MiB           1       results = process_query(graph, query)
+    83   1024.7 MiB      0.0 MiB           1       print_and_write(f"INFO: Number of query results: {len(list(results))}")
+    84   1024.7 MiB      0.0 MiB           1       end = time.time()
+    85   1024.7 MiB      0.0 MiB           1       print_and_write(f"INFO: Query execution time: {end - start}\n")
+    86                                             
+    87   1024.7 MiB      0.0 MiB           1       start = time.time()
+    88   1024.7 MiB      0.0 MiB           1       if is_single:
+    89                                                 zkp_exe_results = ZKPSingleHandler(stage_extracter.get_stage_vals()).build()
+    90                                             else:
+    91   1048.9 MiB     24.3 MiB           1           zkp_exe_results = ZKPSuperHandler(stage_extracter.get_stage_vals(), params).build(log_path=LOG_FILE)
+    92   1048.9 MiB      0.0 MiB           1       end = time.time()
+    93   1048.9 MiB      0.0 MiB           1       print_and_write(f"INFO: perform_zkp execution time: {end - start}\n")
+    94                                             
+    95   1048.9 MiB      0.0 MiB           1       return zkp_exe_results
+
+

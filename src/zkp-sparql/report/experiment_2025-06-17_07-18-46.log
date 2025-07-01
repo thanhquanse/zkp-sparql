@@ -1,0 +1,970 @@
+INFO: Loaded graph ./datasets/swdf/swdf_25_pct.nt with size: 76145
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q1_select"}
+INFO: Param proof ./proof/swdf/super_proof_q1_select...
+INFO: Number of query results: 739
+INFO: Query execution time: 2.666541814804077
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/swdf/super_proof_q1_select
+Time to generate vk 3.759287201s
+Time to generate pk 11.622654649s
+Time to generate proof 102.680188368s
+Proof written to: ./proof/swdf/super_proof_q1_select
+Time to write proof to file 168.156µs
+Time to verify proof 1.194892267s
+INFO: perform_zkp execution time: 165.93643140792847
+
+INFO: Proving time: 8.080251455307007
+INFO: Param gen time: 0
+INFO: Proof gen time: 157.85306024551392
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q2_select"}
+INFO: Param proof ./proof/swdf/super_proof_q2_select...
+INFO: Number of query results: 19
+INFO: Query execution time: 1.245232343673706
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/swdf/super_proof_q2_select
+Time to generate vk 5.049040827s
+Time to generate pk 13.274293209s
+Time to generate proof 102.079337368s
+Proof written to: ./proof/swdf/super_proof_q2_select
+Time to write proof to file 159.892µs
+Time to verify proof 1.221873164s
+INFO: perform_zkp execution time: 173.0622706413269
+
+INFO: Proving time: 14.141513109207153
+INFO: Param gen time: 0
+INFO: Proof gen time: 158.9195261001587
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q3_select"}
+INFO: Param proof ./proof/swdf/super_proof_q3_select...
+INFO: Number of query results: 19
+INFO: Query execution time: 1.1409366130828857
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/swdf/super_proof_q3_select
+Time to generate vk 5.278321639s
+Time to generate pk 13.589612112s
+Time to generate proof 104.558104576s
+Proof written to: ./proof/swdf/super_proof_q3_select
+Time to write proof to file 126.094µs
+Time to verify proof 1.232181431s
+INFO: perform_zkp execution time: 175.91974639892578
+
+INFO: Proving time: 15.14360785484314
+INFO: Param gen time: 0
+INFO: Proof gen time: 160.77410578727722
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q4_ask"}
+INFO: Param proof ./proof/swdf/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 0.7614045143127441
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/swdf/super_proof_q4_ask
+Time to generate vk 4.187024232s
+Time to generate pk 12.300391198s
+Time to generate proof 101.301273533s
+Proof written to: ./proof/swdf/super_proof_q4_ask
+Time to write proof to file 160.332µs
+Time to verify proof 1.218829691s
+INFO: perform_zkp execution time: 162.50357866287231
+
+INFO: Proving time: 6.474076271057129
+INFO: Param gen time: 0
+INFO: Proof gen time: 156.0282690525055
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q5_select"}
+INFO: Param proof ./proof/swdf/super_proof_q5_select...
+INFO: Number of query results: 324
+INFO: Query execution time: 4.595007658004761
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/swdf/super_proof_q5_select
+Time to generate vk 6.334243566s
+Time to generate pk 14.839134285s
+Time to generate proof 103.876484829s
+Proof written to: ./proof/swdf/super_proof_q5_select
+Time to write proof to file 177.61µs
+Time to verify proof 1.225882048s
+INFO: perform_zkp execution time: 224.42055439949036
+
+INFO: Proving time: 52.2941997051239
+INFO: Param gen time: 0
+INFO: Proof gen time: 172.12301468849182
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/drugbank/drugbank_25_pct.nt with size: 151736
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q1_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q1_select...
+INFO: Number of query results: 7609
+INFO: Query execution time: 3.995972156524658
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/drugbank/super_proof_q1_select
+Time to generate vk 6.285793305s
+Time to generate pk 22.820920345s
+Time to generate proof 194.620747288s
+Proof written to: ./proof/drugbank/super_proof_q1_select
+Time to write proof to file 133.307µs
+Time to verify proof 2.168728649s
+INFO: perform_zkp execution time: 375.2732584476471
+
+INFO: Proving time: 40.761738777160645
+INFO: Param gen time: 0
+INFO: Proof gen time: 334.5066092014313
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q2_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q2_select...
+INFO: Number of query results: 17
+INFO: Query execution time: 6.168185234069824
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/drugbank/super_proof_q2_select
+Time to generate vk 8.499365266s
+Time to generate pk 24.585173626s
+Time to generate proof 197.354351751s
+Proof written to: ./proof/drugbank/super_proof_q2_select
+Time to write proof to file 121.352µs
+Time to verify proof 2.129893062s
+INFO: perform_zkp execution time: 334.2998969554901
+
+INFO: Proving time: 24.48504400253296
+INFO: Param gen time: 0
+INFO: Proof gen time: 309.8125636577606
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q3_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q3_select...
+INFO: Number of query results: 17
+INFO: Query execution time: 6.149247884750366
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/drugbank/super_proof_q3_select
+Time to generate vk 8.903758846s
+Time to generate pk 25.35908606s
+Time to generate proof 196.836164141s
+Proof written to: ./proof/drugbank/super_proof_q3_select
+Time to write proof to file 172.045µs
+Time to verify proof 2.139741419s
+INFO: perform_zkp execution time: 337.1817169189453
+
+INFO: Proving time: 26.016016006469727
+INFO: Param gen time: 0
+INFO: Proof gen time: 311.1639459133148
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q4_ask"}
+INFO: Param proof ./proof/drugbank/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 5.689742565155029
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/drugbank/super_proof_q4_ask
+Time to generate vk 6.805681232s
+Time to generate pk 23.285356592s
+Time to generate proof 195.992645445s
+Proof written to: ./proof/drugbank/super_proof_q4_ask
+Time to write proof to file 461.199µs
+Time to verify proof 2.163787532s
+INFO: perform_zkp execution time: 310.1597263813019
+
+INFO: Proving time: 11.070473194122314
+INFO: Param gen time: 0
+INFO: Proof gen time: 299.08690547943115
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q5_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q5_select...
+INFO: Number of query results: 187
+INFO: Query execution time: 1555.46484375
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/drugbank/super_proof_q5_select
+Time to generate vk 10.47111191s
+Time to generate pk 26.891936774s
+Time to generate proof 812.412861062s
+Proof written to: ./proof/drugbank/super_proof_q5_select
+Time to write proof to file 1.510001ms
+Time to verify proof 1.873611854s
+INFO: perform_zkp execution time: 1000.0333437919617
+
+INFO: Proving time: 69.02873969078064
+INFO: Param gen time: 0
+INFO: Proof gen time: 930.992880821228
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/bsbm/bsbm_25_pct.nt with size: 87048
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q1_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q1_select...
+INFO: Number of query results: 0
+INFO: Query execution time: 0.20319342613220215
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/bsbm/super_proof_q1_select
+Time to generate vk 3.305895297s
+Time to generate pk 11.532701403s
+Time to generate proof 94.404121171s
+Proof written to: ./proof/bsbm/super_proof_q1_select
+Time to write proof to file 722.077µs
+Time to verify proof 1.220279739s
+INFO: perform_zkp execution time: 149.9349205493927
+
+INFO: Proving time: 4.1363911628723145
+INFO: Param gen time: 0
+INFO: Proof gen time: 145.7961344718933
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q2_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q2_select...
+INFO: Number of query results: 54
+INFO: Query execution time: 0.6459243297576904
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/bsbm/super_proof_q2_select
+Time to generate vk 4.625726165s
+Time to generate pk 12.554405262s
+Time to generate proof 96.220910287s
+Proof written to: ./proof/bsbm/super_proof_q2_select
+Time to write proof to file 146.611µs
+Time to verify proof 1.221865471s
+INFO: perform_zkp execution time: 169.54048919677734
+
+INFO: Proving time: 18.3233540058136
+INFO: Param gen time: 0
+INFO: Proof gen time: 151.21501755714417
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q3_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q3_select...
+INFO: Number of query results: 54
+INFO: Query execution time: 0.6502180099487305
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/bsbm/super_proof_q3_select
+Time to generate vk 5.267787566s
+Time to generate pk 13.17288232s
+Time to generate proof 96.062343189s
+Proof written to: ./proof/bsbm/super_proof_q3_select
+Time to write proof to file 456.02µs
+Time to verify proof 1.047254761s
+INFO: perform_zkp execution time: 172.0134677886963
+
+INFO: Proving time: 19.837069511413574
+INFO: Param gen time: 0
+INFO: Proof gen time: 152.17322826385498
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q4_ask"}
+INFO: Param proof ./proof/bsbm/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 0.3503439426422119
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/bsbm/super_proof_q4_ask
+Time to generate vk 3.642803083s
+Time to generate pk 11.805419406s
+Time to generate proof 93.495042782s
+Proof written to: ./proof/bsbm/super_proof_q4_ask
+Time to write proof to file 458.196µs
+Time to verify proof 1.046061192s
+INFO: perform_zkp execution time: 150.48397064208984
+
+INFO: Proving time: 5.188082456588745
+INFO: Param gen time: 0
+INFO: Proof gen time: 145.29400610923767
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 17, "step_num": 100000, "param": "./proof/param_17.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q5_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q5_select...
+INFO: Number of query results: 4
+INFO: Query execution time: 1.2430520057678223
+
+INFO: param_path: ./proof/param_17.bin, proof_path: ./proof/bsbm/super_proof_q5_select
+Time to generate vk 6.26852942s
+Time to generate pk 14.30340964s
+Time to generate proof 98.754815923s
+Proof written to: ./proof/bsbm/super_proof_q5_select
+Time to write proof to file 170.313µs
+Time to verify proof 1.050751478s
+INFO: perform_zkp execution time: 173.98569464683533
+
+INFO: Proving time: 18.046691417694092
+INFO: Param gen time: 0
+INFO: Proof gen time: 155.9344663619995
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/swdf/swdf_50_pct.nt with size: 152291
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q1_select"}
+INFO: Param proof ./proof/swdf/super_proof_q1_select...
+INFO: Number of query results: 2918
+INFO: Query execution time: 3.258836030960083
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/swdf/super_proof_q1_select
+Time to generate vk 5.913371042s
+Time to generate pk 22.022503676s
+Time to generate proof 181.736963607s
+Proof written to: ./proof/swdf/super_proof_q1_select
+Time to write proof to file 445.549µs
+Time to verify proof 2.182217144s
+INFO: perform_zkp execution time: 314.3722355365753
+
+INFO: Proving time: 19.471088886260986
+INFO: Param gen time: 0
+INFO: Proof gen time: 294.89357471466064
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q2_select"}
+INFO: Param proof ./proof/swdf/super_proof_q2_select...
+INFO: Number of query results: 71
+INFO: Query execution time: 1.892730712890625
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/swdf/super_proof_q2_select
+Time to generate vk 7.87484324s
+Time to generate pk 24.063538603s
+Time to generate proof 187.028912232s
+Proof written to: ./proof/swdf/super_proof_q2_select
+Time to write proof to file 314.226µs
+Time to verify proof 2.118440645s
+INFO: perform_zkp execution time: 322.2777967453003
+
+INFO: Proving time: 27.64698362350464
+INFO: Param gen time: 0
+INFO: Proof gen time: 294.628933429718
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q3_select"}
+INFO: Param proof ./proof/swdf/super_proof_q3_select...
+INFO: Number of query results: 71
+INFO: Query execution time: 1.9371392726898193
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/swdf/super_proof_q3_select
+Time to generate vk 8.399673505s
+Time to generate pk 24.4448871s
+Time to generate proof 186.695898865s
+Proof written to: ./proof/swdf/super_proof_q3_select
+Time to write proof to file 149.172µs
+Time to verify proof 1.869365917s
+INFO: perform_zkp execution time: 324.55874133110046
+
+INFO: Proving time: 29.799635410308838
+INFO: Param gen time: 0
+INFO: Proof gen time: 294.75709676742554
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q4_ask"}
+INFO: Param proof ./proof/swdf/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 1.387300968170166
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/swdf/super_proof_q4_ask
+Time to generate vk 6.595097441s
+Time to generate pk 22.875639334s
+Time to generate proof 183.166030282s
+Proof written to: ./proof/swdf/super_proof_q4_ask
+Time to write proof to file 140.664µs
+Time to verify proof 1.883788725s
+INFO: perform_zkp execution time: 295.51252484321594
+
+INFO: Proving time: 10.438687562942505
+INFO: Param gen time: 0
+INFO: Proof gen time: 285.0723626613617
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q5_select"}
+INFO: Param proof ./proof/swdf/super_proof_q5_select...
+INFO: Number of query results: 1000
+INFO: Query execution time: 49.77264451980591
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/swdf/super_proof_q5_select
+Time to generate vk 10.178978664s
+Time to generate pk 26.295448287s
+Time to generate proof 188.969095669s
+Proof written to: ./proof/swdf/super_proof_q5_select
+Time to write proof to file 340.185µs
+Time to verify proof 1.867058923s
+INFO: perform_zkp execution time: 503.86484384536743
+
+INFO: Proving time: 167.42260313034058
+INFO: Param gen time: 0
+INFO: Proof gen time: 336.4356746673584
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/drugbank/drugbank_50_pct.nt with size: 280322
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q1_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q1_select...
+INFO: Number of query results: 12579
+INFO: Query execution time: 6.295014142990112
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q1_select
+Time to generate vk 10.846296848s
+Time to generate pk 43.60889879s
+Time to generate proof 359.900024417s
+Proof written to: ./proof/drugbank/super_proof_q1_select
+Time to write proof to file 132.605µs
+Time to verify proof 3.447079354s
+INFO: perform_zkp execution time: 681.1668970584869
+
+INFO: Proving time: 68.33258032798767
+INFO: Param gen time: 0
+INFO: Proof gen time: 612.8275897502899
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q2_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q2_select...
+INFO: Number of query results: 34
+INFO: Query execution time: 9.812904357910156
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q2_select
+Time to generate vk 14.150590969s
+Time to generate pk 47.117687509s
+Time to generate proof 360.566148746s
+Proof written to: ./proof/drugbank/super_proof_q2_select
+Time to write proof to file 199.878µs
+Time to verify proof 3.722613566s
+INFO: perform_zkp execution time: 614.8996775150299
+
+INFO: Proving time: 42.84689927101135
+INFO: Param gen time: 0
+INFO: Proof gen time: 572.0467653274536
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q3_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q3_select...
+INFO: Number of query results: 34
+INFO: Query execution time: 9.996058464050293
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q3_select
+Time to generate vk 14.896905149s
+Time to generate pk 47.778374379s
+Time to generate proof 362.721431166s
+Proof written to: ./proof/drugbank/super_proof_q3_select
+Time to write proof to file 363.816µs
+Time to verify proof 3.778766597s
+INFO: perform_zkp execution time: 619.9090785980225
+
+INFO: Proving time: 44.150554180145264
+INFO: Param gen time: 0
+INFO: Proof gen time: 575.7524292469025
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q4_ask"}
+INFO: Param proof ./proof/drugbank/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 8.97548508644104
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q4_ask
+Time to generate vk 12.143622286s
+Time to generate pk 44.868891261s
+Time to generate proof 357.186069271s
+Proof written to: ./proof/drugbank/super_proof_q4_ask
+Time to write proof to file 147.387µs
+Time to verify proof 3.408216701s
+INFO: perform_zkp execution time: 578.7456059455872
+
+INFO: Proving time: 19.841279983520508
+INFO: Param gen time: 0
+INFO: Proof gen time: 558.9013016223907
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q5_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q5_select...
+INFO: Number of query results: 276
+INFO: Query execution time: 3707.001955509186
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q5_select
+Time to generate vk 17.871172526s
+Time to generate pk 51.609211582s
+Time to generate proof 367.106269712s
+Proof written to: ./proof/drugbank/super_proof_q5_select
+Time to write proof to file 129.491µs
+Time to verify proof 3.736988137s
+INFO: perform_zkp execution time: 701.913724899292
+
+INFO: Proving time: 107.70422887802124
+INFO: Param gen time: 0
+INFO: Proof gen time: 594.2047584056854
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/bsbm/bsbm_50_pct.nt with size: 174016
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q1_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q1_select...
+INFO: Number of query results: 0
+INFO: Query execution time: 0.20252609252929688
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/bsbm/super_proof_q1_select
+Time to generate vk 5.659488776s
+Time to generate pk 21.624205981s
+Time to generate proof 181.689970348s
+Proof written to: ./proof/bsbm/super_proof_q1_select
+Time to write proof to file 133.143µs
+Time to verify proof 1.891916514s
+INFO: perform_zkp execution time: 287.0198450088501
+
+INFO: Proving time: 5.659299373626709
+INFO: Param gen time: 0
+INFO: Proof gen time: 281.3584723472595
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q2_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q2_select...
+INFO: Number of query results: 198
+INFO: Query execution time: 1.2233765125274658
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/bsbm/super_proof_q2_select
+Time to generate vk 7.903330203s
+Time to generate pk 24.043429689s
+Time to generate proof 185.016682793s
+Proof written to: ./proof/bsbm/super_proof_q2_select
+Time to write proof to file 131.952µs
+Time to verify proof 2.198054019s
+INFO: perform_zkp execution time: 341.60475516319275
+
+INFO: Proving time: 46.92818737030029
+INFO: Param gen time: 0
+INFO: Proof gen time: 294.6711733341217
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q3_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q3_select...
+INFO: Number of query results: 198
+INFO: Query execution time: 1.314673662185669
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/bsbm/super_proof_q3_select
+Time to generate vk 8.392378544s
+Time to generate pk 24.670601454s
+Time to generate proof 184.518290473s
+Proof written to: ./proof/bsbm/super_proof_q3_select
+Time to write proof to file 144.912µs
+Time to verify proof 1.887920706s
+INFO: perform_zkp execution time: 344.65363812446594
+
+INFO: Proving time: 49.630478382110596
+INFO: Param gen time: 0
+INFO: Proof gen time: 295.0200092792511
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q4_ask"}
+INFO: Param proof ./proof/bsbm/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 0.5675978660583496
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/bsbm/super_proof_q4_ask
+Time to generate vk 6.563713978s
+Time to generate pk 22.665996963s
+Time to generate proof 183.341760728s
+Proof written to: ./proof/bsbm/super_proof_q4_ask
+Time to write proof to file 127.424µs
+Time to verify proof 1.896440573s
+INFO: perform_zkp execution time: 295.2540349960327
+
+INFO: Proving time: 10.258749723434448
+INFO: Param gen time: 0
+INFO: Proof gen time: 284.9926402568817
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q5_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q5_select...
+INFO: Number of query results: 22
+INFO: Query execution time: 5.502427577972412
+
+INFO: param_path: ./proof/param_18.bin, proof_path: ./proof/bsbm/super_proof_q5_select
+Time to generate vk 10.036520788s
+Time to generate pk 26.289810904s
+Time to generate proof 188.421371297s
+Proof written to: ./proof/bsbm/super_proof_q5_select
+Time to write proof to file 124.817µs
+Time to verify proof 1.868828274s
+INFO: perform_zkp execution time: 329.9998207092285
+
+INFO: Proving time: 31.88956642150879
+INFO: Param gen time: 0
+INFO: Proof gen time: 298.10877442359924
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/swdf/swdf_100_pct.nt with size: 304583
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q1_select"}
+INFO: Param proof ./proof/swdf/super_proof_q1_select...
+INFO: Number of query results: 11624
+INFO: Query execution time: 9.127591371536255
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/swdf/super_proof_q1_select
+Time to generate vk 11.061013128s
+Time to generate pk 43.789004531s
+Time to generate proof 357.384427135s
+Proof written to: ./proof/swdf/super_proof_q1_select
+Time to write proof to file 134.804µs
+Time to verify proof 3.439171032s
+INFO: perform_zkp execution time: 670.3878495693207
+
+INFO: Proving time: 63.74447321891785
+INFO: Param gen time: 0
+INFO: Proof gen time: 606.6331458091736
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q2_select"}
+INFO: Param proof ./proof/swdf/super_proof_q2_select...
+INFO: Number of query results: 273
+INFO: Query execution time: 3.958641290664673
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/swdf/super_proof_q2_select
+Time to generate vk 14.133342523s
+Time to generate pk 47.448754653s
+Time to generate proof 360.302501112s
+Proof written to: ./proof/swdf/super_proof_q2_select
+Time to write proof to file 393.725µs
+Time to verify proof 3.48262461s
+INFO: perform_zkp execution time: 650.3177614212036
+
+INFO: Proving time: 73.31730628013611
+INFO: Param gen time: 0
+INFO: Proof gen time: 576.9932928085327
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q3_select"}
+INFO: Param proof ./proof/swdf/super_proof_q3_select...
+INFO: Number of query results: 273
+INFO: Query execution time: 4.327841758728027
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/swdf/super_proof_q3_select
+Time to generate vk 14.903313789s
+Time to generate pk 47.986156906s
+Time to generate proof 362.80784012s
+Proof written to: ./proof/swdf/super_proof_q3_select
+Time to write proof to file 128.715µs
+Time to verify proof 3.396146849s
+INFO: perform_zkp execution time: 660.9839265346527
+
+INFO: Proving time: 80.46136355400085
+INFO: Param gen time: 0
+INFO: Proof gen time: 580.5173923969269
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q4_ask"}
+INFO: Param proof ./proof/swdf/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 3.0303947925567627
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/swdf/super_proof_q4_ask
+Time to generate vk 11.759957971s
+Time to generate pk 44.687657388s
+Time to generate proof 354.356840438s
+Proof written to: ./proof/swdf/super_proof_q4_ask
+Time to write proof to file 124.619µs
+Time to verify proof 3.596710725s
+INFO: perform_zkp execution time: 573.4469485282898
+
+INFO: Proving time: 17.87055015563965
+INFO: Param gen time: 0
+INFO: Proof gen time: 555.5743973255157
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/super_proof_q5_select"}
+INFO: Param proof ./proof/swdf/super_proof_q5_select...
+INFO: Number of query results: 1000
+INFO: Query execution time: 1052.3405768871307
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/swdf/super_proof_q5_select
+Time to generate vk 17.550147701s
+Time to generate pk 50.008392667s
+Time to generate proof 370.703395978s
+Proof written to: ./proof/swdf/super_proof_q5_select
+Time to write proof to file 155.469µs
+Time to verify proof 3.439404013s
+INFO: perform_zkp execution time: 1361.6185553073883
+
+INFO: Proving time: 651.2670176029205
+INFO: Param gen time: 0
+INFO: Proof gen time: 710.332189321518
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/drugbank/drugbank_100_pct.nt with size: 517023
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q1_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q1_select...
+INFO: Number of query results: 20367
+INFO: Query execution time: 10.163597106933594
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q1_select
+Time to generate vk 10.637136866s
+Time to generate pk 44.162421457s
+Time to generate proof 357.684148373s
+Proof written to: ./proof/drugbank/super_proof_q1_select
+Time to write proof to file 146.987µs
+Time to verify proof 3.401013928s
+INFO: perform_zkp execution time: 747.5141205787659
+
+INFO: Proving time: 103.07095170021057
+INFO: Param gen time: 0
+INFO: Proof gen time: 644.4263925552368
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q2_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q2_select...
+INFO: Number of query results: 63
+INFO: Query execution time: 15.339170932769775
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q2_select
+Time to generate vk 14.272375225s
+Time to generate pk 47.150036105s
+Time to generate proof 361.226733126s
+Proof written to: ./proof/drugbank/super_proof_q2_select
+Time to write proof to file 154.146µs
+Time to verify proof 3.463865609s
+INFO: perform_zkp execution time: 626.1540129184723
+
+INFO: Proving time: 51.531718015670776
+INFO: Param gen time: 0
+INFO: Proof gen time: 574.619001865387
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q3_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q3_select...
+INFO: Number of query results: 63
+INFO: Query execution time: 15.397366046905518
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q3_select
+Time to generate vk 15.013013814s
+Time to generate pk 48.144224574s
+Time to generate proof 362.477551772s
+Proof written to: ./proof/drugbank/super_proof_q3_select
+Time to write proof to file 219.83µs
+Time to verify proof 3.475661056s
+INFO: perform_zkp execution time: 633.0777447223663
+
+INFO: Proving time: 55.43833565711975
+INFO: Param gen time: 0
+INFO: Proof gen time: 577.633337020874
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q4_ask"}
+INFO: Param proof ./proof/drugbank/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 14.450258493423462
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q4_ask
+Time to generate vk 12.023913957s
+Time to generate pk 45.335724062s
+Time to generate proof 357.409288439s
+Proof written to: ./proof/drugbank/super_proof_q4_ask
+Time to write proof to file 142.142µs
+Time to verify proof 3.439700982s
+INFO: perform_zkp execution time: 578.9835302829742
+
+INFO: Proving time: 19.467012882232666
+INFO: Param gen time: 0
+INFO: Proof gen time: 559.5129637718201
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: drugbank - ./datasets/drugbank/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/drugbank/super_proof_q5_select"}
+INFO: Param proof ./proof/drugbank/super_proof_q5_select...
+INFO: Number of query results: 360
+INFO: Query execution time: 8348.812865495682
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/drugbank/super_proof_q5_select
+Time to generate vk 17.85840829s
+Time to generate pk 51.788768778s
+Time to generate proof 366.639997789s
+Proof written to: ./proof/drugbank/super_proof_q5_select
+Time to write proof to file 157.265µs
+Time to verify proof 3.418104291s
+INFO: perform_zkp execution time: 724.6625664234161
+
+INFO: Proving time: 126.79468178749084
+INFO: Param gen time: 0
+INFO: Proof gen time: 597.8630454540253
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/bsbm/bsbm_100_pct.nt with size: 348064
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q1_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q1_select...
+INFO: Number of query results: 1
+INFO: Query execution time: 0.21377849578857422
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/bsbm/super_proof_q1_select
+Time to generate vk 11.001073925s
+Time to generate pk 43.426750321s
+Time to generate proof 354.561482096s
+Proof written to: ./proof/bsbm/super_proof_q1_select
+Time to write proof to file 164.676µs
+Time to verify proof 3.685809708s
+INFO: perform_zkp execution time: 565.0006642341614
+
+INFO: Proving time: 11.382223129272461
+INFO: Param gen time: 0
+INFO: Proof gen time: 553.6162297725677
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q2_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q2_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q2_select...
+INFO: Number of query results: 840
+INFO: Query execution time: 3.647975444793701
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/bsbm/super_proof_q2_select
+Time to generate vk 14.021591286s
+Time to generate pk 47.159118157s
+Time to generate proof 361.187382058s
+Proof written to: ./proof/bsbm/super_proof_q2_select
+Time to write proof to file 135.867µs
+Time to verify proof 3.432137607s
+INFO: perform_zkp execution time: 780.7605288028717
+
+INFO: Proving time: 192.9695062637329
+INFO: Param gen time: 0
+INFO: Proof gen time: 587.7835690975189
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q3_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q3_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q3_select...
+INFO: Number of query results: 840
+INFO: Query execution time: 3.8444998264312744
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/bsbm/super_proof_q3_select
+Time to generate vk 14.850378667s
+Time to generate pk 47.76854241s
+Time to generate proof 363.395660823s
+Proof written to: ./proof/bsbm/super_proof_q3_select
+Time to write proof to file 182.621µs
+Time to verify proof 3.504546188s
+INFO: perform_zkp execution time: 786.720263004303
+
+INFO: Proving time: 195.19670796394348
+INFO: Param gen time: 0
+INFO: Proof gen time: 591.5126023292542
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q4_ask.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q4_ask"}
+INFO: Param proof ./proof/bsbm/super_proof_q4_ask...
+INFO: Number of query results: 1
+INFO: Query execution time: 1.2598135471343994
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/bsbm/super_proof_q4_ask
+Time to generate vk 11.817507938s
+Time to generate pk 44.861024507s
+Time to generate proof 355.179939944s
+Proof written to: ./proof/bsbm/super_proof_q4_ask
+Time to write proof to file 171.699µs
+Time to verify proof 3.469257723s
+INFO: perform_zkp execution time: 572.9637696743011
+
+INFO: Proving time: 16.579630851745605
+INFO: Param gen time: 0
+INFO: Proof gen time: 556.3815884590149
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm - ./datasets/bsbm/benchmark_queries/q5_select.sparql ---------------
+INFO: Params: {"k": 19, "step_num": 250000, "param": "./proof/param_19.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm/super_proof_q5_select"}
+INFO: Param proof ./proof/bsbm/super_proof_q5_select...
+INFO: Number of query results: 298
+INFO: Query execution time: 131.17039847373962
+
+INFO: param_path: ./proof/param_19.bin, proof_path: ./proof/bsbm/super_proof_q5_select
+Time to generate vk 17.760968182s
+Time to generate pk 50.582165138s
+Time to generate proof 364.64659556s
+Proof written to: ./proof/bsbm/super_proof_q5_select
+Time to write proof to file 135.056µs
+Time to verify proof 3.453503496s
+INFO: perform_zkp execution time: 688.6162116527557
+
+INFO: Proving time: 101.16583561897278
+INFO: Param gen time: 0
+INFO: Proof gen time: 587.444322347641
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./rdf2rdb/datasets/BSBM.ttl with size: 40177
+--------------- Experimenting: bsbm_converted - ./rdf2rdb/sparql_queries/q1_select.sparql ---------------
+INFO: Params: {"k": 16, "step_num": 65000, "param": "./proof/param_16.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm_converted/super_proof_q1_select"}
+INFO: Param proof ./proof/bsbm_converted/super_proof_q1_select...
+INFO: Number of query results: 1
+INFO: Query execution time: 0.33942151069641113
+
+INFO: param_path: ./proof/param_16.bin, proof_path: ./proof/bsbm_converted/super_proof_q1_select
+Time to generate vk 3.124622688s
+Time to generate pk 6.433854513s
+Time to generate proof 54.050897283s
+Proof written to: ./proof/bsbm_converted/super_proof_q1_select
+Time to write proof to file 347.117µs
+Time to verify proof 613.483536ms
+INFO: perform_zkp execution time: 87.25250053405762
+
+INFO: Proving time: 5.323564529418945
+INFO: Param gen time: 0
+INFO: Proof gen time: 81.9271788597107
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: bsbm_converted - ./rdf2rdb/sparql_queries/q4_select.sparql ---------------
+INFO: Params: {"k": 16, "step_num": 65000, "param": "./proof/param_16.bin", "paramgen": false, "proofgen": true, "proof": "./proof/bsbm_converted/super_proof_q4_select"}
+INFO: Param proof ./proof/bsbm_converted/super_proof_q4_select...
+INFO: Number of query results: 10
+INFO: Query execution time: 1.5525662899017334
+
+INFO: param_path: ./proof/param_16.bin, proof_path: ./proof/bsbm_converted/super_proof_q4_select
+Time to generate vk 3.933059097s
+Time to generate pk 7.476826535s
+Time to generate proof 55.743202523s
+Proof written to: ./proof/bsbm_converted/super_proof_q4_select
+Time to write proof to file 284.682µs
+Time to verify proof 624.043776ms
+INFO: perform_zkp execution time: 115.793874502182
+
+INFO: Proving time: 26.417680740356445
+INFO: Param gen time: 0
+INFO: Proof gen time: 89.37336206436157
+-----------------------------------------------------Done-----------------------------------------------------
+
+INFO: Loaded graph ./datasets/swdf/swdf_50_pct.nt with size: 152291
+--------------- Experimenting: swdf - ./datasets/swdf/single_gate_benchmark_queries/q2_group_order_by.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/single_proof_q2_group_order_by"}
+INFO: Param proof ./proof/swdf/single_proof_q2_group_order_by...
+INFO: Number of query results: 1000
+INFO: Query execution time: 34.33450531959534
+
+INFO: perform_zkp execution time: 1563.1979563236237
+
+INFO: Proving time: 0.38028407096862793
+INFO: Param gen time: 0
+INFO: Proof gen time: 0
+-----------------------------------------------------Done-----------------------------------------------------
+
+--------------- Experimenting: swdf - ./datasets/swdf/single_gate_benchmark_queries/q3_aggregate.sparql ---------------
+INFO: Params: {"k": 18, "step_num": 150000, "param": "./proof/param_18.bin", "paramgen": false, "proofgen": true, "proof": "./proof/swdf/single_proof_q3_aggregate"}
+INFO: Param proof ./proof/swdf/single_proof_q3_aggregate...
+INFO: Number of query results: 866
+INFO: Query execution time: 4227.90451836586
+
