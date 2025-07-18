@@ -21,7 +21,7 @@ from utils.util import find_next_stage
 class ZKPSingleHandler:
     def __init__(self, stage_dict):
         self.stage_dict = stage_dict
-        self.k = 19
+        self.k = 20
 
     def build(self):
         time_measurement = {
@@ -54,6 +54,12 @@ class ZKPSingleHandler:
                     end = time.time()
                     print(f"Proving time: {end - start}\n")
                     time_measurement["proving"] = end - start
+
+                    start = time.time()
+                    filter_circuit.create_param_file(f"./proof/param_{self.k}.bin", self.k, f"./logs/experiment_create_params.log")
+                    end = time.time()
+                    print(f"Param k = {self.k} generation time: {end - start}")
+                    time_measurement["param_gen"] = end - start
 
                 case QueryExecutionStage.UNION.value:
                     total_steps = len(stage_results) + 8 # +8 for greater than constraint

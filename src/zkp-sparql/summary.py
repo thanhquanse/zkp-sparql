@@ -15,7 +15,8 @@ dict_unit: dict = {
     "Running Time": "s",
     "Memory": "GB",
     "Proof Verification Time": "s",
-    "Proof Size": "KB"
+    "Proof Size": "KB",
+    "Total Proof Gen": "s"
 }
 
 def extract_info(file_path, output_path):
