@@ -12,27 +12,27 @@ The Chameleon Cloud with a Skylake node configured with dual Intel Xeon Skylake 
 
 ## Project structure
 
-.
-├── src
-├──── ref                   # Additional modules to support the development for reference only
-├─────── ...     
-├── zkp-sparql              # Main directory
-├──── datasets              # Datasets used for experiments
-├─────── ... 
-├──── enums                 # Enums
-├──── gates                 # Main gate designs
-├─────── ... 
-├──── libs                  # Libaries used for experiments
-├─────── ... 
-├──── rdb2rdf               # Resources for rdb to rdf transformation to compare zkp-sparql with the naive way
-├─────── ... 
-├──── rdf2rdb               # Resources for rdf to rdb transformation to compare zkp-sparql with the naive way
-├─────── ... 
-├──── report                # Experiment report folder
-├──── utils
-├─────── ... 
-└── requirements.txt        # List of packages must be installed for the experiments
-└── README.md
+    .
+    ├── src
+    ├──── ref                   # Additional modules to support the development for reference only
+    ├─────── ...     
+    ├── zkp-sparql              # Main directory
+    ├──── datasets              # Datasets used for experiments
+    ├─────── ... 
+    ├──── enums                 # Enums
+    ├──── gates                 # Main gate designs
+    ├─────── ... 
+    ├──── libs                  # Libaries used for experiments
+    ├─────── ... 
+    ├──── rdb2rdf               # Resources for rdb to rdf transformation to compare zkp-sparql with the naive way
+    ├─────── ... 
+    ├──── rdf2rdb               # Resources for rdf to rdb transformation to compare zkp-sparql with the naive way
+    ├─────── ... 
+    ├──── report                # Experiment report folder
+    ├──── utils
+    ├─────── ... 
+    └── requirements.txt        # List of packages must be installed for the experiments
+    └── README.md
 
 ## Usage
 
