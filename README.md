@@ -29,7 +29,7 @@ The Chameleon Cloud with a Skylake node configured with dual Intel Xeon Skylake 
     ├──── rdf2rdb               # Resources for rdf to rdb transformation to compare zkp-sparql with the naive way
     ├─────── ... 
     ├──── report                # Experiment report folder
-    ├──── utils
+    ├──── utils                 # Utility which are common libraries used in other modules
     ├─────── ... 
     └── requirements.txt        # List of packages must be installed for the experiments
     └── README.md
