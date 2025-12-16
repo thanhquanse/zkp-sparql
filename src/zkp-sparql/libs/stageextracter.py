@@ -1,5 +1,5 @@
 from rdflib.term import Variable
-from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject, evalPart
+from rdflib.plugins.sparql.evaluate import evalBGP, evalFilter, evalOrderBy, evalGroup, evalUnion, evalMinus, evalMultiset, evalAggregateJoin, evalReduced, evalDistinct, evalSlice, evalExtend, evalJoin, evalLeftJoin, evalAskQuery, evalProject, evalGraph
 from itertools import tee
 from utils.util import contains_regex, constains_builtin, contains_expression
 from enums.stages import QueryExecutionStage, QueryType
@@ -43,6 +43,7 @@ class StageExtracter:
     
     def process_bgp_vars(self, ctx, input):
         vals_arr = set()
+        triples = []
 
         for triple in input.triples:
             new_triple = []
@@ -57,6 +58,7 @@ class StageExtracter:
 
             # Query the graph
             for result in ctx.graph.triples(tuple(new_triple)):
+                triples.append(result)
                 for j in var_positions:
                     vals_arr.add((var_positions[j], result[j]))
 
@@ -69,9 +71,10 @@ class StageExtracter:
         # Process expression
         match stage_name:
             case QueryExecutionStage.BGP.value:
-                vals = self.process_bgp_vars(ctx, condition)
+                # vals = self.process_bgp_vars(ctx, condition)
                 expression = {
-                    'p': vals,
+                    'ctx': ctx,
+                    'triples': condition.triples,
                     'op': 'bgp',
                 }
             
@@ -280,6 +283,14 @@ class StageExtracter:
         Extract intermediate values at each stage
         """
         match part.name:
+            case QueryExecutionStage.GRAPH.value:
+                graph_pattern = []
+                generator = evalGraph(ctx, part)
+                gen1, gen2 = tee(generator, 2)
+                for v in gen1:
+                    graph_pattern.append(v)
+
+                return gen2
             case QueryExecutionStage.BGP.value:
                 bgp = []
                 generator = evalBGP(ctx, part.triples)
@@ -287,6 +298,10 @@ class StageExtracter:
                 for v in gen1:
                     bgp.append(v)
 
+                if len(bgp) == 0:
+                    # Handle empty BGP result corresponding to evalBGP in RDFLib "continue"
+                    return gen2
+                
                 self.add_stage(ctx, part.name, part, bgp)
                 
                 return gen2

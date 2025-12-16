@@ -35,8 +35,7 @@ class ZKPSingleHandler:
             stage_name = self.stage_dict[stage]['name']
             stage_results = self.stage_dict[stage]['value']
 
-            if stage_name != "BGP":
-                print(f"Proving results of the stage {stage_name}...")
+            print(f"Proving results of the stage {stage_name}...")
 
             match stage_name:
                 case QueryExecutionStage.FILTER.value:
@@ -248,27 +247,14 @@ class ZKPSingleHandler:
                     # project_circuit.generate_proof_file(project_circuit_instance, "project_params_test.bin", "project_proof.bin")
 
                 case QueryExecutionStage.BGP.value:
-                    pass
-                    # p = self.stage_dict[stage]['condition']['p']
-                    # p_dict = defaultdict(list)
-                    # value_dict = defaultdict(list)
+                    ctx = self.stage_dict[stage]['condition']['ctx']
+                    triples = self.stage_dict[stage]['condition']['triples']
 
-                    # # Process group values by names for p
-                    # for var, val in p:
-                    #     p_dict[str(var)].append(str(val))
-                    # p_grouped = dict(p_dict)
+                    total_steps = len(stage_results)*10
+                    bgp_circuit = BGPVerificationCircuit(max_steps=total_steps)
+                    bgp_circuit_instance = bgp_circuit.gen_witness(ctx, triples, stage_results)
 
-                    # # Process group values by names for results
-                    # for entry in stage_results:
-                    #     for key, value in entry.items():
-                    #         value_dict[key].append(value)
-                    # value_grouped = dict(value_dict)
-
-                    # total_steps = len(stage_results) + 8 # +8 for greater than constraint
-                    # bgp_circuit = BGPVerificationCircuit(max_steps=total_steps)
-                    # bgp_circuit_instance = bgp_circuit.gen_witness(p_grouped, value_grouped)
-
-                    # bgp_circuit.halo2_mock_prover(witness=bgp_circuit_instance, k=self.k)
+                    bgp_circuit.halo2_mock_prover(witness=bgp_circuit_instance, k=self.k)
 
                 case QueryExecutionStage.EXTEND.value:
                     condition = self.stage_dict[stage]['condition']

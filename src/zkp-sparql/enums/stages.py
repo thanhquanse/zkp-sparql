@@ -16,6 +16,7 @@ class QueryExecutionStage(Enum):
     TO_MULTISET = "ToMultiSet"
     REDUCED = "Reduced"
     JOIN = "Join"
+    GRAPH = "Graph"
 
 class QueryType(Enum):
     SELECT = "SelectQuery"
