@@ -1,0 +1,6 @@
+PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+
+ASK {
+  ?target db:synonym ?synonym .
+  FILTER REGEX(?synonym, "glucanase", "i")
+}

@@ -1,9 +1,0 @@
-PREFIX drugbank: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
-
-DESCRIBE ?drug
-WHERE {
-  ?drug drugbank:chemicalFormula ?formula ;
-        drugbank:indication ?indication ;
-        drugbank:structure ?structure .
-}
-LIMIT 10

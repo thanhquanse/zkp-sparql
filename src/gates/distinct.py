@@ -1,0 +1,66 @@
+from chiquito.dsl import Circuit, StepType
+from chiquito.cb import eq
+from chiquito.util import F
+from .common.gteq import GreaterEqVerifier
+
+from utils.hash import hash_to_number
+
+from collections import defaultdict
+
+class DistinctConditionVerifier(StepType):
+    def setup(self):
+        self.constr(eq(self.circuit.total_computed - self.circuit.total_distinct, 0))
+
+    def wg(self, input):
+        self.assign(self.circuit.total_computed, F(input["total_computed"]))
+        self.assign(self.circuit.total_distinct, F(input["total_distinct"]))
+
+class DistinctVerificationCircuit(Circuit):
+    def __init__(self, max_steps):
+        self.max_steps = max_steps
+        super().__init__()
+
+    def setup(self):
+        self.total_computed = self.shared("total_computed")
+        self.total_distinct = self.shared("total_distinct")
+
+        self.distinct_check_step = self.step_type(DistinctConditionVerifier(self, "distinct_check_step"))
+        self.distinct_gteq_step = self.step_type(GreaterEqVerifier(self, "distinct_gteq_step"))
+        self.pragma_num_steps(self.max_steps)
+
+    def trace(self, result):
+        grouped_items = defaultdict(list)
+
+        for item in result:
+            key = tuple(sorted(item.items()))
+            grouped_items[key].append(item)
+
+        # Extract duplicates
+        duplicates = [items for items in grouped_items.values() if len(items) > 1]
+
+        for group in duplicates:
+            for dup in group:
+                print(dup)
+            print("---")
+
+        # Convert to set to ensure the content is still the same when comparing
+        result_set = {tuple(d.items()) for d in result}
+        distinct_set = set(tuple(d.items()) for d in result)
+
+        # Constrain >= 1
+        self.add(self.distinct_gteq_step, 1, len(distinct_set))
+        self.add(self.distinct_check_step, {
+            "total_computed": len(result),
+            "total_distinct": len(distinct_set)
+        })
+
+        # Normalize to ensure the order does not impact the hashing results
+        normalized_result_set = [tuple(sorted(t)) for t in result_set]
+        normalized_result_set.sort()
+        normalized_distinct_set = [tuple(sorted(t)) for t in distinct_set]
+        normalized_distinct_set.sort()
+
+        self.add(self.distinct_check_step, {
+            "total_computed": hash_to_number(normalized_result_set),
+            "total_distinct": hash_to_number(normalized_distinct_set)
+        })

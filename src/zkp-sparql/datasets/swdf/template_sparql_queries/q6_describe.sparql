@@ -1,5 +1,0 @@
-DESCRIBE ?person
-WHERE {
-  ?person a <http://xmlns.com/foaf/0.1/Person> ;
-          <http://swrc.ontoware.org/ontology#affiliation> <http://data.semanticweb.org/organization/universite-francois-rabelais-tours> .
-}
