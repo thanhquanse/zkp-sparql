@@ -46,7 +46,7 @@ pip install maturin
 For more details, see the [Maturin documentation](https://www.maturin.rs/installation.html) or [PyO3 Getting Started](https://pyo3.rs/main/getting-started).
 
 ### Step 3: Install ZKP Chiquito Dependency
-Clone and build our redesigned Chiquito framework (required for ZKP functionality):
+Clone and build our redesigned Chiquito framework (required for ZKP functionality, such as range checks, proof generation/verification, parameter generation, etc. compared to the original version):
 ```sh
 wget -O zkpchiquito.zip https://anonymous.4open.science/api/repo/chiquito-9B54/zip
 unzip zkpchiquito.zip -d ./path/to/zkpchiquito
