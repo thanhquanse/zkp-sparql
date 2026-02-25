@@ -65,11 +65,11 @@ def performZKP(graph: Graph, query: str, params: dict):
 @profile
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
-        "k": 16,
+        "k": 20,
         "paramgen": False,
-        "param": f"./rdf2rdb/proof/super_param.bin",
+        "param": f"./proof/param_20.bin",
         "proofgen": True,
-        "step_num": 50000
+        "step_num": 500000
     }
     for dataset in dataset_query_dict.keys():
         path = dataset_query_dict[dataset]["path"]
@@ -80,19 +80,16 @@ def zkpFunc(dataset_query_dict: dict):
             print(f"----- Experimenting {query_str} -----")
             query_name = os.path.basename(query_str).split('.')[0]
             query: str = load_query(query_str)
-            params["proof"] = f"./rdf2rdb/proof/super_proof_{dataset}_{query_name}"
+            params["proof"] = f"./proof/zkgraph_proof_{dataset}_{query_name}"
 
             performZKP(graph, query, params)
 
 if __name__ == "__main__":
     dataset_query_dict = {
         "bsbm": {
-            "path": "./rdf2rdb/datasets/BSBM.ttl",
+            "path": "./datasets/zkgraph/snb_sample.ttl",
             "queries": [
-                "./rdf2rdb/sparql_queries/q1_select.sparql",
-                "./rdf2rdb/sparql_queries/q2_select.sparql",
-                "./rdf2rdb/sparql_queries/q3_select.sparql",
-                "./rdf2rdb/sparql_queries/q4_select.sparql"
+                "./datasets/zkgraph/benchmark_queries/is3.sparql"
             ]
         }
     }

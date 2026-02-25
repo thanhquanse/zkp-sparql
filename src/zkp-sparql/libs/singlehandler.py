@@ -239,22 +239,37 @@ class ZKPSingleHandler:
                     project_vars = self.stage_dict[stage]['condition']['pv']
 
                     total_steps = len(stage_results) + 2 # +2 for greater than constraint
+
+                    start = time.time()
                     project_circuit = ProjectVerificationCircuit(max_steps=total_steps)
                     project_circuit_instance = project_circuit.gen_witness(project_vars, stage_results)
                     project_circuit.halo2_mock_prover(witness=project_circuit_instance, k=self.k)
+
+                    end = time.time()
+                    print(f"Project Proving time: {end - start}\n")
+                    time_measurement["proving"] = end - start
 
                     # project_circuit.create_param_file("project_params_test.bin", self.k)
                     # project_circuit.generate_proof_file(project_circuit_instance, "project_params_test.bin", "project_proof.bin")
 
                 case QueryExecutionStage.BGP.value:
+                    # pass
                     ctx = self.stage_dict[stage]['condition']['ctx']
                     triples = self.stage_dict[stage]['condition']['triples']
 
-                    total_steps = len(stage_results)*10
+                    total_steps = len(stage_results)*3000
+
+                    start = time.time()
                     bgp_circuit = BGPVerificationCircuit(max_steps=total_steps)
                     bgp_circuit_instance = bgp_circuit.gen_witness(ctx, triples, stage_results)
 
+                    print(bgp_circuit_instance)
+
                     bgp_circuit.halo2_mock_prover(witness=bgp_circuit_instance, k=self.k)
+
+                    end = time.time()
+                    print(f"BGP Proving time: {end - start}\n")
+                    time_measurement["proving"] = end - start
 
                 case QueryExecutionStage.EXTEND.value:
                     condition = self.stage_dict[stage]['condition']

@@ -126,3 +126,103 @@ class OptionalVerificationCircuit(Circuit):
                     "p_common_hash": p_common_hash_2,
                     "p_set_hash": p_set_hash_2
             })
+
+def sparql_like_optional(data):
+    """
+    General SPARQL-like optional (left outer join) for two sources of flattened RDF-like data.
+    
+    Input format:
+        data = {0: [single-key dicts], 1: [single-key dicts]}
+    
+    Each source is a flat sequence of dictionaries, each containing exactly one key-value pair.
+    Consecutive entries sharing the same key (variable) but with different values belong to different rows.
+    
+    The function:
+    - Automatically parses each source into rows (dictionaries of variable → value)
+    - Performs a left optional join:
+        • Includes all rows from the left source
+        • For each left row, extends with compatible rows from the right source (if any)
+        • Compatibility: agree on values for variables bound in both
+        • If no compatible right rows, include the left row as-is
+        • If multiple compatible right rows, produce multiple extended rows (duplicating left)
+    - Handles unbound variables (missing keys in rows) correctly per SPARQL semantics
+    - If no shared variables: cross product (all left extended with all right)
+    - Fully general: no hardcoded variable names
+    
+    :param data: dict mapping 0 (left) and 1 (right) to lists of single-key dicts
+    :return: list of merged solution mappings (dicts)
+    """
+    # Step 1: Parse each source into a list of rows (dict: variable → value)
+    def parse_source(lst):
+        if not lst:
+            return []
+        
+        rows = []
+        current_row = {}
+        
+        for d in lst:
+            if len(d) != 1:
+                raise ValueError("Each element must be a dict with exactly one key-value pair")
+            
+            var, val = next(iter(d.items()))
+            
+            if var in current_row:
+                if current_row[var] != val:
+                    # Different value for the same variable → new row starts
+                    rows.append(current_row)
+                    current_row = {var: val}
+                # else: same var + same val → redundant, ignore
+            else:
+                # New variable in current row
+                current_row[var] = val
+        
+        if current_row:
+            rows.append(current_row)
+        
+        return rows
+    
+    if 0 not in data:
+        raise ValueError("Data must include key 0 for the left source")
+    
+    left_rows = parse_source(data[0])
+    
+    if not left_rows:
+        return []
+    
+    right_rows = parse_source(data.get(1, []))
+    
+    result_rows = []
+    
+    for left_row in left_rows:
+        matched = False
+        for right_row in right_rows:
+            # Check compatibility: agree on overlapping bound variables
+            overlapping_vars = set(left_row.keys()) & set(right_row.keys())
+            conflict = False
+            for var in overlapping_vars:
+                if left_row[var] != right_row[var]:
+                    conflict = True
+                    break
+            if conflict:
+                continue
+            
+            # Merge: union of bindings
+            merged = left_row.copy()
+            for var, val in right_row.items():
+                if var not in merged:
+                    merged[var] = val
+                # No need to check equality again, as conflicts already checked
+            
+            result_rows.append(merged)
+            matched = True
+        
+        if not matched:
+            result_rows.append(left_row.copy())
+    
+    # Sort for deterministic, readable output (by sorted variables and values)
+    def sort_key(row):
+        return tuple(sorted((var, str(val)) for var, val in row.items()))
+    
+    result_rows.sort(key=sort_key)
+    
+    return result_rows

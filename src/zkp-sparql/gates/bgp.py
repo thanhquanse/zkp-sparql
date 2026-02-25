@@ -7,6 +7,36 @@ from .common.gteq import GreaterEqVerifier
 
 from utils.hash import hash_to_number
 
+class FieldElement:
+    PRIME = 2**255 - 19  # A large prime for the field
+
+    def __init__(self, val):
+        self.val = val % self.PRIME
+
+    def __add__(self, other):
+        return FieldElement((self.val + other.val) % self.PRIME)
+
+    def __mul__(self, other):
+        return FieldElement((self.val * other.val) % self.PRIME)
+
+    def __truediv__(self, other):
+        inv = pow(other.val, self.PRIME - 2, self.PRIME)
+        return FieldElement((self.val * inv) % self.PRIME)
+
+    def __sub__(self, other):
+        return FieldElement((self.val - other.val) % self.PRIME)
+
+    def __eq__(self, other):
+        return self.val == other.val
+
+    @classmethod
+    def zero(cls):
+        return cls(0)
+
+    @classmethod
+    def one(cls):
+        return cls(1)
+
 class BGPConditionVerifier(StepType):
     def setup(self):
         self.constr(eq(self.circuit.comparator_1 - self.circuit.comparator_2, 0))
@@ -14,20 +44,61 @@ class BGPConditionVerifier(StepType):
     def wg(self, input):
         self.assign(self.circuit.comparator_1, F(input["comparator_1"]))
         self.assign(self.circuit.comparator_2, F(input["comparator_2"]))
+
+class BGPGPInitVerifier(StepType):
+    def setup(self):
+        self.constr(eq(self.circuit.z - 1, 0))
+
+    def wg(self, input):
+        self.assign(self.circuit.z, F(input["z"]))
+
+class BGPGPStepVerifier(StepType):
+    def setup(self):
+        z = self.circuit.z
+        z_next = self.circuit.z_next
+        c_omega_star = self.circuit.c_omega_star
+        c_omega = self.circuit.c_omega
+        beta = self.circuit.beta
+
+        self.constr(eq(z_next * (c_omega + beta) - z * (c_omega_star + beta), 0))
+
+    def wg(self, input):
+        self.assign(self.circuit.z, F(input["z"]))
+        self.assign(self.circuit.z_next, F(input["z_next"]))
+        self.assign(self.circuit.c_omega_star, F(input["c_omega_star"]))
+        self.assign(self.circuit.c_omega, F(input["c_omega"]))
+        self.assign(self.circuit.beta, F(input["beta"]))
+
+class BGPGPEndVerifier(StepType):
+    def setup(self):
+        self.constr(eq(self.circuit.z - 1, 0))
+
+    def wg(self, input):
+        self.assign(self.circuit.z, F(input["z"]))
+
 class BGPVerificationCircuit(Circuit):
     def __init__(self, max_steps):
         self.max_steps = max_steps
         super().__init__()
 
     def setup(self):
+        self.z = self.shared("z")
+        self.z_next = self.shared("z_next")
+        self.c_omega_star = self.shared("c_omega_star")
+        self.c_omega = self.shared("c_omega")
+        self.beta = self.shared("beta")
+
         self.comparator_1 = self.shared("comparator_1")
         self.comparator_2 = self.shared("comparator_2")
 
+        self.bgp_gp_init_step = self.step_type(BGPGPInitVerifier(self, "bgp_gp_init_step"))
+        self.bgp_gp_end_step = self.step_type(BGPGPEndVerifier(self, "bgp_gp_end_step"))
         self.bgp_check_step = self.step_type(BGPConditionVerifier(self, "bgp_check_step"))
         self.bgp_gteq_check_step = self.step_type(GreaterEqVerifier(self, "bgp_gteq_check_step"))
+        self.bgp_gp_step = self.step_type(BGPGPStepVerifier(self, "bgp_gp_step"))
         self.pragma_num_steps(self.max_steps)
 
-    def trace(self, ctx, triples, results):
+    def trace2(self, ctx, triples, results):
         triple_dict = {}
         single_triple_rs = []
         j = 0
@@ -68,10 +139,6 @@ class BGPVerificationCircuit(Circuit):
             
             triple_dict[j] = matching_triples
             j += 1
-        
-        # common_var_position = find_common_variable_positions(triples)[0]
-        # common_var = triples[0][common_var_position].__str__()
-        # joined = merge_on(triple_dict, on=common_var)
 
         if len(triples) == 1:
             joined = single_triple_rs
@@ -82,14 +149,6 @@ class BGPVerificationCircuit(Circuit):
 
         sorted_concat_list1 = sorted(joined, key=lambda d: tuple(sorted(d.items())))
         sorted_concat_list2 = sorted(results, key=lambda d: tuple(sorted(d.items())))
-
-        # for i in range(len(sorted_concat_list1)):
-        #     a = hash_to_number(sorted_concat_list1[i])
-        #     b = hash_to_number(sorted_concat_list2[i])
-        #     self.add(self.bgp_check_step, {
-        #         "comparator_1": a,
-        #         "comparator_2": b
-        #     })
 
         for i in range(len(sorted_concat_list1)):
             common_keys = set(sorted_concat_list1[i].keys()).intersection(set(sorted_concat_list2[i].keys()))
@@ -102,6 +161,132 @@ class BGPVerificationCircuit(Circuit):
                 "comparator_2": b
             })
 
+    def trace(self, ctx, triples, results):
+        PRIME = 2**255 - 19  # A large prime for the field
+
+        def mod_inverse(a, m=PRIME):
+            return pow(a, m - 2, m)
+
+        triple_dict = {}
+        single_triple_rs = []
+        j = 0
+        for triple in triples:
+            new_triple = []
+            matching_triples = []
+            fixed_val = {}
+
+            for i, el in enumerate(triple):
+                if isinstance(el, Variable):
+                    new_triple.append(None)
+                else:
+                    new_triple.append(el)
+                    fixed_val[i] = el
+
+            # Query the graph
+            for result in ctx.graph.triples(tuple(new_triple)):
+                # constraints fixed values
+                for i in fixed_val.keys():
+                    tphash = hash_to_number(result[i])
+                    valhash = hash_to_number(fixed_val[i])
+                    self.add(self.bgp_check_step, {
+                        "comparator_1": tphash,
+                        "comparator_2": valhash
+                    })
+                # handle 1 triple pattern
+                if len(triples) == 1:
+                    temp = {}
+                    for idx, el in enumerate(result):
+                        if idx not in fixed_val.keys():
+                            temp[str(triple[idx])] = str(el)
+                    single_triple_rs.append(temp)
+                
+                # handle multiple triple patterns
+                for idx, el in enumerate(result):
+                    if idx not in fixed_val.keys():
+                        matching_triples.append({str(triple[idx]): str(el)})
+            
+            triple_dict[j] = matching_triples
+            j += 1
+
+        if len(triples) == 1:
+            joined = single_triple_rs
+        else:
+            joined = sparql_like_join(triple_dict)
+        
+        # BC you can use your code to compute Omega* (scanning triple in G) and Omega (engine output table)
+        joined_tmp = sorted(joined, key=lambda d: tuple(sorted(d.items())))
+        results_tmp = sorted(results, key=lambda d: tuple(sorted(d.items())))
+        omega_star = joined_tmp  # off-circuit witness generation
+        omega = results_tmp      # off-circuit (public/claimed output)
+
+        # Get all unique sorted variables (columns) across both tables
+        all_vars = set()
+        for row in omega_star + omega:
+            all_vars.update(row.keys())
+        sorted_vars = sorted(list(all_vars))
+        L = len(sorted_vars)
+
+        # Dummy row encoded as reserved field elements (e.g., zero)
+        reserved = 0
+        DUMMY_ROW = [reserved] * L
+
+        # Convert dict rows to lists of field elements (integers mod PRIME)
+        def row_to_field_list(row_dict):
+            return [(hash_to_number(row_dict.get(v)) % PRIME) if v in row_dict else reserved for v in sorted_vars]
+
+        omega_star_rows = [row_to_field_list(row) for row in omega_star]
+        omega_rows = [row_to_field_list(row) for row in omega]
+
+        # Pad both tables to the same length N
+        N = max(len(omega_star_rows), len(omega_rows))
+        omega_star_padded = omega_star_rows + [DUMMY_ROW] * (N - len(omega_star_rows))
+        omega_padded = omega_rows + [DUMMY_ROW] * (N - len(omega_rows))
+
+        # Challenges (for prototype: fixed/public constants; ideally Fiat–Shamir)
+        alpha = 1234567 % PRIME
+        beta = 89101112 % PRIME
+
+        # Compress function
+        def compress_row(row_vals, alpha):
+            """
+            Compress a multi-column row into one field element:
+            c = v0 + alpha*v1 + alpha^2*v2 + ... + alpha^(L-1)*v(L-1)
+            """
+            acc = 0
+            powa = 1
+            for v in row_vals:
+                acc = (acc + (powa * v) % PRIME) % PRIME
+                powa = (powa * alpha) % PRIME
+            return acc
+
+        # Enforce Z[0] = 1
+        z = 1
+        self.add(self.bgp_gp_init_step, {"z": z})
+
+        # Running product over all rows
+        for i in range(N):
+            c_omega_star = compress_row(omega_star_padded[i], alpha)
+            c_omega = compress_row(omega_padded[i], alpha)
+
+            # Witness for next accumulator value:
+            # z_next = z * (c_omega_star + beta) / (c_omega + beta)
+            numerator = (z * ((c_omega_star + beta) % PRIME)) % PRIME
+            denominator = (c_omega + beta) % PRIME
+            z_next = (numerator * mod_inverse(denominator)) % PRIME
+
+            # Enforce: z_next * (c_omega + beta) = z * (c_omega_star + beta)
+            self.add(self.bgp_gp_step, {
+                "z": z,
+                "z_next": z_next,
+                "c_omega_star": c_omega_star,
+                "c_omega": c_omega,
+                "beta": beta
+            })
+
+            z = z_next
+
+        # Enforce Z[N] = 1
+        self.add(self.bgp_gp_end_step, {"z": z})
 
 def find_common_variable_positions(triples_list):
     if not triples_list:

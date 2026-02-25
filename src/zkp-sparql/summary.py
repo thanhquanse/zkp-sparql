@@ -8,7 +8,7 @@ dict_size: dict = {
     "swdf": 304583,
     "bsbm": 350062,
     "drugbank": 766920,
-    "bsbm_compared": 50000
+    "bsbm_compared": '~50000'
 }
 
 dict_unit: dict = {
@@ -102,7 +102,7 @@ def plot_super_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str)
 
     fig, ax = plt.subplots(figsize=(4, 4))
     pivot_df = pivot_df.sort_index()
-    pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=0.9, ax=ax)
+    pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=(0.9 if sheet_name != "bsbm_compared" else 0.4), ax=ax)
     ax.legend(title=f'Full size: {dict_size[sheet_name]}', loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=3, frameon=False)
     # ax = pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=0.4)
 
@@ -116,7 +116,7 @@ def plot_super_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str)
     # plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     # plt.legend(title=f'Full size: {dict_size[sheet_name]}')
-    plt.savefig(f"./summary/plot_{sheet_name}_{col2plot}.png")
+    plt.savefig(f"./summary/plot_{sheet_name}_{col2plot}.pdf", format='pdf')
     plt.close()
 
 def plot_single_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str):
@@ -125,7 +125,7 @@ def plot_single_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str
         y="Running Time",
         kind="barh",
         figsize=(6, 2),
-        color="grey",
+        color="lightslategray",
         legend=False
     )
 
@@ -137,7 +137,7 @@ def plot_single_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str
     plt.grid(True, axis='y', linestyle='--', alpha=0.5)
     plt.grid(True, axis='x', linestyle='--', alpha=0.5)
 
-    plt.savefig(f"./summary/plot_{sheet_name}_{col2plot}.png")
+    plt.savefig(f"./summary/plot_{sheet_name}_{col2plot}.pdf", format='pdf')
     plt.close()
 
 if __name__ == "__main__":
@@ -168,6 +168,6 @@ if __name__ == "__main__":
                 break
             plot_super_circuit_results(df, sheet, col)
 
-    # single_df = pd.read_excel(excel_file, sheet_name="swdf_single_gate")
-    # single_df = single_df.round(1)
-    # plot_single_circuit_results(single_df, "swdf_single_gate", "Running Time")
+    single_df = pd.read_excel(excel_file, sheet_name="swdf_single_gate")
+    single_df = single_df.round(1)
+    plot_single_circuit_results(single_df, "swdf_single_gate", "Running Time")

@@ -74,10 +74,12 @@ bsbm_query = """
 stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
-# g.parse(data=data, format="turtle")
-g.parse(drugbank_data_path)
+g.parse(data=data, format="turtle")
+# g.parse(".//rdf2rdb/datasets/BSBM.ttl")
 print(f"Graph size: {len(g)}")
-results = g.query(drugbank_query)
+results = g.query(query)
+# for row in results:
+#     print(row)
 
 @timeit
 @profile

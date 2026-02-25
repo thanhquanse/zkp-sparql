@@ -73,4 +73,91 @@ class MinusVerificationCircuit(Circuit):
             self.add(self.minus_noteq_check_step, orig_p2_key_hash, result_key_hash)
 
 
+def sparql_like_minus(data):
+    """
+    General SPARQL-like MINUS (anti-join) for two sources of flattened RDF-like data.
+    
+    Input format:
+        data = {0: [single-key dicts], 1: [single-key dicts]}
+    
+    Each source is a flat sequence of dictionaries, each containing exactly one key-value pair.
+    Consecutive entries sharing the same key (variable) but with different values belong to different rows.
+    
+    The function:
+    - Automatically parses each source into rows (dictionaries of variable → value)
+    - Performs a MINUS operation:
+        • Includes rows from the left source that have NO compatible rows in the right source
+        • Compatibility: agree on values for all shared variables (and shared variables exist)
+        • If no shared variables, preserve left results unchanged (regardless of right)
+        • Does not extend left rows with right variables (filters only)
+    - Handles unbound variables correctly per SPARQL semantics
+    - Fully general: no hardcoded variable names
+    
+    :param data: dict mapping 0 (left) and 1 (right) to lists of single-key dicts
+    :return: list of filtered solution mappings (dicts) from left
+    """
+    # Step 1: Parse each source into a list of rows (dict: variable → value)
+    def parse_source(lst):
+        if not lst:
+            return []
         
+        rows = []
+        current_row = {}
+        
+        for d in lst:
+            if len(d) != 1:
+                raise ValueError("Each element must be a dict with exactly one key-value pair")
+            
+            var, val = next(iter(d.items()))
+            
+            if var in current_row:
+                if current_row[var] != val:
+                    # Different value for the same variable → new row starts
+                    rows.append(current_row)
+                    current_row = {var: val}
+                # else: same var + same val → redundant, ignore
+            else:
+                # New variable in current row
+                current_row[var] = val
+        
+        if current_row:
+            rows.append(current_row)
+        
+        return rows
+    
+    if 0 not in data:
+        raise ValueError("Data must include key 0 for the left source")
+    
+    left_rows = parse_source(data[0])
+    
+    if not left_rows:
+        return []
+    
+    right_rows = parse_source(data.get(1, []))
+    
+    # If right is empty, return all left (no removals)
+    if not right_rows:
+        result_rows = [row.copy() for row in left_rows]
+    else:
+        result_rows = []
+        for left_row in left_rows:
+            has_match = False
+            for right_row in right_rows:
+                # Check compatibility: agree on overlapping bound variables, but only if overlap exists
+                overlapping_vars = set(left_row.keys()) & set(right_row.keys())
+                if overlapping_vars:
+                    conflict = any(left_row[var] != right_row[var] for var in overlapping_vars)
+                    if not conflict:
+                        has_match = True
+                        break
+            
+            if not has_match:
+                result_rows.append(left_row.copy())
+    
+    # Sort for deterministic, readable output (by sorted variables and values)
+    def sort_key(row):
+        return tuple(sorted((var, str(val)) for var, val in row.items()))
+    
+    result_rows.sort(key=sort_key)
+    
+    return result_rows        
