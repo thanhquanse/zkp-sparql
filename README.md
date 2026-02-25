@@ -61,8 +61,9 @@ maturin develop
 ## Installation
 Clone ZKP-SPARQL Repository
 ```sh
-git clone https://github.com/thanhquanse/zkp-sparql.git
-cd zkp-sparql
+wget -O zkp-sparql.zip https://anonymous.4open.science/api/repo/zkp-sparql-6FCA/zip
+unzip zkp-sparql.zip -d ./path/to/zkp-sparql
+cd ./path/to/zkp-sparql
 pip install -r requirements.txt
 ```
 
