@@ -37,7 +37,6 @@ WHERE {
   {
     ?book ex:title ?title ;
           ex:author ?author ;
-          ex:year "2023" ;
           ex:year ?year .
   }
 }

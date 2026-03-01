@@ -50,9 +50,9 @@ LIMIT   1000
 stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
-# g.parse(data=data, format="turtle")
-g.parse(data_path)
-results = g.query(query_str)
+g.parse(data=data, format="turtle")
+# g.parse(data_path)
+results = g.query(query)
 
 @timeit
 @profile

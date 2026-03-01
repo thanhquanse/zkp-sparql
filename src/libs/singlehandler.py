@@ -249,7 +249,7 @@ class ZKPSingleHandler:
                     ctx = self.stage_dict[stage]['condition']['ctx']
                     triples = self.stage_dict[stage]['condition']['triples']
 
-                    total_steps = len(stage_results)*10
+                    total_steps = len(stage_results)*100
                     bgp_circuit = BGPVerificationCircuit(max_steps=total_steps)
                     bgp_circuit_instance = bgp_circuit.gen_witness(ctx, triples, stage_results)
 
