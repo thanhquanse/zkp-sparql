@@ -113,7 +113,7 @@ Individual operator gates are available as zkp_\<operator\>.py files. These demo
 
 ***Available operators:***
 
-- zkp_project.py: Project operations
+- zkp_bgp.py: Project operations
 - zkp_union.py: Union operations
 - zkp_filter.py: Filter operations
 - (and others)
