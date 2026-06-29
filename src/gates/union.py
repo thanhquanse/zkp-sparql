@@ -1,5 +1,5 @@
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, mseq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
@@ -61,6 +61,13 @@ class UnionVerificationCircuit(Circuit):
         p1_common = normalize_data(list(p1_common))
         p1_set = normalize_data(list(p1_set))
 
+        # Multiset equality check by Halo2
+        is_mseq = mseq(p1_common, p1_set, 18)
+        self.add(self.total_union_check_step, {
+            "total_computed": is_mseq,
+            "total_union": 1
+        })
+
         if len(p1_common) == len(p1_set):
             for i in range(len(p1_set)):
                 p_common_hash = hash_to_number(p1_common[i])
@@ -86,6 +93,13 @@ class UnionVerificationCircuit(Circuit):
         # Back to list to execute further
         p2_common = normalize_data(list(p2_common))
         p2_set = normalize_data(list(p2_set))
+
+        # Multiset equality check by Halo2
+        is_mseq = mseq(p2_common, p2_set, 18)
+        self.add(self.total_union_check_step, {
+            "total_computed": is_mseq,
+            "total_union": 1
+        })
 
         if len(p2_common) == len(p2_set):
             for i in range(len(p2_set)):

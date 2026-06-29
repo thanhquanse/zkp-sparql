@@ -1,7 +1,7 @@
 import statistics
 
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, mseq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 

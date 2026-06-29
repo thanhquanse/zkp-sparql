@@ -1,5 +1,5 @@
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, mseq
 from chiquito.util import F
 
 from utils.util import is_grouped_by, group_by_fields, group_by_keys

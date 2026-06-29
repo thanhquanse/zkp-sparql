@@ -1,5 +1,5 @@
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, mseq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
@@ -52,6 +52,13 @@ class DistinctVerificationCircuit(Circuit):
         self.add(self.distinct_check_step, {
             "total_computed": len(result),
             "total_distinct": len(distinct_set)
+        })
+
+        # Multiset equality check by Halo2
+        is_mseq = mseq(result_set, distinct_set, 18)
+        self.add(self.distinct_check_step, {
+            "total_computed": is_mseq,
+            "total_distinct": 1
         })
 
         # Normalize to ensure the order does not impact the hashing results

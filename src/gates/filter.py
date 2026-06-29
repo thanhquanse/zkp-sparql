@@ -1,5 +1,5 @@
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, mseq
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
@@ -136,6 +136,13 @@ class FilterVerificationCircuit(Circuit):
                 # Constrain >= 0
                 self.add(self.filter_gteq_step, 0, len(computed_hashes))
                 self.add(self.filter_gteq_step, 0, len(filtered_hashes))
+
+                # Multiset equality check by Halo2
+                is_mseq = mseq(computed_hashes, filtered_hashes, 18)
+                self.add(self.total_computed_check_step, {
+                    "total_computed": is_mseq,
+                    "total_filtered": 1
+                })
                 
                 # Step 4: Constrain filtered hashes to match expected
                 if len(computed_hashes) == len(filtered_hashes):

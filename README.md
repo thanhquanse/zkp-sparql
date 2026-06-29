@@ -56,7 +56,9 @@ cd ./path/to/zkpchiquito
 pip install -r requirements.txt
 maturin develop
 ```
-**Note:** This redesigned Chiquito requires a specific Plonkish backend defined in its Cargo.toml, which includes bug fixes tailored to ZKP-SPARQL. If using a different backend, ensure full compatibility.
+**Note 1:** This redesigned Chiquito requires a specific Plonkish backend defined in its Cargo.toml, which includes bug fixes tailored to ZKP-SPARQL. If using a different backend, ensure full compatibility.
+
+**Note 2:** **This redesigned Chiquito includes the multiset equality implemented in the Rust backend.**
 
 ## Installation
 Clone ZKP-SPARQL Repository
