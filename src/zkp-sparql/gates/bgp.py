@@ -1,7 +1,8 @@
 from collections import defaultdict
+import time
 from rdflib.term import Variable
 from chiquito.dsl import Circuit, StepType
-from chiquito.cb import eq
+from chiquito.cb import eq, lteq, mseq, mseq_nonperm, mseq_exsortcmp
 from chiquito.util import F
 from .common.gteq import GreaterEqVerifier
 
@@ -98,7 +99,134 @@ class BGPVerificationCircuit(Circuit):
         self.bgp_gp_step = self.step_type(BGPGPStepVerifier(self, "bgp_gp_step"))
         self.pragma_num_steps(self.max_steps)
 
-    def trace2(self, ctx, triples, results):
+    # Compare 2 multisets using permutation check
+    def trace(self, ctx, triples, results):
+        triple_dict = {}
+        single_triple_rs = []
+        j = 0
+        for triple in triples:
+            new_triple = []
+            matching_triples = []
+            fixed_val = {}
+
+            for i, el in enumerate(triple):
+                if isinstance(el, Variable):
+                    new_triple.append(None)
+                else:
+                    new_triple.append(el)
+                    fixed_val[i] = el
+
+            # Query the graph
+            for result in ctx.graph.triples(tuple(new_triple)):
+                # constraints fixed values
+                for i in fixed_val.keys():
+                    tphash = hash_to_number(result[i])
+                    valhash = hash_to_number(fixed_val[i])
+                    self.add(self.bgp_check_step, {
+                        "comparator_1": tphash,
+                        "comparator_2": valhash
+                    })
+                # handle 1 triple pattern
+                if len(triples) == 1:
+                    temp = {}
+                    for idx, el in enumerate(result):
+                        if idx not in fixed_val.keys():
+                            temp[str(triple[idx])] = str(el)
+                    single_triple_rs.append(temp)
+                
+                # handle multiple triple patterns
+                for idx, el in enumerate(result):
+                    if idx not in fixed_val.keys():
+                        matching_triples.append({str(triple[idx]): str(el)})
+            
+            triple_dict[j] = matching_triples
+            j += 1
+
+        if len(triples) == 1:
+            joined = single_triple_rs
+        else:
+            joined = sparql_like_join(triple_dict)
+        
+        self.add(self.bgp_gteq_check_step, len(results), len(joined))
+
+        joined_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in joined]
+        results_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in results]
+
+        # Multiset equality check by Halo2
+        is_mseq = mseq(joined_fe, results_fe, 18)
+
+        print(f"Info: Multiset equality check by permutation result: {is_mseq}")
+
+        self.add(self.bgp_check_step, {
+            "comparator_1": is_mseq,
+            "comparator_2": 1  # Expecting equality, so comparator_2 is set to 1
+        })
+
+    # Compare 2 multisets by sorting and comparing element-wise in backend
+    def _trace(self, ctx, triples, results):
+        triple_dict = {}
+        single_triple_rs = []
+        j = 0
+        for triple in triples:
+            new_triple = []
+            matching_triples = []
+            fixed_val = {}
+
+            for i, el in enumerate(triple):
+                if isinstance(el, Variable):
+                    new_triple.append(None)
+                else:
+                    new_triple.append(el)
+                    fixed_val[i] = el
+
+            # Query the graph
+            for result in ctx.graph.triples(tuple(new_triple)):
+                # constraints fixed values
+                for i in fixed_val.keys():
+                    tphash = hash_to_number(result[i])
+                    valhash = hash_to_number(fixed_val[i])
+                    self.add(self.bgp_check_step, {
+                        "comparator_1": tphash,
+                        "comparator_2": valhash
+                    })
+                # handle 1 triple pattern
+                if len(triples) == 1:
+                    temp = {}
+                    for idx, el in enumerate(result):
+                        if idx not in fixed_val.keys():
+                            temp[str(triple[idx])] = str(el)
+                    single_triple_rs.append(temp)
+                
+                # handle multiple triple patterns
+                for idx, el in enumerate(result):
+                    if idx not in fixed_val.keys():
+                        matching_triples.append({str(triple[idx]): str(el)})
+            
+            triple_dict[j] = matching_triples
+            j += 1
+
+        if len(triples) == 1:
+            joined = single_triple_rs
+        else:
+            joined = sparql_like_join(triple_dict)
+        
+        self.add(self.bgp_gteq_check_step, len(results), len(joined))
+
+        joined_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in joined]
+        results_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in results]
+
+        # Multiset equality check by Halo2
+        is_mseq = mseq_nonperm(joined_fe, results_fe, 18)
+
+        print(f"Info: Multiset equality check by sorted and compared in rust result: {is_mseq}")
+
+        self.add(self.bgp_check_step, {
+            "comparator_1": is_mseq,
+            "comparator_2": 1  # Expecting equality, so comparator_2 is set to 1
+        })
+
+    # Compare 2 multisets by sorting and comparing element-wise with sorted in frontend
+    def _trace(self, ctx, triples, results):
         triple_dict = {}
         single_triple_rs = []
         j = 0
@@ -161,7 +289,86 @@ class BGPVerificationCircuit(Circuit):
                 "comparator_2": b
             })
 
-    def trace(self, ctx, triples, results):
+    # Compare 2 multisets by sorting and checking the sorting in frontend, but the equality check in backend
+    def _trace(self, ctx, triples, results):
+        triple_dict = {}
+        single_triple_rs = []
+        j = 0
+        for triple in triples:
+            new_triple = []
+            matching_triples = []
+            fixed_val = {}
+
+            for i, el in enumerate(triple):
+                if isinstance(el, Variable):
+                    new_triple.append(None)
+                else:
+                    new_triple.append(el)
+                    fixed_val[i] = el
+
+            # Query the graph
+            for result in ctx.graph.triples(tuple(new_triple)):
+                # constraints fixed values
+                for i in fixed_val.keys():
+                    tphash = hash_to_number(result[i])
+                    valhash = hash_to_number(fixed_val[i])
+                    self.add(self.bgp_check_step, {
+                        "comparator_1": tphash,
+                        "comparator_2": valhash
+                    })
+                # handle 1 triple pattern
+                if len(triples) == 1:
+                    temp = {}
+                    for idx, el in enumerate(result):
+                        if idx not in fixed_val.keys():
+                            temp[str(triple[idx])] = str(el)
+                    single_triple_rs.append(temp)
+                
+                # handle multiple triple patterns
+                for idx, el in enumerate(result):
+                    if idx not in fixed_val.keys():
+                        matching_triples.append({str(triple[idx]): str(el)})
+            
+            triple_dict[j] = matching_triples
+            j += 1
+
+        if len(triples) == 1:
+            joined = single_triple_rs
+        else:
+            joined = sparql_like_join(triple_dict)
+        
+        self.add(self.bgp_gteq_check_step, len(results), len(joined))
+
+        sorted_concat_list1 = sorted(joined, key=lambda d: tuple(sorted(d.items())))
+        sorted_concat_list2 = sorted(results, key=lambda d: tuple(sorted(d.items())))
+
+        start = time.time()
+        for i in range(1, len(sorted_concat_list1)):
+            prev_element = hash_to_number(sorted_concat_list1[i-1])
+            current_element = hash_to_number(sorted_concat_list1[i])
+            is_lteq = lteq(prev_element, current_element)
+            self.add(self.bgp_check_step, {
+                "comparator_1": is_lteq,
+                "comparator_2": 1
+            })
+        end = time.time()
+        print(f"BGP Multiset 1 sorted check time: {end - start - 2500}\n")
+
+        joined_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in joined]
+        results_fe = [[hash_to_number(''.join(f"{k}:{v}" for k, v in sorted(row.items())))] for row in results]
+
+        # Multiset equality check by Halo2
+        is_mseq = mseq(joined_fe, results_fe, 18)
+
+        print(f"Info: Multiset equality check by exsortcmp in rust: {is_mseq}")
+
+        self.add(self.bgp_check_step, {
+            "comparator_1": is_mseq,
+            "comparator_2": 1  # Expecting equality, so comparator_2 is set to 1
+        })
+
+    # Compare 2 multisets with Fiat-Shamir re-implementation of permutation check in frontend
+    def _trace_fe_perm(self, ctx, triples, results):
         PRIME = 2**255 - 19  # A large prime for the field
 
         def mod_inverse(a, m=PRIME):

@@ -8,7 +8,8 @@ dict_size: dict = {
     "swdf": 304583,
     "bsbm": 350062,
     "drugbank": 766920,
-    "bsbm_compared": '~50000'
+    "bsbm_compared": '~50000',
+    "zkgraph": 60000
 }
 
 dict_unit: dict = {
@@ -94,7 +95,7 @@ def parse_experiment_blocks(file_path, output_path):
 def plot_super_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str):
     pivot_df = df.pivot(index='Query', columns='Dataset Size', values=col2plot)
     
-    if sheet_name == "bsbm_compared":
+    if sheet_name == "bsbm_compared" or sheet_name == "zkgraph":
         pivot_df.columns = [f"{col}" for col in pivot_df.columns]
         pivot_df = pivot_df[sorted(pivot_df.columns, reverse=True)]
     else:
@@ -102,7 +103,7 @@ def plot_super_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str)
 
     fig, ax = plt.subplots(figsize=(4, 4))
     pivot_df = pivot_df.sort_index()
-    pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=(0.9 if sheet_name != "bsbm_compared" else 0.4), ax=ax)
+    pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=(0.9 if sheet_name != "bsbm_compared" and sheet_name != "zkgraph" else 0.4), ax=ax)
     ax.legend(title=f'Full size: {dict_size[sheet_name]}', loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=3, frameon=False)
     # ax = pivot_df.plot(kind='bar', figsize=(4, 4), color=['blue', 'orange', 'grey'], width=0.4)
 
@@ -143,14 +144,14 @@ def plot_single_circuit_results(df: pd.DataFrame, sheet_name: str, col2plot: str
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--input_path", type=str, default="./summary/experiment_2025-06-18_10-25-21.log")
-    parser.add_argument("--output_path", type=str, default="./summary/experiment_excel_official_results_v2.xlsx")
+    parser.add_argument("--output_path", type=str, default="./summary/experiment_official_results_revision.xlsx")
     input = parser.parse_args()
 
     # Run the function with your log file
     # parse_experiment_blocks(input.input_path, input.output_path)
 
     excel_file = input.output_path
-    sheets = ['swdf', 'bsbm', 'drugbank', 'bsbm_compared']
+    sheets = ['swdf', 'bsbm', 'drugbank', 'bsbm_compared', 'zkgraph']
     columns = ['Running Time', 'Memory', 'Proof Verification Time', 'Proof Size']
 
     for sheet in sheets:

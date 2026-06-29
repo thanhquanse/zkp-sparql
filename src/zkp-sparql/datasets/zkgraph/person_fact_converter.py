@@ -75,5 +75,5 @@ with open('./person_fact/60k/person_knows_person_0_0.csv', 'r') as f:
         g.add((src_uri, SNVOC.knowsCreationDate, Literal(row['creationDate'], datatype=XSD.dateTime)))
         # Or link creationDate to knows node if reified: g.add((src_uri, SNVOC.knowsCreationDate, knows_node))
 
-g.serialize(destination='snb_sample.ttl', format='turtle')
-print("Converted to snb_sample.ttl - SPARQL ready!")
+g.serialize(destination='person_fact.ttl', format='turtle')
+print("Converted to person_fact.ttl - SPARQL ready!")

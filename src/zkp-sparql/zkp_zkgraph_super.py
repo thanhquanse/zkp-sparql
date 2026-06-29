@@ -8,7 +8,7 @@ from libs.stageextracter import StageExtracter
 from libs.superhandler import ZKPSuperHandler
 from utils.measure import timeit
 
-LOG_FILE = "./rdf2rdb/logs/run.log"
+LOG_FILE = "./zkgraph/logs/run.log"
 fp = open(LOG_FILE, "w+")
 
 class TeeLog:
@@ -65,11 +65,11 @@ def performZKP(graph: Graph, query: str, params: dict):
 @profile
 def zkpFunc(dataset_query_dict: dict):
     params: dict = {
-        "k": 20,
-        "paramgen": False,
-        "param": f"./proof/param_20.bin",
+        "k": 17,
+        "paramgen": True,
+        "param": f"./proof/param_17.bin",
         "proofgen": True,
-        "step_num": 500000
+        "step_num": 100000
     }
     for dataset in dataset_query_dict.keys():
         path = dataset_query_dict[dataset]["path"]
@@ -87,9 +87,9 @@ def zkpFunc(dataset_query_dict: dict):
 if __name__ == "__main__":
     dataset_query_dict = {
         "bsbm": {
-            "path": "./datasets/zkgraph/snb_sample.ttl",
+            "path": "./datasets/zkgraph/msg_fact_sample.ttl",
             "queries": [
-                "./datasets/zkgraph/benchmark_queries/is3.sparql"
+                "./datasets/zkgraph/benchmark_queries/is4.sparql"
             ]
         }
     }
