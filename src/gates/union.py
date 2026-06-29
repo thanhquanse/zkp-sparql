@@ -62,7 +62,9 @@ class UnionVerificationCircuit(Circuit):
         p1_set = normalize_data(list(p1_set))
 
         # Multiset equality check by Halo2
-        is_mseq = mseq(p1_common, p1_set, 18)
+        _p1_common = [[hash_to_number(x)] for x in p1_common]
+        _p1_set = [[hash_to_number(x)] for x in p1_set]
+        is_mseq = mseq(_p1_common, _p1_set, 18)
         self.add(self.total_union_check_step, {
             "total_computed": is_mseq,
             "total_union": 1
@@ -95,7 +97,9 @@ class UnionVerificationCircuit(Circuit):
         p2_set = normalize_data(list(p2_set))
 
         # Multiset equality check by Halo2
-        is_mseq = mseq(p2_common, p2_set, 18)
+        _p2_common = [[hash_to_number(x)] for x in p2_common]
+        _p2_set = [[hash_to_number(x)] for x in p2_set]
+        is_mseq = mseq(_p2_common, _p2_set, 18)
         self.add(self.total_union_check_step, {
             "total_computed": is_mseq,
             "total_union": 1

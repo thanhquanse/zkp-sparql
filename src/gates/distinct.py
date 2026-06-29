@@ -54,18 +54,20 @@ class DistinctVerificationCircuit(Circuit):
             "total_distinct": len(distinct_set)
         })
 
-        # Multiset equality check by Halo2
-        is_mseq = mseq(result_set, distinct_set, 18)
-        self.add(self.distinct_check_step, {
-            "total_computed": is_mseq,
-            "total_distinct": 1
-        })
-
         # Normalize to ensure the order does not impact the hashing results
         normalized_result_set = [tuple(sorted(t)) for t in result_set]
         normalized_result_set.sort()
         normalized_distinct_set = [tuple(sorted(t)) for t in distinct_set]
         normalized_distinct_set.sort()
+
+        # Multiset equality check by Halo2
+        _result_set = [[hash_to_number(x)] for x in normalized_result_set]
+        _distinct_set = [[hash_to_number(x)] for x in normalized_distinct_set]
+        is_mseq = mseq(_result_set, _distinct_set, 18)
+        self.add(self.distinct_check_step, {
+            "total_computed": is_mseq,
+            "total_distinct": 1
+        })
 
         self.add(self.distinct_check_step, {
             "total_computed": hash_to_number(normalized_result_set),

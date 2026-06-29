@@ -138,7 +138,9 @@ class FilterVerificationCircuit(Circuit):
                 self.add(self.filter_gteq_step, 0, len(filtered_hashes))
 
                 # Multiset equality check by Halo2
-                is_mseq = mseq(computed_hashes, filtered_hashes, 18)
+                _computed_hashes = [[x] for x in computed_hashes]
+                _filtered_hashes = [[x] for x in filtered_hashes]
+                is_mseq = mseq(_computed_hashes, _filtered_hashes, 18)
                 self.add(self.total_computed_check_step, {
                     "total_computed": is_mseq,
                     "total_filtered": 1
