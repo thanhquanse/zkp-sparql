@@ -134,7 +134,7 @@ bash run.sh
 ```
 **Experiments included:**
 - Benchmarking queries Q1–Q5 on proportionally divided datasets
-- Performance comparison: PoneglyphDB vs. ZKP-SPARQL
+- Performance comparison: PoneglyphDB/ZKGraph vs. ZKP-SPARQL
 - Gate-level breakdown measurements
 
 **Tip:** Edit main.py to exclude specific experiments as needed.
