@@ -162,8 +162,9 @@ class StageExtracter:
                 except:
                     print("Error: Failed to get the previous values to group.")
                 
-                for c in condition.expr:
-                    groups.append(str(c))
+                if condition.expr:
+                    for c in condition.expr:
+                        groups.append(str(c))
 
                 expression = {
                     'groupby': groups,

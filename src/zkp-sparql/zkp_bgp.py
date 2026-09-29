@@ -41,7 +41,7 @@ WHERE {
 }
 """
 
-swdf_query = """
+swdf_query_1 = """
   PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
   PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
@@ -49,6 +49,36 @@ swdf_query = """
   SELECT ?resource_uri
   WHERE {
       ?resource_uri <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?concept .
+  }
+"""
+
+swdf_query_2 = """
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+
+    SELECT ?person
+    WHERE {
+        ?person foaf:made ?work .
+    {
+        SELECT ?person
+        WHERE {
+            ?person foaf:made ?work2 .
+            ?work2 dc:subject ?subject .
+        }
+    }
+    }
+"""
+
+swdf_query_3 = """
+  SELECT ?person ?paper WHERE {
+    ?person <http://xmlns.com/foaf/0.1/made> ?paper .
+    {
+      SELECT DISTINCT ?paper_inner WHERE {
+        ?person_inner <http://xmlns.com/foaf/0.1/made> ?paper_inner .
+        ?paper_inner <http://data.semanticweb.org/ns/swc/ontology#isPartOf>
+                    <http://data.semanticweb.org/conference/iswc/2010/proceedings> .
+      }
+    }
   }
 """
 
@@ -75,9 +105,9 @@ stage_extracter = StageExtracter()
 rdflib.plugins.sparql.CUSTOM_EVALS["ZKPQueryEval"] = stage_extracter.ZKPQueryEval
 
 g.parse(data=data, format="turtle")
-# g.parse(".//rdf2rdb/datasets/BSBM.ttl")
+g.parse(swdf_data_path, format="nt")
 print(f"Graph size: {len(g)}")
-results = g.query(query)
+results = g.query(swdf_query_2)
 # for row in results:
 #     print(row)
 
