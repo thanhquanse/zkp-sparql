@@ -1,9 +1,0 @@
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
-
-ASK WHERE {
-  ?product rdf:type bsbm:Product ;
-           rdfs:label ?label .
-  FILTER (REGEX(?label, "eco", "i"))
-}

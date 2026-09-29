@@ -1,7 +1,0 @@
-CONSTRUCT {
-  ?author <http://xmlns.com/foaf/0.1/made> ?paper .
-}
-WHERE {
-  ?author a <http://xmlns.com/foaf/0.1/Person> ;
-          <http://xmlns.com/foaf/0.1/made> ?paper .
-}

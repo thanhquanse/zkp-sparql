@@ -1,9 +1,0 @@
-SELECT ?event (COUNT(?label) AS ?labelCount)
-WHERE {
-  ?event a <http://data.semanticweb.org/ns/swc/ontology#TalkEvent> ;
-           <http://www.w3.org/2000/01/rdf-schema#label> ?label ;
-  FILTER(REGEX(?label, "da", "i"))
-}
-GROUP BY ?event
-HAVING (COUNT(?label) >= 1)
-ORDER BY DESC(?labelCount)

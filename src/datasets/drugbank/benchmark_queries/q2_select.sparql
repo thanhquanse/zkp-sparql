@@ -1,0 +1,10 @@
+PREFIX db: <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/>
+
+SELECT ?target (COUNT(?synonym) AS ?synonymCount)
+WHERE {
+  ?target db:synonym ?synonym
+  FILTER(REGEX(?synonym, "alpha", "i"))
+}
+GROUP BY ?target
+HAVING (COUNT(?synonym) > 2)
+ORDER BY DESC(?synonymCount)
