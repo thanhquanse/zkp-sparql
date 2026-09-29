@@ -48,9 +48,8 @@ For more details, see the [Maturin documentation](https://www.maturin.rs/install
 ### Step 3: Install ZKP Chiquito Dependency
 Clone and build our redesigned Chiquito framework (required for ZKP functionality, such as range checks, proof generation/verification, parameter generation, etc. compared to the original version):
 ```sh
-wget -O zkpchiquito.zip https://anonymous.4open.science/api/repo/chiquito-9B54/zip
-unzip zkpchiquito.zip -d ./path/to/zkpchiquito
-cd ./path/to/zkpchiquito
+git clone https://github.com/thanhquanse/chiquito.git
+cd ./path/to/chiquito
 
 # Ensure virtual environment is activated
 pip install -r requirements.txt
@@ -63,8 +62,7 @@ maturin develop
 ## Installation
 Clone ZKP-SPARQL Repository
 ```sh
-wget -O zkp-sparql.zip https://anonymous.4open.science/api/repo/zkp-sparql-6FCA/zip
-unzip zkp-sparql.zip -d ./path/to/zkp-sparql
+git clone https://github.com/thanhquanse/zkp-sparql.git
 cd ./path/to/zkp-sparql
 pip install -r requirements.txt
 ```
